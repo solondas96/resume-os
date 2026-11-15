@@ -709,7 +709,7 @@ html, body, #root {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 12mm;
+    margin: 0;
   }
 
   html, body, #root {
@@ -745,12 +745,12 @@ html, body, #root {
   .a4-sheet {
     box-shadow: none !important;
     border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    min-height: auto !important;
-    max-height: none !important;
+    margin: 0 auto !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
     transform: none !important;
+    box-sizing: border-box !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

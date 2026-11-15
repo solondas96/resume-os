@@ -31,16 +31,54 @@ export async function exportDirectPdf(
   // Ensure clean filename
   const cleanFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
 
+  // Clone the sheet element so we can sanitize it without mutating the live UI
+  const clone = element.cloneNode(true) as HTMLElement;
+
+  // 1. Remove editor visual overlays (.page-break-indicator, .no-print)
+  clone.querySelectorAll('.page-break-indicator, .no-print').forEach((el) => el.remove());
+
+  // 2. Normalize styles on the clone to ensure exact 1:1 A4 canvas dimensions
+  clone.style.boxShadow = 'none';
+  clone.style.margin = '0 auto';
+  clone.style.transform = 'none';
+  clone.style.width = '794px';
+  clone.style.minWidth = '794px';
+  clone.style.maxWidth = '794px';
+  clone.style.boxSizing = 'border-box';
+  clone.style.backgroundColor = '#ffffff';
+
+  // Copy CSS variables from original element
+  const computed = window.getComputedStyle(element);
+  const primaryColor = computed.getPropertyValue('--primary-color') || '#c96442';
+  const primaryLight = computed.getPropertyValue('--primary-light') || '#f5e9e2';
+  clone.style.setProperty('--primary-color', primaryColor);
+  clone.style.setProperty('--primary-light', primaryLight);
+
+  // 3. Mount clone into a clean temporary container offscreen
+  const container = document.createElement('div');
+  container.id = 'pdf-export-temp-container';
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.top = '0';
+  container.style.width = '794px';
+  container.style.background = '#ffffff';
+  container.style.zIndex = '-9999';
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  // 4. Configure html2pdf with zero margins (since .a4-sheet already has its own user-chosen padding)
   const opt = {
-    margin: [8, 10, 8, 10] as [number, number, number, number],
+    margin: [0, 0, 0, 0] as [number, number, number, number],
     filename: cleanFilename,
     image: { type: 'jpeg' as const, quality: 0.98 },
     html2canvas: {
       scale: 2,
       useCORS: true,
-      letterRendering: true,
+      letterRendering: false,
       logging: false,
       scrollY: 0,
+      scrollX: 0,
+      windowWidth: 794,
     },
     jsPDF: {
       unit: 'mm' as const,
@@ -48,17 +86,22 @@ export async function exportDirectPdf(
       orientation: 'portrait' as const,
     },
     pagebreak: {
-      mode: ['avoid-all', 'css', 'legacy'],
+      mode: ['css', 'legacy'],
+      avoid: ['.resume-section', 'h1', 'h2', 'h3'],
       before: '.manual-page-break',
     },
   };
 
   try {
-    await html2pdf().set(opt).from(element).save();
+    await html2pdf().set(opt).from(clone).save();
     return true;
   } catch (err) {
     console.error('Direct PDF export error:', err);
     return false;
+  } finally {
+    if (container.parentNode) {
+      document.body.removeChild(container);
+    }
   }
 }
 
