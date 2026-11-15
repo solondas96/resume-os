@@ -359,10 +359,10 @@ export const CommandPalette: React.FC = () => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-slate-900 border border-slate-750 rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[70vh]"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[70vh] transition-colors duration-150"
       >
         {/* Search Input Bar */}
-        <div className="h-13 px-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950">
+        <div className="h-13 px-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-slate-50 dark:bg-slate-950">
           <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
           <input
             ref={inputRef}
@@ -374,9 +374,9 @@ export const CommandPalette: React.FC = () => {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Type a command or search (e.g. 'pdf', 'template', 'compact', 'star')..."
-            className="w-full bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+            className="w-full bg-transparent text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
-          <kbd className="hidden sm:inline-block text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700 px-1.5 py-0.5 rounded">
+          <kbd className="hidden sm:inline-block text-[10px] font-mono bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 px-1.5 py-0.5 rounded">
             ESC
           </kbd>
         </div>
@@ -395,25 +395,25 @@ export const CommandPalette: React.FC = () => {
                 onMouseEnter={() => setSelectedIndex(idx)}
                 className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs transition ${
                   selectedIndex === idx
-                    ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30'
-                    : 'text-slate-300 hover:bg-slate-800/60 border border-transparent'
+                    ? 'bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-200 border border-blue-200 dark:border-blue-500/30'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-800/80">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-100 dark:bg-slate-800/80">
                     {cmd.icon}
                   </div>
                   <div>
-                    <span className="font-semibold text-slate-200 block">{cmd.title}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200 block">{cmd.title}</span>
                     {cmd.description && (
-                      <span className="text-[11px] text-slate-400 line-clamp-1">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
                         {cmd.description}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <span className="text-[10px] uppercase font-mono font-medium text-slate-500 bg-slate-800/60 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] uppercase font-mono font-medium text-slate-500 bg-slate-100 dark:bg-slate-800/60 px-1.5 py-0.5 rounded">
                   {cmd.category}
                 </span>
               </button>
@@ -422,7 +422,7 @@ export const CommandPalette: React.FC = () => {
         </div>
 
         {/* Footer Shortcut Hints */}
-        <div className="h-8 px-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+        <div className="h-8 px-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
           <div className="flex items-center gap-2">
             <span>↑↓ Navigate</span>
             <span>•</span>
@@ -430,7 +430,7 @@ export const CommandPalette: React.FC = () => {
             <span>•</span>
             <span>ESC Close</span>
           </div>
-          <span className="font-mono text-[10px]">ResumeOS Cmd+K</span>
+          <span className="font-mono text-[10px]">ResumeLabs Cmd+K</span>
         </div>
       </div>
     </div>

@@ -105,21 +105,21 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transition-colors duration-150">
         {/* Top Header */}
-        <div className="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-xl text-white shadow-lg shadow-orange-500/20">
               <Zap className="w-5 h-5 fill-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-100 tracking-tight">Headroom AI Studio</h2>
-                <span className="text-[10px] bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono font-semibold">
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">Headroom AI Studio</h2>
+                <span className="text-[10px] bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-full font-mono font-semibold">
                   Context Compression
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Token optimization & cost reduction layer for LLM resume agents (60–95% savings)
               </p>
             </div>
@@ -130,13 +130,13 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
             <div
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono border ${
                 proxyActive
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                  : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                  ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
+                  : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/30'
               }`}
             >
               <div
                 className={`w-2 h-2 rounded-full ${
-                  proxyActive ? 'bg-emerald-400 animate-pulse' : 'bg-blue-400'
+                  proxyActive ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'
                 }`}
               />
               <span>{proxyActive ? 'Local Proxy Active (8787)' : 'Edge Compression Engine'}</span>
@@ -144,7 +144,7 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
 
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition"
+              className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -152,13 +152,13 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center px-6 bg-slate-950/50 border-b border-slate-800 text-xs">
+        <div className="flex items-center px-6 bg-slate-50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800 text-xs">
           <button
             onClick={() => setActiveTab('telemetry')}
             className={`py-3 px-4 font-semibold border-b-2 flex items-center gap-2 transition ${
               activeTab === 'telemetry'
-                ? 'border-amber-500 text-amber-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <TrendingDown className="w-4 h-4" />
@@ -168,8 +168,8 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
             onClick={() => setActiveTab('optimizer')}
             className={`py-3 px-4 font-semibold border-b-2 flex items-center gap-2 transition ${
               activeTab === 'optimizer'
-                ? 'border-amber-500 text-amber-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             <Sparkles className="w-4 h-4" />

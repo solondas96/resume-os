@@ -51,23 +51,23 @@ export const PresetsModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="relative w-full max-w-4xl bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-150">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/80">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400">
+            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-600/20 border border-blue-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-400">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-100">Starter Role Presets</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Starter Role Presets</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Choose a battle-tested professional English resume blueprint crafted for your field.
               </p>
             </div>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -78,36 +78,36 @@ export const PresetsModal: React.FC = () => {
           {ROLE_PRESETS.map((preset) => (
             <div
               key={preset.id}
-              className="bg-slate-900/60 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 rounded-xl p-5 flex flex-col justify-between transition-all group"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/50 hover:bg-white dark:hover:bg-slate-900 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-xs"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-slate-800 border border-slate-700/60 group-hover:scale-105 transition">
+                    <div className="p-2.5 rounded-xl bg-slate-200/80 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/60 group-hover:scale-105 transition">
                       {getPresetIcon(preset.iconName)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-100 group-hover:text-blue-400 transition">
+                      <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
                         {preset.roleName}
                       </h3>
-                      <span className="text-xs text-slate-400 font-medium">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                         {preset.candidateName}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-200/90 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-full">
                     {preset.badge}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   {preset.description}
                 </p>
 
                 <div className="flex items-center gap-3 pt-2 text-[11px] text-slate-500 font-mono">
                   <span className="flex items-center gap-1.5">
                     <span
-                      className="w-2.5 h-2.5 rounded-full inline-block"
+                      className="w-2.5 h-2.5 rounded-full inline-block shadow-xs"
                       style={{ backgroundColor: preset.accentColor }}
                     />
                     Color
@@ -119,7 +119,7 @@ export const PresetsModal: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-end">
+              <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-end">
                 <button
                   onClick={() => handleSelectPreset(preset)}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md shadow-blue-600/20 transition active:scale-95"
@@ -133,11 +133,11 @@ export const PresetsModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-6 py-3.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
           <span>Loading a preset replaces your editor content. (A revision backup will be automatically saved).</span>
           <button
             onClick={() => setActiveModal(null)}
-            className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition"
+            className="px-3.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition"
           >
             Cancel
           </button>

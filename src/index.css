@@ -23,13 +23,19 @@ html, body, #root {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
+  background: rgba(148, 163, 184, 0.4);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.8);
 }
 
@@ -37,13 +43,18 @@ html, body, #root {
    A4 SHEET & PREVIEW CANVAS
    ================================================================ */
 .a4-canvas-wrapper {
-  background-color: #0f172a;
+  background-color: #f1f5f9;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
   display: flex;
   justify-content: center;
   padding: 2rem 1rem 4rem 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.dark .a4-canvas-wrapper {
+  background-color: #0b0f19;
 }
 
 .a4-sheet {
@@ -51,12 +62,16 @@ html, body, #root {
   min-height: var(--a4-height);
   background-color: #ffffff;
   color: #1e293b;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 40px 48px;
   transform-origin: top center;
-  transition: transform 0.15s ease-out;
+  transition: transform 0.15s ease-out, box-shadow 0.2s ease;
   position: relative;
   box-sizing: border-box;
+}
+
+.dark .a4-sheet {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 /* Margin Variants */

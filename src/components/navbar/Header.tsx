@@ -20,6 +20,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useResumeStore } from '../../store/useResumeStore';
+import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
 import { HeadroomStudio } from '../headroom/HeadroomStudio';
 import { DesignPanel } from '../design/DesignPanel';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
@@ -93,17 +94,12 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="no-print h-14 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-4 select-none z-30 relative">
+    <header className="no-print h-14 bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 select-none z-30 relative transition-colors duration-150 backdrop-blur-xs">
       {/* Left: Brand logo & Editable Document Title */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-bold text-sm tracking-tighter">
-            R<span className="text-blue-200">OS</span>
-          </div>
-          <span className="font-bold text-slate-100 text-sm tracking-tight hidden sm:inline">ResumeOS</span>
-        </div>
+        <ResumeLabsLogo size={32} showText={true} />
 
-        <div className="h-4 w-[1px] bg-slate-800 mx-1 hidden sm:block" />
+        <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-800 mx-1 hidden md:block" />
 
         {/* Editable Title */}
         <div className="flex items-center gap-1.5 group">
@@ -115,30 +111,30 @@ export const Header: React.FC = () => {
               onChange={(e) => setDocumentTitle(e.target.value)}
               onBlur={() => setIsEditingTitle(false)}
               onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
-              className="bg-slate-900 border border-blue-500 rounded px-2 py-0.5 text-xs text-white font-medium focus:outline-none w-48 sm:w-60"
+              className="bg-slate-100 dark:bg-slate-900 border border-blue-500 rounded px-2 py-0.5 text-xs text-slate-900 dark:text-white font-medium focus:outline-none w-44 sm:w-60 shadow-inner"
             />
           ) : (
             <button
               onClick={() => setIsEditingTitle(true)}
-              className="flex items-center gap-1.5 text-xs font-medium text-slate-300 hover:text-white px-2 py-1 rounded hover:bg-slate-900 transition max-w-[200px] sm:max-w-xs truncate"
+              className="flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-900 transition max-w-[160px] sm:max-w-xs truncate"
               title="Click to rename document"
             >
               <span className="truncate">{documentTitle}</span>
-              <Edit3 className="w-3 h-3 text-slate-500 group-hover:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+              <Edit3 className="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
             </button>
           )}
         </div>
       </div>
 
       {/* Center: Consolidated Action Buttons (Presets, ATS Scan, Design & Headroom AI) */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Starter Role Presets */}
         <button
           onClick={() => setActiveModal('presets')}
           title="Browse Professional Starter Presets"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition active:scale-95 shadow-xs"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition active:scale-95 shadow-xs"
         >
-          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+          <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span className="hidden lg:inline">Presets</span>
         </button>
 
@@ -146,9 +142,9 @@ export const Header: React.FC = () => {
         <button
           onClick={() => setActiveModal('ats')}
           title="ATS Keyword Scanner & Job Description Matcher"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition active:scale-95 shadow-xs"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold transition active:scale-95 shadow-xs"
         >
-          <Target className="w-3.5 h-3.5 text-emerald-400" />
+          <Target className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
           <span className="hidden sm:inline">ATS Scan</span>
         </button>
 
@@ -156,11 +152,11 @@ export const Header: React.FC = () => {
         <button
           onClick={() => setDesignOpen(true)}
           title="Open Design & Layout Settings"
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-750 hover:border-slate-600 text-xs font-semibold text-slate-200 hover:text-white shadow-sm transition active:scale-95"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white shadow-xs transition active:scale-95"
         >
-          <Palette className="w-3.5 h-3.5 text-blue-400" />
+          <Palette className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span>Design</span>
-          <span className="text-[10px] bg-slate-800 text-slate-400 border border-slate-700/80 px-1.5 py-0.5 rounded capitalize font-mono font-medium">
+          <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700/80 px-1.5 py-0.5 rounded capitalize font-mono font-medium">
             {theme}
           </span>
         </button>
@@ -169,21 +165,21 @@ export const Header: React.FC = () => {
         <button
           onClick={() => setHeadroomOpen(true)}
           title="Headroom AI Context Compression & Optimization Studio"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 text-amber-300 font-semibold text-xs shadow-sm shadow-amber-500/10 transition active:scale-95"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-gradient-to-r dark:from-amber-500/10 dark:to-orange-500/10 dark:hover:from-amber-500/20 dark:hover:to-orange-500/20 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300 font-semibold text-xs shadow-xs transition active:scale-95"
         >
-          <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+          <Zap className="w-3.5 h-3.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
           <span className="hidden sm:inline">Headroom AI</span>
           <span className="sm:hidden">AI</span>
         </button>
       </div>
 
       {/* Right Controls: Palette, Theme, History, Help, Import & Prominent Export */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Cmd+K Quick Search Trigger */}
         <button
           onClick={() => setCommandPaletteOpen(true)}
           title="Command Palette (Cmd+K / Ctrl+K)"
-          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 transition text-xs font-mono"
+          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800 transition text-xs font-mono"
         >
           <Command className="w-3 h-3 text-slate-500" />
           <span>Cmd+K</span>
@@ -193,15 +189,15 @@ export const Header: React.FC = () => {
         <button
           onClick={toggleUiTheme}
           title={`Switch to ${uiTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
-          className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition"
+          className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition"
         >
-          {uiTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+          {uiTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
         </button>
 
         <button
           onClick={() => setActiveModal('shortcuts')}
           title="Markdown & Icon Shortcuts (?)"
-          className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition"
+          className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition"
         >
           <HelpCircle className="w-4 h-4" />
         </button>
@@ -209,7 +205,7 @@ export const Header: React.FC = () => {
         <button
           onClick={() => setActiveModal('history')}
           title="Revision History"
-          className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition"
+          className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition"
         >
           <History className="w-4 h-4" />
         </button>
@@ -217,7 +213,7 @@ export const Header: React.FC = () => {
         <button
           onClick={() => setActiveModal('import')}
           title="Import Markdown"
-          className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition"
+          className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition"
         >
           <Upload className="w-4 h-4" />
         </button>
@@ -242,22 +238,22 @@ export const Header: React.FC = () => {
           </div>
 
           {exportMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-1.5 z-50 divide-y divide-slate-800/60">
+            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-1.5 z-50 divide-y divide-slate-100 dark:divide-slate-800/60 animate-in fade-in zoom-in-95 duration-100">
               <div className="pb-1">
                 <button
                   onClick={handleDirectPdf}
                   disabled={isExportingPdf}
-                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center justify-between group transition"
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 flex items-center justify-between group transition"
                 >
                   <div className="flex items-center gap-2">
                     {isExportingPdf ? (
-                      <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 animate-spin" />
                     ) : (
-                      <Download className="w-3.5 h-3.5 text-blue-400" />
+                      <Download className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                     )}
                     <span className="font-medium">1-Click Direct PDF</span>
                   </div>
-                  <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded font-mono">
+                  <span className="text-[10px] bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded font-mono font-medium">
                     Instant
                   </span>
                 </button>
@@ -267,9 +263,9 @@ export const Header: React.FC = () => {
                     setExportMenuOpen(false);
                     handlePrintPdf();
                   }}
-                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 flex items-center gap-2 transition"
                 >
-                  <Printer className="w-3.5 h-3.5 text-slate-400" />
+                  <Printer className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                   <span>Print Dialog / Vector PDF</span>
                 </button>
               </div>
@@ -280,9 +276,9 @@ export const Header: React.FC = () => {
                     setExportMenuOpen(false);
                     handleDownloadMarkdown();
                   }}
-                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 flex items-center gap-2 transition"
                 >
-                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                  <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Download .md Source</span>
                 </button>
 
@@ -291,9 +287,9 @@ export const Header: React.FC = () => {
                     setExportMenuOpen(false);
                     handleExportPlainText();
                   }}
-                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 flex items-center gap-2 transition"
                 >
-                  <FileCode className="w-3.5 h-3.5 text-amber-400" />
+                  <FileCode className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   <span>Export Clean Text (.txt for ATS)</span>
                 </button>
 
@@ -302,9 +298,9 @@ export const Header: React.FC = () => {
                     setExportMenuOpen(false);
                     handleExportJson();
                   }}
-                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 flex items-center gap-2 transition"
                 >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-purple-400" />
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                   <span>Export JSON Resume (.json)</span>
                 </button>
               </div>

@@ -42,7 +42,8 @@ export const EditorPane: React.FC = () => {
     setMarkdown,
     saveRevision,
     editorViewMode,
-    setEditorViewMode
+    setEditorViewMode,
+    uiTheme,
   } = useResumeStore();
 
   const editorRef = useRef<ReactCodeMirrorRef>(null);
@@ -297,17 +298,17 @@ export const EditorPane: React.FC = () => {
   );
 
   return (
-    <div className="editor-pane-container flex flex-col h-full bg-slate-900 border-r border-slate-800 select-none relative">
+    <div className="editor-pane-container flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 select-none relative transition-colors duration-150">
       {/* Editor Sub-Header Toolbar */}
-      <div className="h-10 px-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+      <div className="h-10 px-3 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 transition-colors">
         {/* Left: View Mode Segmented Switch */}
-        <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+        <div className="flex items-center bg-slate-200/80 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-300 dark:border-slate-800">
           <button
             onClick={() => setEditorViewMode('markdown')}
             className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition ${
               editorViewMode === 'markdown'
                 ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-400 hover:text-slate-200'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             Markdown
@@ -317,7 +318,7 @@ export const EditorPane: React.FC = () => {
             className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition ${
               editorViewMode === 'cards'
                 ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-400 hover:text-slate-200'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
             Section Cards
@@ -326,36 +327,36 @@ export const EditorPane: React.FC = () => {
 
         {/* Center: Formatting Quick Actions (Active in Markdown mode) */}
         {editorViewMode === 'markdown' && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             <button
               onClick={() => insertSnippet('**Bold Text**')}
               title="Bold (**text**)"
-              className="p-1.5 hover:bg-slate-800 hover:text-slate-200 rounded transition"
+              className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded transition"
             >
               <Bold className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertSnippet('*Italic Text*')}
               title="Italic (*text*)"
-              className="p-1.5 hover:bg-slate-800 hover:text-slate-200 rounded transition"
+              className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded transition"
             >
               <Italic className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertSnippet('\n## Section Heading\n')}
               title="Section Heading (##)"
-              className="p-1.5 hover:bg-slate-800 hover:text-slate-200 rounded transition"
+              className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded transition"
             >
               <Heading2 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertSnippet('\n- Bullet point metric or task achievement\n')}
               title="Bullet Point (- )"
-              className="p-1.5 hover:bg-slate-800 hover:text-slate-200 rounded transition"
+              className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded transition"
             >
               <List className="w-3.5 h-3.5" />
             </button>
-            <div className="w-[1px] h-4 bg-slate-800 mx-1" />
+            <div className="w-[1px] h-4 bg-slate-300 dark:bg-slate-800 mx-1" />
             <button
               onClick={() =>
                 insertSnippet(
@@ -363,9 +364,9 @@ export const EditorPane: React.FC = () => {
                 )
               }
               title="Insert Two-Column Container"
-              className="flex items-center gap-1 px-1.5 py-1 hover:bg-slate-800 hover:text-blue-300 rounded transition text-[11px]"
+              className="flex items-center gap-1 px-1.5 py-1 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-300 rounded transition text-[11px]"
             >
-              <Columns className="w-3.5 h-3.5 text-blue-400" />
+              <Columns className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>2-Col</span>
             </button>
           </div>
@@ -376,7 +377,7 @@ export const EditorPane: React.FC = () => {
           <button
             onClick={() => saveRevision()}
             title="Commit revision snapshot now"
-            className="flex items-center gap-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 px-2 py-0.5 rounded transition"
+            className="flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 px-2 py-0.5 rounded transition"
           >
             <Save className="w-3 h-3" />
             <span>Snapshot</span>
@@ -393,7 +394,7 @@ export const EditorPane: React.FC = () => {
             ref={editorRef}
             value={content}
             height="100%"
-            theme={oneDark}
+            theme={uiTheme === 'dark' ? oneDark : 'light'}
             extensions={[markdown()]}
             onChange={(val) => setMarkdown(val)}
             onUpdate={handleUpdate}
@@ -418,40 +419,40 @@ export const EditorPane: React.FC = () => {
                 left: `${selectionToolbarPos.left}px`,
                 zIndex: 50,
               }}
-              className="bg-slate-950 border border-slate-750 shadow-2xl rounded-lg flex items-center p-1 gap-1 text-slate-200 animate-in fade-in zoom-in-95 duration-100"
+              className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-750 shadow-2xl rounded-lg flex items-center p-1 gap-1 text-slate-700 dark:text-slate-200 animate-in fade-in zoom-in-95 duration-100"
             >
               <button
                 onClick={() => applyFormatting('**', '**')}
                 title="Bold"
-                className="p-1.5 hover:bg-slate-800 rounded text-xs hover:text-white"
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-xs hover:text-slate-950 dark:hover:text-white"
               >
                 <Bold className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => applyFormatting('*', '*')}
                 title="Italic"
-                className="p-1.5 hover:bg-slate-800 rounded text-xs hover:text-white"
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-xs hover:text-slate-950 dark:hover:text-white"
               >
                 <Italic className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => applyFormatting('`', '`')}
                 title="Skill Tag Chip"
-                className="p-1.5 hover:bg-slate-800 rounded text-xs hover:text-purple-300"
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-xs hover:text-purple-600 dark:hover:text-purple-300"
               >
                 <Code className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => applyFormatting('[', '](https://...)')}
                 title="Link"
-                className="p-1.5 hover:bg-slate-800 rounded text-xs hover:text-blue-300"
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-xs hover:text-blue-600 dark:hover:text-blue-300"
               >
                 <Link className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => applyFormatting('\n- ')}
                 title="Bullet"
-                className="p-1.5 hover:bg-slate-800 rounded text-xs hover:text-emerald-300"
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-xs hover:text-emerald-600 dark:hover:text-emerald-300"
               >
                 <List className="w-3.5 h-3.5" />
               </button>
@@ -460,10 +461,10 @@ export const EditorPane: React.FC = () => {
 
           {/* Floating Slash (/) Command Menu */}
           {slashOpen && (
-            <div className="absolute top-4 left-12 w-72 bg-slate-950 border border-slate-750 shadow-2xl rounded-xl z-50 overflow-hidden text-xs">
-              <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
+            <div className="absolute top-4 left-12 w-72 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-750 shadow-2xl rounded-xl z-50 overflow-hidden text-xs">
+              <div className="px-3 py-1.5 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
                 <span>Insert Blocks (Type to filter)</span>
-                <span className="text-blue-400">/{slashFilter}</span>
+                <span className="text-blue-600 dark:text-blue-400">/{slashFilter}</span>
               </div>
               <div className="max-h-64 overflow-y-auto p-1.5 space-y-1">
                 {filteredCommands.length === 0 ? (
@@ -478,15 +479,15 @@ export const EditorPane: React.FC = () => {
                       onMouseEnter={() => setSlashIndex(idx)}
                       className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center gap-2.5 transition ${
                         slashIndex === idx
-                          ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30'
-                          : 'text-slate-300 hover:bg-slate-800/60'
+                          ? 'bg-blue-50 dark:bg-blue-600/20 text-blue-700 dark:text-blue-200 border border-blue-200 dark:border-blue-500/30'
+                          : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                       }`}
                     >
-                      <div className="w-5 h-5 flex items-center justify-center rounded bg-slate-900 flex-shrink-0">
+                      <div className="w-5 h-5 flex items-center justify-center rounded bg-slate-100 dark:bg-slate-900 flex-shrink-0">
                         {cmd.icon}
                       </div>
                       <div className="flex-1 truncate">
-                        <span className="font-semibold block text-[11px] text-slate-200 truncate">
+                        <span className="font-semibold block text-[11px] text-slate-800 dark:text-slate-200 truncate">
                           {cmd.title}
                         </span>
                         <span className="text-[10px] text-slate-500 block truncate">

@@ -153,13 +153,13 @@ export const SectionCardView: React.FC = () => {
   };
 
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-4 bg-slate-900 text-slate-200">
+    <div className="h-full overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-150">
       {/* 1. Header Card (Contact & Intro) */}
-      <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
+        <div className="px-4 py-3 bg-slate-100/70 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <GripVertical className="w-4 h-4 text-slate-600 cursor-grab" />
-            <span className="font-bold text-xs text-slate-100">Personal Info & Header</span>
+            <GripVertical className="w-4 h-4 text-slate-400 dark:text-slate-600 cursor-grab" />
+            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">Personal Info & Header</span>
           </div>
           <span className="text-[10px] text-slate-500 font-mono">Title & Contact Layout</span>
         </div>
@@ -168,7 +168,7 @@ export const SectionCardView: React.FC = () => {
             value={headerBlock}
             onChange={(e) => updateHeaderBlock(e.target.value)}
             rows={6}
-            className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed"
+            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5 font-mono text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed"
           />
         </div>
       </div>
@@ -179,23 +179,23 @@ export const SectionCardView: React.FC = () => {
         return (
           <div
             key={section.id + idx}
-            className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-sm transition-all"
+            className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs transition-all"
           >
             {/* Card Header */}
-            <div className="px-4 py-3 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-slate-100/70 dark:bg-slate-950/90 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <GripVertical className="w-4 h-4 text-slate-600 cursor-grab hover:text-slate-400" />
+                <GripVertical className="w-4 h-4 text-slate-400 dark:text-slate-600 cursor-grab hover:text-slate-600 dark:hover:text-slate-400" />
                 {getSectionIcon(section.title)}
-                <span className="font-bold text-xs text-slate-100">{section.title}</span>
+                <span className="font-bold text-xs text-slate-800 dark:text-slate-100">{section.title}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 {/* Reorder Buttons */}
-                <div className="flex items-center gap-0.5 border-r border-slate-800 pr-1.5 mr-0.5">
+                <div className="flex items-center gap-0.5 border-r border-slate-200 dark:border-slate-800 pr-1.5 mr-0.5">
                   <button
                     onClick={() => moveSection(idx, 'up')}
                     disabled={idx === 0}
-                    className="p-1 text-slate-400 hover:text-slate-100 disabled:opacity-25 disabled:hover:text-slate-400 rounded transition"
+                    className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-25 rounded transition"
                     title="Move section up"
                   >
                     <ArrowUp className="w-3.5 h-3.5" />
@@ -203,7 +203,7 @@ export const SectionCardView: React.FC = () => {
                   <button
                     onClick={() => moveSection(idx, 'down')}
                     disabled={idx === sections.length - 1}
-                    className="p-1 text-slate-400 hover:text-slate-100 disabled:opacity-25 disabled:hover:text-slate-400 rounded transition"
+                    className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-25 rounded transition"
                     title="Move section down"
                   >
                     <ArrowDown className="w-3.5 h-3.5" />
@@ -212,7 +212,7 @@ export const SectionCardView: React.FC = () => {
 
                 <button
                   onClick={() => addBulletToSection(idx)}
-                  className="flex items-center gap-1 text-[11px] bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded transition"
+                  className="flex items-center gap-1 text-[11px] bg-blue-50 dark:bg-blue-600/10 hover:bg-blue-100 dark:hover:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 px-2 py-0.5 rounded transition"
                   title="Add bullet point"
                 >
                   <Plus className="w-3 h-3" />
@@ -221,7 +221,7 @@ export const SectionCardView: React.FC = () => {
 
                 <button
                   onClick={() => deleteSection(idx)}
-                  className="p-1 text-slate-500 hover:text-rose-400 rounded transition"
+                  className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition"
                   title="Delete section"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -229,7 +229,7 @@ export const SectionCardView: React.FC = () => {
 
                 <button
                   onClick={() => toggleCollapse(section.id)}
-                  className="p-1 text-slate-400 hover:text-slate-200 rounded transition"
+                  className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded transition"
                 >
                   {isCollapsed ? (
                     <ChevronDown className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export const SectionCardView: React.FC = () => {
                   value={section.rawContent}
                   onChange={(e) => updateSectionContent(idx, e.target.value)}
                   rows={Math.max(4, section.rawContent.split('\n').length + 1)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5 font-mono text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed"
                 />
               </div>
             )}
