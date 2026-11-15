@@ -81,25 +81,24 @@ html, body, #root {
   position: absolute;
   left: 0;
   right: 0;
-  height: 2px;
-  border-top: 2px dashed #f43f5e;
-  z-index: 30;
+  height: 0;
+  border-top: 1.5px dashed #94a3b8;
+  z-index: 20;
   pointer-events: none;
-  opacity: 0.85;
 }
 .page-break-badge {
   position: absolute;
-  right: 12px;
-  top: -11px;
-  background-color: #f43f5e;
-  color: white;
+  right: 16px;
+  top: -10px;
+  background-color: #334155;
+  color: #f8fafc;
   font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 1px 8px;
+  font-weight: 600;
+  padding: 1px 10px;
   border-radius: 9999px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.02em;
 }
 
 /* ================================================================

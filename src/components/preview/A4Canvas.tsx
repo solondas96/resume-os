@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { parseResumeMarkdown } from '../../parser/markdown';
-import { ZoomIn, ZoomOut, AlertTriangle } from 'lucide-react';
 
 const A4_HEIGHT_PX = 1123; // 297mm at 96 DPI
 const A4_WIDTH_PX = 794;   // 210mm at 96 DPI
@@ -16,13 +15,12 @@ export const A4Canvas: React.FC = () => {
     zoom,
     setZoom,
     autoFitZoom,
-    setAutoFitZoom,
+    setPageCount,
   } = useResumeStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
   const [sheetHeight, setSheetHeight] = useState(A4_HEIGHT_PX);
-  const [calculatedScale, setCalculatedScale] = useState(1.0);
 
   // Parse markdown into sanitized HTML with icons and containers
   const parsedHtml = useMemo(() => {
@@ -31,17 +29,16 @@ export const A4Canvas: React.FC = () => {
 
   // Derive light tint of accent color for background accents
   const primaryLightHex = useMemo(() => {
-    // Generate subtle 10% opacity tint
     return accentColor + '18';
   }, [accentColor]);
 
-  // Auto-fit scale listener
+  // Auto-fit scale listener: automatically syncs scale with store zoom
   useEffect(() => {
     const handleResize = () => {
       if (!containerRef.current || !autoFitZoom) return;
       const availableWidth = containerRef.current.clientWidth - 48; // padding
       const targetScale = Math.min(1.05, Math.max(0.45, availableWidth / A4_WIDTH_PX));
-      setCalculatedScale(targetScale);
+      setZoom(Number(targetScale.toFixed(2)));
     };
 
     handleResize();
@@ -50,24 +47,25 @@ export const A4Canvas: React.FC = () => {
       ro.observe(containerRef.current);
     }
     return () => ro.disconnect();
-  }, [autoFitZoom]);
+  }, [autoFitZoom, setZoom]);
 
-  // Track sheet height to render page-break indicators
+  // Track sheet height to render page-break indicators and update page count in store
   useEffect(() => {
     if (!sheetRef.current) return;
     const observer = new ResizeObserver(() => {
       if (sheetRef.current) {
-        setSheetHeight(sheetRef.current.offsetHeight);
+        const height = sheetRef.current.offsetHeight;
+        setSheetHeight(height);
+        const calculatedPages = Math.max(1, Math.ceil((height - 20) / A4_HEIGHT_PX));
+        setPageCount(calculatedPages);
       }
     });
     observer.observe(sheetRef.current);
     return () => observer.disconnect();
-  }, [parsedHtml, compactSpacing, theme]);
-
-  const activeScale = autoFitZoom ? calculatedScale : zoom;
+  }, [parsedHtml, compactSpacing, theme, setPageCount]);
 
   // Calculate page break positions
-  const numPages = Math.ceil(sheetHeight / A4_HEIGHT_PX);
+  const numPages = Math.max(1, Math.ceil((sheetHeight - 20) / A4_HEIGHT_PX));
   const pageBreaks = useMemo(() => {
     const breaks = [];
     for (let i = 1; i < numPages; i++) {
@@ -76,12 +74,10 @@ export const A4Canvas: React.FC = () => {
     return breaks;
   }, [numPages]);
 
-  const isOverflowingOnePage = sheetHeight > A4_HEIGHT_PX + 20;
-
   return (
     <div
       ref={containerRef}
-      className="a4-canvas-wrapper relative flex flex-col items-center"
+      className="a4-canvas-wrapper relative flex flex-col items-center select-text"
       style={
         {
           '--primary-color': accentColor,
@@ -89,64 +85,12 @@ export const A4Canvas: React.FC = () => {
         } as React.CSSProperties
       }
     >
-      {/* Floating Canvas Controls (Zoom & Overflow Warning) */}
-      <div className="no-print sticky top-3 z-30 flex items-center gap-3">
-        {/* Overflow alert if user turned on 1-Page mode or wants to know */}
-        {isOverflowingOnePage && (
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/90 text-amber-950 font-semibold text-xs rounded-full shadow-lg backdrop-blur border border-amber-400">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-950" />
-            <span>Spills onto Page 2 ({sheetHeight}px / {A4_HEIGHT_PX}px)</span>
-          </div>
-        )}
-
-        {/* Zoom Bar */}
-        <div className="flex items-center gap-1 bg-slate-900/90 backdrop-blur border border-slate-700/80 rounded-full px-2 py-1 shadow-xl text-slate-300 text-xs">
-          <button
-            onClick={() => {
-              setAutoFitZoom(false);
-              setZoom(Math.max(0.4, Number((activeScale - 0.1).toFixed(2))));
-            }}
-            title="Zoom Out"
-            className="p-1 hover:text-white hover:bg-slate-800 rounded-full transition"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </button>
-
-          <span className="w-12 text-center font-mono text-[11px] font-semibold text-slate-200">
-            {Math.round(activeScale * 100)}%
-          </span>
-
-          <button
-            onClick={() => {
-              setAutoFitZoom(false);
-              setZoom(Math.min(1.5, Number((activeScale + 0.1).toFixed(2))));
-            }}
-            title="Zoom In"
-            className="p-1 hover:text-white hover:bg-slate-800 rounded-full transition"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-
-          <div className="w-[1px] h-3 bg-slate-700 mx-0.5" />
-
-          <button
-            onClick={() => setAutoFitZoom(true)}
-            title="Auto-Fit Width"
-            className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition ${
-              autoFitZoom ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-slate-300'
-            }`}
-          >
-            Fit
-          </button>
-        </div>
-      </div>
-
       {/* A4 Paper Surface */}
       <div
         className="transition-transform duration-100 ease-out origin-top my-4"
         style={{
-          transform: `scale(${activeScale})`,
-          marginBottom: `${Math.max(40, (sheetHeight * (activeScale - 1)) + 40)}px`,
+          transform: `scale(${zoom})`,
+          marginBottom: `${Math.max(40, sheetHeight * (zoom - 1) + 40)}px`,
         }}
       >
         <div
@@ -163,7 +107,7 @@ export const A4Canvas: React.FC = () => {
               style={{ top: `${breakTop}px` }}
             >
               <div className="page-break-badge">
-                A4 Page {idx + 1} Cutoff
+                Page {idx + 1} of {numPages}
               </div>
             </div>
           ))}

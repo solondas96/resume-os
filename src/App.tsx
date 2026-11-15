@@ -5,6 +5,7 @@ import { A4Canvas } from './components/preview/A4Canvas';
 import { HistoryModal } from './components/modals/HistoryModal';
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { ImportModal } from './components/modals/ImportModal';
+import { StatusBar } from './components/statusbar/StatusBar';
 
 export const App: React.FC = () => {
   const [editorWidth, setEditorWidth] = useState<number>(() => {
@@ -68,6 +69,9 @@ export const App: React.FC = () => {
           <A4Canvas />
         </div>
       </div>
+
+      {/* Bottom Unified Status Bar */}
+      <StatusBar />
 
       {/* Modals */}
       <HistoryModal />

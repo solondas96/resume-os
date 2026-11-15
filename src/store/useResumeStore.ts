@@ -49,6 +49,9 @@ interface ResumeStoreState extends StoredState {
   autoFitZoom: boolean;
   history: ResumeRevision[];
   activeModal: 'history' | 'shortcuts' | 'import' | null;
+  pageCount: number;
+  isSaving: boolean;
+  documentTitle: string;
 
   setMarkdown: (markdown: string) => void;
   setTheme: (theme: TemplateId) => void;
@@ -57,6 +60,9 @@ interface ResumeStoreState extends StoredState {
   setAutoFitZoom: (autoFit: boolean) => void;
   setOnePageMode: (onePage: boolean) => void;
   setCompactSpacing: (compact: boolean) => void;
+  setPageCount: (count: number) => void;
+  setIsSaving: (isSaving: boolean) => void;
+  setDocumentTitle: (title: string) => void;
   saveRevision: (title?: string) => void;
   restoreRevision: (revision: ResumeRevision) => void;
   resetToSample: () => void;
@@ -71,10 +77,16 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
   autoFitZoom: true,
   history: loadInitialHistory(),
   activeModal: null,
+  pageCount: 1,
+  isSaving: false,
+  documentTitle: 'Alex Morgan - Resume',
 
   setMarkdown: (markdown) => {
-    set({ markdown });
+    set({ markdown, isSaving: true });
     persistCurrentState({ ...get(), markdown });
+    setTimeout(() => {
+      set({ isSaving: false });
+    }, 400);
   },
 
   setTheme: (theme) => {
@@ -99,6 +111,10 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
     set({ compactSpacing });
     persistCurrentState({ ...get(), compactSpacing });
   },
+
+  setPageCount: (pageCount) => set({ pageCount }),
+  setIsSaving: (isSaving) => set({ isSaving }),
+  setDocumentTitle: (documentTitle) => set({ documentTitle }),
 
   saveRevision: (title) => {
     const { markdown, theme, accentColor, history } = get();

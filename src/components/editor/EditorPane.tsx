@@ -10,8 +10,7 @@ import {
   List,
   Columns,
   Sparkles,
-  Save,
-  CheckCircle2
+  Save
 } from 'lucide-react';
 
 export const EditorPane: React.FC = () => {
@@ -35,10 +34,6 @@ export const EditorPane: React.FC = () => {
     });
     view.focus();
   }, [content, setMarkdown]);
-
-  // Stats calculation
-  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
-  const lineCount = content.split('\n').length;
 
   return (
     <div className="editor-pane-container flex flex-col h-full bg-slate-900 border-r border-slate-800 select-none">
@@ -92,11 +87,7 @@ export const EditorPane: React.FC = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] text-slate-500">
-          <div className="flex items-center gap-1 text-emerald-400">
-            <CheckCircle2 className="w-3 h-3" />
-            <span>Autosaved</span>
-          </div>
+        <div className="flex items-center gap-2 text-[11px] text-slate-500">
           <button
             onClick={() => saveRevision()}
             title="Commit revision snapshot now"
@@ -145,15 +136,6 @@ export const EditorPane: React.FC = () => {
           }}
           className="h-full text-[13px] font-mono leading-relaxed"
         />
-      </div>
-
-      {/* Editor Footer / Word Stats */}
-      <div className="h-6 px-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500 font-mono">
-        <div>Markdown Engine: CommonMark + ResumeOS v1</div>
-        <div className="flex items-center gap-3">
-          <span>{wordCount} words</span>
-          <span>{lineCount} lines</span>
-        </div>
       </div>
     </div>
   );
