@@ -1,11 +1,11 @@
-# ResumeLabs 🧪 + Headroom ⚡
+# ResumeLabs 🧪
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20GitHub%20Pages-c96442?style=for-the-badge&logo=github)](https://solondas96.github.io/resume-os/)
 [![Built With](https://img.shields.io/badge/Stack-React%2018%20•%20Vite%206%20•%20TypeScript%20•%20Tailwind-141413?style=for-the-badge)](https://github.com/solondas96/resume-os)
-[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passing%20(6%2F6)-059669?style=for-the-badge)](https://github.com/solondas96/resume-os)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passing%20(10%2F10)-059669?style=for-the-badge)](https://github.com/solondas96/resume-os)
 [![License](https://img.shields.io/badge/License-MIT-3a3a37?style=for-the-badge)](LICENSE)
 
-> **Precision Markdown resume builder with Headroom context compression and a calm, Claude-inspired warm minimalist aesthetic.**  
+> **Precision Markdown resume builder with a calm, Claude-inspired warm minimalist aesthetic.**  
 > 100% Client-Side • Zero Backend Telemetry • In-Browser Privacy • Pixel-Perfect Vector PDF Export • Instant GitHub Pages Hosting.
 
 ---
@@ -24,29 +24,6 @@ ResumeLabs is engineered to feel calm, focused, and distraction-free:
 - **Quiet Typography**: Geist & Geist Mono fonts with clean tracking, balanced heading wraps (`[text-wrap:balance]`), and optimal reading line-height.
 - **Two Soft Shadows**: Pure CSS elevation tokens for resting cards and lifted popover drawers without artificial blur or gradient noise.
 - **Single Brand Call to Action**: Clear visual hierarchy with at most one primary brand-focused action per screen.
-
----
-
-## ⚡ Headroom AI Context Compression
-
-ResumeLabs dogfoods **[Headroom](https://github.com/headroomlabs-ai/headroom)** — an intelligent context compression layer that slashes LLM token consumption by **60–95% for structured data** and **15–20% for agentic text workflows**.
-
-### Why Headroom in ResumeLabs?
-
-When AI agents analyze resumes against 5-page job descriptions, calculate ATS keyword overlap, or re-engineer bullet points into the STAR format, raw prompt tokens multiply rapidly. 
-
-ResumeLabs integrates Headroom to:
-- **Prune Redundant Schema & Formatting**: Compresses JSON trees and Markdown structures before hitting LLMs.
-- **Slash Inference Costs by 60–85%**: Lowers token overhead across GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5.
-- **Real-Time Telemetry Studio**: Open the built-in **Headroom AI Studio** to inspect live token savings, calculated dollar savings, and compression breakdowns.
-- **Dual Mode Support**: Operates out of the box with the browser-based Client-Edge Smart Crusher or connects to a local Headroom Python proxy (`http://localhost:8787`).
-
-```bash
-# Optional: run the local Python Headroom compression proxy
-pip install "headroom-ai[proxy]"
-headroom proxy --port 8787
-# ResumeLabs auto-detects the proxy at http://localhost:8787!
-```
 
 ---
 
@@ -138,9 +115,6 @@ The repository is configured for automated deployments via GitHub Actions (`.git
 
 - **Live Site**: [https://solondas96.github.io/resume-os/](https://solondas96.github.io/resume-os/)
 - **GitHub Repository**: [https://github.com/solondas96/resume-os](https://github.com/solondas96/resume-os)
-- **Headroom AI GitHub**: [https://github.com/headroomlabs-ai/headroom](https://github.com/headroomlabs-ai/headroom)
-- **Headroom AI Docs**: [https://headroom-docs.vercel.app/docs](https://headroom-docs.vercel.app/docs)
-- **Model Card**: [https://huggingface.co/chopratejas/kompress-v2-base](https://huggingface.co/chopratejas/kompress-v2-base)
 
 ---
 

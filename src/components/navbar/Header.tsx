@@ -7,7 +7,6 @@ import {
   Upload,
   FileText,
   ChevronDown,
-  Zap,
   Edit3,
   Sun,
   Moon,
@@ -21,7 +20,6 @@ import {
 } from 'lucide-react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
-import { HeadroomStudio } from '../headroom/HeadroomStudio';
 import { DesignPanel } from '../design/DesignPanel';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import confetti from 'canvas-confetti';
@@ -40,7 +38,6 @@ export const Header: React.FC = () => {
   } = useResumeStore();
 
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
-  const [headroomOpen, setHeadroomOpen] = useState(false);
   const [designOpen, setDesignOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
@@ -126,7 +123,7 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Center: Quiet Action Buttons (Presets, ATS Scan, Design & Headroom AI) */}
+      {/* Center: Quiet Action Buttons (Presets, ATS Scan, Design) */}
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Starter Role Presets */}
         <button
@@ -159,17 +156,6 @@ export const Header: React.FC = () => {
           <span className="text-[10px] bg-background text-muted-foreground border border-border px-1.5 py-0.5 rounded capitalize font-mono">
             {theme}
           </span>
-        </button>
-
-        {/* Headroom AI Studio Trigger */}
-        <button
-          onClick={() => setHeadroomOpen(true)}
-          title="Headroom AI Context Compression & Optimization Studio"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/70 hover:bg-accent border border-brand/30 text-accent-foreground font-medium text-xs transition active:scale-[0.98]"
-        >
-          <Zap className="w-3.5 h-3.5 text-brand fill-brand" />
-          <span className="hidden sm:inline">Headroom AI</span>
-          <span className="sm:hidden">AI</span>
         </button>
       </div>
 
@@ -313,12 +299,6 @@ export const Header: React.FC = () => {
       <DesignPanel
         isOpen={designOpen}
         onClose={() => setDesignOpen(false)}
-      />
-
-      {/* Headroom Studio Modal */}
-      <HeadroomStudio
-        isOpen={headroomOpen}
-        onClose={() => setHeadroomOpen(false)}
       />
     </header>
   );

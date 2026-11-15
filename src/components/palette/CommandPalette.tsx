@@ -10,7 +10,6 @@ import {
   Printer,
   Upload,
   History,
-  Zap,
   Sun,
   Moon,
   Columns,
@@ -186,21 +185,6 @@ export const CommandPalette: React.FC = () => {
       icon: <History className="w-4 h-4 text-amber-400" />,
       action: () => setActiveModal('history'),
       keywords: ['undo', 'history', 'revisions', 'restore', 'snapshots'],
-    },
-
-    // AI
-    {
-      id: 'headroom-ai',
-      category: 'AI',
-      title: 'Open Headroom AI Studio',
-      description: 'Context compression, STAR optimizer & live token telemetry',
-      icon: <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />,
-      action: () => {
-        // Toggle headroom by dispatching click or active modal
-        const btn = document.querySelector('button[title*="Headroom"]') as HTMLButtonElement;
-        btn?.click();
-      },
-      keywords: ['ai', 'headroom', 'token', 'compression', 'star', 'optimizer'],
     },
 
     // Appearance & Views

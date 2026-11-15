@@ -72,7 +72,7 @@ interface ResumeStoreState extends StoredState {
   zoom: number;
   autoFitZoom: boolean;
   history: ResumeRevision[];
-  activeModal: 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | 'headroom' | null;
+  activeModal: 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | null;
   pageCount: number;
   isSaving: boolean;
   documentTitle: string;
@@ -101,7 +101,7 @@ interface ResumeStoreState extends StoredState {
   saveRevision: (title?: string) => void;
   restoreRevision: (revision: ResumeRevision) => void;
   resetToSample: () => void;
-  setActiveModal: (modal: 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | 'headroom' | null) => void;
+  setActiveModal: (modal: 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | null) => void;
 }
 
 const initial = loadInitialState();
