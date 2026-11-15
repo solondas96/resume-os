@@ -32,17 +32,17 @@ export const ImportModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-lg w-full shadow-2xl flex flex-col transition-colors duration-150">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none">
+      <div className="bg-card border border-border rounded-2xl max-w-lg w-full shadow-lifted flex flex-col transition-colors duration-150 overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60 rounded-t-xl">
-          <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-semibold text-sm">
-            <Upload className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-card">
+          <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
+            <Upload className="w-4 h-4 text-brand" />
             <span>Import Markdown Resume</span>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -52,13 +52,13 @@ export const ImportModal: React.FC = () => {
         <div className="p-5 space-y-4">
           {/* File Upload Zone */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-medium text-foreground mb-1.5">
               Upload .md File
             </label>
-            <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50 dark:bg-slate-950/40 transition group">
-              <FileText className="w-8 h-8 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition mb-2" />
-              <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">Click to select Markdown file</span>
-              <span className="text-[11px] text-slate-500 mt-1">Supports standard .md and CommonMark</span>
+            <label className="border-2 border-dashed border-border hover:border-brand rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-muted/30 transition group">
+              <FileText className="w-8 h-8 text-muted-foreground group-hover:text-brand transition mb-2" />
+              <span className="text-xs text-foreground font-medium">Click to select Markdown file</span>
+              <span className="text-[11px] text-muted-foreground mt-1">Supports standard .md and CommonMark</span>
               <input
                 type="file"
                 accept=".md,.txt"
@@ -69,9 +69,9 @@ export const ImportModal: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-[1px] bg-slate-200 dark:bg-slate-800" />
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">Or Paste Markdown</span>
-            <div className="flex-1 h-[1px] bg-slate-200 dark:bg-slate-800" />
+            <div className="flex-1 h-[1px] bg-border" />
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">Or Paste Markdown</span>
+            <div className="flex-1 h-[1px] bg-border" />
           </div>
 
           {/* Paste Text Area */}
@@ -81,25 +81,25 @@ export const ImportModal: React.FC = () => {
               onChange={(e) => setPasteText(e.target.value)}
               placeholder="Paste Markdown contents here..."
               rows={6}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-3 text-xs text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:border-blue-500 resize-none"
+              className="w-full bg-background border border-border rounded-xl p-3 text-xs text-foreground font-mono focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-hidden resize-none leading-relaxed"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2 bg-slate-50 dark:bg-slate-950/60 rounded-b-xl">
+        <div className="px-5 py-3 border-t border-border flex justify-end gap-2 bg-card">
           <button
             onClick={() => setActiveModal(null)}
-            className="px-4 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-md transition"
+            className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
           >
             Cancel
           </button>
           <button
             disabled={!pasteText.trim()}
             onClick={handlePasteSubmit}
-            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:pointer-events-none text-white text-xs font-medium rounded-md transition"
+            className="px-4 py-1.5 bg-primary text-primary-foreground disabled:opacity-40 disabled:pointer-events-none text-xs font-medium rounded-lg hover:opacity-90 active:scale-[0.99] transition shadow-card"
           >
-            Load into Editor
+            Import Document
           </button>
         </div>
       </div>

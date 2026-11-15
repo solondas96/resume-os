@@ -32,6 +32,7 @@ export const TEMPLATES: TemplateConfig[] = [
 ];
 
 export const ACCENT_COLORS: AccentColor[] = [
+  { id: 'terracotta', name: 'Terracotta (Warm)', hex: '#c96442', lightHex: '#f5e9e2' },
   { id: 'slate', name: 'Slate Gray', hex: '#334155', lightHex: '#f1f5f9' },
   { id: 'blue', name: 'Pacific Blue', hex: '#2563eb', lightHex: '#eff6ff' },
   { id: 'navy', name: 'Oxford Navy', hex: '#1e3a8a', lightHex: '#eff6ff' },

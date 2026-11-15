@@ -4,7 +4,6 @@ import { ROLE_PRESETS } from '../../data/rolePresets';
 import {
   X,
   Sparkles,
-  Check,
   Code,
   Palette,
   Briefcase,
@@ -37,107 +36,95 @@ export const PresetsModal: React.FC = () => {
   const getPresetIcon = (iconName: string) => {
     switch (iconName) {
       case 'code':
-        return <Code className="w-5 h-5 text-blue-400" />;
+        return <Code className="w-5 h-5 text-brand" />;
       case 'palette':
-        return <Palette className="w-5 h-5 text-purple-400" />;
+        return <Palette className="w-5 h-5 text-brand" />;
       case 'briefcase':
-        return <Briefcase className="w-5 h-5 text-amber-400" />;
+        return <Briefcase className="w-5 h-5 text-brand" />;
       case 'graduation-cap':
-        return <GraduationCap className="w-5 h-5 text-emerald-400" />;
+        return <GraduationCap className="w-5 h-5 text-brand" />;
       default:
-        return <Sparkles className="w-5 h-5 text-blue-400" />;
+        return <Sparkles className="w-5 h-5 text-brand" />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="relative w-full max-w-4xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs select-none">
+      <div className="relative w-full max-w-4xl bg-card border border-border rounded-2xl shadow-lifted overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-150">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/80">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-card">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-600/20 border border-blue-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-400">
-              <Sparkles className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-accent text-accent-foreground border border-brand/20">
+              <Sparkles className="w-5 h-5 text-brand" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Starter Role Presets</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Choose a battle-tested professional English resume blueprint crafted for your field.
+              <h2 className="text-base font-semibold text-foreground">Starter Role Presets</h2>
+              <p className="text-xs text-muted-foreground">
+                Choose a professional resume blueprint crafted for your field.
               </p>
             </div>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Presets Grid */}
+        {/* Preset Cards Grid */}
         <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {ROLE_PRESETS.map((preset) => (
             <div
               key={preset.id}
-              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/50 hover:bg-white dark:hover:bg-slate-900 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-xs"
+              onClick={() => handleSelectPreset(preset)}
+              className="p-5 rounded-2xl border border-border bg-card hover:bg-muted/40 hover:border-brand/40 shadow-card transition cursor-pointer flex flex-col justify-between group"
             >
               <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-slate-200/80 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/60 group-hover:scale-105 transition">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-lg bg-muted text-foreground">
                       {getPresetIcon(preset.iconName)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                      <h3 className="text-sm font-semibold text-foreground group-hover:text-brand transition">
                         {preset.roleName}
                       </h3>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                        {preset.candidateName}
-                      </span>
+                      <p className="text-xs text-muted-foreground">{preset.candidateName}</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-200/90 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-full">
-                    {preset.badge}
+                  <span className="text-[10px] font-mono uppercase bg-muted text-muted-foreground px-2 py-0.5 rounded border border-border">
+                    {preset.theme}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                   {preset.description}
                 </p>
 
-                <div className="flex items-center gap-3 pt-2 text-[11px] text-slate-500 font-mono">
-                  <span className="flex items-center gap-1.5">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full inline-block shadow-xs"
-                      style={{ backgroundColor: preset.accentColor }}
-                    />
-                    Color
+                <div className="flex flex-wrap gap-1">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border">
+                    {preset.badge}
                   </span>
-                  <span>•</span>
-                  <span className="capitalize">Theme: {preset.theme}</span>
-                  <span>•</span>
-                  <span>STAR Format</span>
                 </div>
               </div>
 
-              <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-end">
-                <button
-                  onClick={() => handleSelectPreset(preset)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md shadow-blue-600/20 transition active:scale-95"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Use This Blueprint</span>
-                </button>
+              <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                <span className="text-[11px] text-muted-foreground">Click to load blueprint</span>
+                <span className="text-xs font-medium text-brand group-hover:underline flex items-center gap-1">
+                  Use Preset →
+                </span>
               </div>
             </div>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
-          <span>Loading a preset replaces your editor content. (A revision backup will be automatically saved).</span>
+        <div className="px-6 py-3 border-t border-border bg-card flex items-center justify-between text-xs text-muted-foreground">
+          <span>Loading a preset preserves previous edits in your revision history.</span>
           <button
             onClick={() => setActiveModal(null)}
-            className="px-3.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition"
+            className="px-4 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground font-medium transition"
           >
             Cancel
           </button>

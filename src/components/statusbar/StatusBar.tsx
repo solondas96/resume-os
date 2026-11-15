@@ -29,28 +29,28 @@ export const StatusBar: React.FC = () => {
   const isSpill = pageCount > 1;
 
   return (
-    <footer className="no-print h-8 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 text-[11px] text-slate-600 dark:text-slate-400 select-none z-30 flex-shrink-0 transition-colors">
+    <footer className="no-print h-8 bg-card border-t border-border flex items-center justify-between px-3 text-[11px] text-muted-foreground select-none z-30 flex-shrink-0 transition-colors">
       {/* Left: Editor Metrics & Autosave */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 font-mono">
           <span>{wordCount.toLocaleString()} words</span>
-          <span className="text-slate-300 dark:text-slate-600">•</span>
+          <span className="text-muted-foreground/40">•</span>
           <span>{lineCount} lines</span>
         </div>
 
-        <div className="h-3 w-[1px] bg-slate-200 dark:bg-slate-800 mx-1" />
+        <div className="h-3 w-[1px] bg-border mx-1" />
 
         {/* Autosave Indicator */}
         <div className="flex items-center gap-1.5 font-medium">
           {isSaving ? (
             <>
-              <Loader2 className="w-3 h-3 text-amber-500 dark:text-amber-400 animate-spin" />
-              <span className="text-amber-600 dark:text-amber-400">Saving...</span>
+              <Loader2 className="w-3 h-3 text-brand animate-spin" />
+              <span className="text-brand">Saving...</span>
             </>
           ) : (
             <>
-              <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-slate-500 dark:text-slate-400">Saved</span>
+              <CheckCircle2 className="w-3 h-3 text-muted-foreground" />
+              <span>Saved</span>
             </>
           )}
         </div>
@@ -62,15 +62,15 @@ export const StatusBar: React.FC = () => {
           <div className="flex items-center gap-2">
             <div
               title={`${pageCount} A4 pages. Content spills onto multiple pages.`}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 font-semibold font-mono"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent border border-brand/30 text-accent-foreground font-medium font-mono"
             >
-              <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+              <AlertTriangle className="w-3 h-3 text-brand" />
               <span>{pageCount} Pages (Spill)</span>
             </div>
             {!compactSpacing && (
               <button
                 onClick={() => setCompactSpacing(true)}
-                className="text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center gap-0.5"
+                className="text-[10px] text-brand hover:underline flex items-center gap-0.5 font-medium"
                 title="Enable compact line-height and margins to help fit onto 1 page"
               >
                 <Sliders className="w-2.5 h-2.5" />
@@ -81,9 +81,9 @@ export const StatusBar: React.FC = () => {
         ) : (
           <div
             title="Clean single-page resume layout"
-            className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-medium font-mono"
+            className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground font-mono"
           >
-            <FileText className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+            <FileText className="w-3 h-3 text-brand" />
             <span>1 Page</span>
           </div>
         )}
@@ -97,12 +97,12 @@ export const StatusBar: React.FC = () => {
             setZoom(Math.max(0.4, Number((zoom - 0.1).toFixed(2))));
           }}
           title="Zoom Out (Ctrl -)"
-          className="p-1 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition"
+          className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition"
         >
           <ZoomOut className="w-3 h-3" />
         </button>
 
-        <span className="w-10 text-center font-mono font-medium text-slate-700 dark:text-slate-300">
+        <span className="w-10 text-center font-mono font-medium text-foreground">
           {Math.round(zoom * 100)}%
         </span>
 
@@ -112,20 +112,20 @@ export const StatusBar: React.FC = () => {
             setZoom(Math.min(1.5, Number((zoom + 0.1).toFixed(2))));
           }}
           title="Zoom In (Ctrl +)"
-          className="p-1 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition"
+          className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition"
         >
           <ZoomIn className="w-3 h-3" />
         </button>
 
-        <div className="h-3 w-[1px] bg-slate-200 dark:bg-slate-800 mx-0.5" />
+        <div className="h-3 w-[1px] bg-border mx-0.5" />
 
         <button
           onClick={() => setAutoFitZoom(true)}
           title="Auto-Fit Canvas Width to Viewport"
           className={`flex items-center gap-1 px-2 py-0.5 rounded transition font-medium ${
             autoFitZoom
-              ? 'bg-blue-100 dark:bg-blue-600/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30'
-              : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              ? 'bg-accent text-accent-foreground border border-brand/30'
+              : 'hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}
         >
           <Maximize2 className="w-2.5 h-2.5" />

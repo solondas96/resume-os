@@ -3,47 +3,128 @@
 @tailwind utilities;
 
 :root {
-  --primary-color: #2563eb;
-  --primary-light: #eff6ff;
+  --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-serif: 'Newsreader', 'Merriweather', 'Georgia', serif;
+
+  /* Claude Light Theme */
+  --background: #faf9f5;
+  --foreground: #141413;
+  --card: #ffffff;
+  --card-foreground: #141413;
+  --muted: #f0eee6;
+  --muted-foreground: #6b6a64;
+  --border: #e8e6dc;
+  --input: #e8e6dc;
+  --ring: #c96442;
+  --brand: #c96442;
+  --brand-hover: #b5563a;
+  --accent: #f5e9e2;
+  --accent-foreground: #7a3a22;
+  --primary: #141413;
+  --primary-foreground: #faf9f5;
+  --secondary: #f0eee6;
+  --secondary-foreground: #141413;
+  --destructive: #b3261e;
+  --destructive-foreground: #faf9f5;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-lifted: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+  --primary-color: #c96442;
+  --primary-light: #f5e9e2;
   --a4-width: 794px;
   --a4-height: 1123px;
 }
 
-/* Base resets & dark UI layout */
+.dark {
+  /* Claude Dark Theme */
+  --background: #262624;
+  --foreground: #f5f4ee;
+  --card: #30302e;
+  --card-foreground: #f5f4ee;
+  --muted: #3a3a37;
+  --muted-foreground: #a8a69e;
+  --border: #3d3d3a;
+  --input: #3d3d3a;
+  --ring: #d97757;
+  --brand: #d97757;
+  --brand-hover: #c96442;
+  --accent: #3d2e27;
+  --accent-foreground: #f0c4b1;
+  --primary: #f5f4ee;
+  --primary-foreground: #262624;
+  --secondary: #3a3a37;
+  --secondary-foreground: #f5f4ee;
+  --destructive: #f2877c;
+  --destructive-foreground: #262624;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-lifted: 0 12px 30px -5px rgba(0, 0, 0, 0.55), 0 8px 12px -6px rgba(0, 0, 0, 0.45);
+
+  --primary-color: #d97757;
+  --primary-light: #3d2e27;
+}
+
+/* Base resets & layout */
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
-/* Custom scrollbars */
+/* Faint brand selection */
+::selection {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.dark ::selection {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Custom quiet scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(107, 106, 100, 0.25);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.7);
+  background: rgba(107, 106, 100, 0.45);
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
+  background: rgba(168, 166, 158, 0.25);
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.8);
+  background: rgba(168, 166, 158, 0.45);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ================================================================
    A4 SHEET & PREVIEW CANVAS
    ================================================================ */
 .a4-canvas-wrapper {
-  background-color: #f1f5f9;
+  background-color: #f0eee6;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
@@ -54,15 +135,15 @@ html, body, #root {
 }
 
 .dark .a4-canvas-wrapper {
-  background-color: #0b0f19;
+  background-color: #1e1e1c;
 }
 
 .a4-sheet {
   width: var(--a4-width);
   min-height: var(--a4-height);
   background-color: #ffffff;
-  color: #1e293b;
-  box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  color: #141413;
+  box-shadow: 0 4px 20px -2px rgba(20, 20, 19, 0.08), 0 0 0 1px rgba(20, 20, 19, 0.04);
   padding: 40px 48px;
   transform-origin: top center;
   transition: transform 0.15s ease-out, box-shadow 0.2s ease;
@@ -71,7 +152,7 @@ html, body, #root {
 }
 
 .dark .a4-sheet {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 /* Margin Variants */
@@ -156,7 +237,7 @@ html, body, #root {
   page-break-after: always;
   height: 0;
   margin: 1.5rem 0;
-  border-top: 1.5px dashed #3b82f6;
+  border-top: 1.5px dashed var(--brand);
   position: relative;
 }
 .manual-page-break::after {
@@ -164,13 +245,13 @@ html, body, #root {
   position: absolute;
   right: 12px;
   top: -9px;
-  background-color: #2563eb;
+  background-color: var(--brand);
   color: #ffffff;
   font-size: 10px;
   font-weight: 600;
   padding: 1px 8px;
   border-radius: 9999px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   letter-spacing: 0.02em;
 }
 
@@ -186,7 +267,7 @@ html, body, #root {
   left: 0;
   right: 0;
   height: 0;
-  border-top: 1.5px dashed #94a3b8;
+  border-top: 1.5px dashed #a8a69e;
   z-index: 20;
   pointer-events: none;
 }
@@ -194,14 +275,14 @@ html, body, #root {
   position: absolute;
   right: 16px;
   top: -10px;
-  background-color: #334155;
-  color: #f8fafc;
+  background-color: #3a3a37;
+  color: #faf9f5;
   font-size: 10px;
   font-weight: 600;
   padding: 1px 10px;
   border-radius: 9999px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   letter-spacing: 0.02em;
 }
 
@@ -228,7 +309,7 @@ html, body, #root {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #475569;
+  color: #44433f;
   text-decoration: none;
   font-size: 0.85rem;
   margin: 2px 0;
@@ -254,15 +335,15 @@ html, body, #root {
 
 .skill-pill {
   display: inline-block;
-  background-color: #f1f5f9;
-  color: #334155;
+  background-color: #f0eee6;
+  color: #141413;
   font-size: 0.72rem;
   font-weight: 600;
   padding: 2px 7px;
   border-radius: 4px;
   margin: 2px 4px 2px 0;
-  border: 1px solid #e2e8f0;
-  font-family: 'Inter', system-ui, sans-serif;
+  border: 1px solid #e8e6dc;
+  font-family: var(--font-sans);
 }
 
 /* Section Avoid Breaks */
@@ -278,15 +359,16 @@ html, body, #root {
 
 /* --- 1. MODERN MINIMALIST --- */
 .template-modern {
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #1e293b;
+  font-family: var(--font-sans);
+  color: #141413;
 }
 .template-modern h1 {
   font-size: 1.85rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #141413;
   letter-spacing: -0.025em;
   margin: 0 0 2px 0;
+  text-wrap: balance;
 }
 .template-modern h1 + p {
   color: var(--primary-color);
@@ -308,13 +390,13 @@ html, body, #root {
 .template-modern h3 {
   font-size: 0.92rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #141413;
   margin: 8px 0 1px 0;
 }
 .template-modern p {
   font-size: 0.85rem;
   line-height: 1.45;
-  color: #334155;
+  color: #44433f;
   margin: 3px 0;
 }
 .template-modern ul {
@@ -325,17 +407,17 @@ html, body, #root {
 .template-modern li {
   font-size: 0.83rem;
   line-height: 1.45;
-  color: #334155;
+  color: #44433f;
   margin-bottom: 3px;
 }
 .template-modern li strong {
-  color: #0f172a;
+  color: #141413;
 }
 
 /* --- 2. CLASSIC IVY (Harvard / Wall Street) --- */
 .template-classic {
-  font-family: 'Newsreader', 'Merriweather', 'Georgia', serif;
-  color: #111827;
+  font-family: var(--font-serif);
+  color: #141413;
 }
 .template-classic h1 {
   text-align: center;
@@ -343,13 +425,14 @@ html, body, #root {
   font-weight: 600;
   letter-spacing: 0.02em;
   margin: 0 0 4px 0;
-  color: #111827;
+  color: #141413;
+  text-wrap: balance;
 }
 .template-classic h1 + p {
   text-align: center;
   font-style: italic;
   font-size: 0.95rem;
-  color: #4b5563;
+  color: #6b6a64;
   margin-bottom: 8px;
 }
 .template-classic .resume-columns {
@@ -366,15 +449,15 @@ html, body, #root {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #111827;
-  border-bottom: 1px solid #111827;
+  color: #141413;
+  border-bottom: 1px solid #141413;
   padding-bottom: 2px;
   margin: 14px 0 6px 0;
 }
 .template-classic h3 {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #111827;
+  color: #141413;
   margin: 8px 0 1px 0;
 }
 .template-classic p {
@@ -397,19 +480,20 @@ html, body, #root {
   font-style: italic;
   font-family: inherit;
   padding: 0 4px;
-  color: #374151;
+  color: #44433f;
 }
 
 /* --- 3. EXECUTIVE TWO-TONE --- */
 .template-executive {
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #1e293b;
+  font-family: var(--font-sans);
+  color: #141413;
 }
 .template-executive h1 {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #0f172a;
+  color: #141413;
   margin: 0;
+  text-wrap: balance;
 }
 .template-executive h1 + p {
   color: var(--primary-color);
@@ -422,8 +506,8 @@ html, body, #root {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #0f172a;
-  background-color: var(--primary-light, #eff6ff);
+  color: #141413;
+  background-color: var(--primary-light, #f5e9e2);
   border-left: 4px solid var(--primary-color);
   padding: 4px 8px;
   margin: 14px 0 6px 0;
@@ -431,13 +515,14 @@ html, body, #root {
 .template-executive h3 {
   font-size: 0.92rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #141413;
   margin: 8px 0 1px 0;
 }
 .template-executive p,
 .template-executive li {
   font-size: 0.84rem;
   line-height: 1.45;
+  color: #44433f;
 }
 .template-executive ul {
   margin: 3px 0 6px 18px;
@@ -446,28 +531,29 @@ html, body, #root {
 
 /* --- 4. MONO COMPACT --- */
 .template-minimal {
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #0f172a;
+  font-family: var(--font-sans);
+  color: #141413;
 }
 .template-minimal h1 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 1.7rem;
   font-weight: 700;
   margin: 0 0 2px 0;
+  text-wrap: balance;
 }
 .template-minimal h1 + p {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
-  color: #64748b;
+  color: #6b6a64;
   margin-bottom: 6px;
 }
 .template-minimal h2 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.88rem;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--primary-color);
-  border-bottom: 1px dashed #cbd5e1;
+  border-bottom: 1px dashed #e8e6dc;
   padding-bottom: 2px;
   margin: 10px 0 4px 0;
 }
@@ -480,13 +566,14 @@ html, body, #root {
 .template-minimal li {
   font-size: 0.82rem;
   line-height: 1.4;
+  color: #44433f;
 }
 .template-minimal ul {
   margin: 2px 0 4px 16px;
   padding: 0;
 }
 .template-minimal .skill-pill {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
 }
 
@@ -508,10 +595,11 @@ html, body, #root {
     padding: 0 !important;
   }
 
-  /* Hide entire UI layout: navbar, sidebar, codemirror editor, dividers */
+  /* Hide entire UI layout: navbar, statusbar, editor, dividers */
   .no-print,
   nav,
   header,
+  footer,
   .editor-pane-container,
   .split-resizer,
   .page-break-indicator,

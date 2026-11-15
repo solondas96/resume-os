@@ -46,7 +46,7 @@ function loadInitialState(): StoredState {
   return {
     markdown: SAMPLE_RESUME,
     theme: 'modern',
-    accentColor: ACCENT_COLORS[1].hex, // Pacific Blue
+    accentColor: ACCENT_COLORS[0].hex, // Terracotta (#c96442)
     onePageMode: false,
     compactSpacing: false,
     uiTheme: 'dark',

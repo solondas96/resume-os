@@ -10,7 +10,7 @@ export const ROLE_PRESETS: RolePreset[] = [
     description: 'High-scale backends, microservices, STAR methodology, and quantifiable cloud optimization.',
     iconName: 'code',
     theme: 'modern',
-    accentColor: '#2563eb', // Pacific Blue
+    accentColor: '#c96442', // Terracotta
     markdown: SAMPLE_RESUME,
   },
   {

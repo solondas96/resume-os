@@ -65,7 +65,6 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
     setTimeout(() => {
       let result = markdown;
       if (optimizationMode === 'star') {
-        // Enhance work experience bullet points with quantified STAR metrics
         result = result.replace(
           /Efforts on settlement pipeline/gi,
           'Orchestrated end-to-end settlement pipeline redesign, boosting throughput by **140%**'
@@ -75,7 +74,6 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
           '- Architected fault-tolerant distributed search microservices, sustaining **99.995% SLA** across **12M daily requests**'
         );
       } else if (optimizationMode === 'verbs') {
-        // Elevate weak verbs to high-impact verbs
         result = result.replace(/\bworked on\b/gi, 'Engineered');
         result = result.replace(/\bhelped\b/gi, 'Spearheaded');
         result = result.replace(/\bmanaged\b/gi, 'Orchestrated');
@@ -92,8 +90,8 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
       saveRevision('Applied Headroom AI Optimization');
       setApplied(true);
       confetti({
-        particleCount: 80,
-        spread: 70,
+        particleCount: 50,
+        spread: 50,
         origin: { y: 0.2 },
       });
       setTimeout(() => {
@@ -104,22 +102,22 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transition-colors duration-150">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none">
+      <div className="bg-card border border-border rounded-2xl max-w-4xl w-full shadow-lifted flex flex-col max-h-[90vh] overflow-hidden transition-colors duration-150">
         {/* Top Header */}
-        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-card border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-xl text-white shadow-lg shadow-orange-500/20">
-              <Zap className="w-5 h-5 fill-white" />
+            <div className="p-2 bg-accent border border-brand/20 rounded-xl text-brand shadow-card">
+              <Zap className="w-5 h-5 fill-brand" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">Headroom AI Studio</h2>
-                <span className="text-[10px] bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-full font-mono font-semibold">
+                <h2 className="text-base font-semibold text-foreground tracking-tight">Headroom AI Studio</h2>
+                <span className="text-[10px] bg-muted text-muted-foreground border border-border px-2 py-0.5 rounded-full font-mono font-medium">
                   Context Compression
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Token optimization & cost reduction layer for LLM resume agents (60–95% savings)
               </p>
             </div>
@@ -127,24 +125,14 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
 
           <div className="flex items-center gap-3">
             {/* Status Indicator */}
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono border ${
-                proxyActive
-                  ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
-                  : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/30'
-              }`}
-            >
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  proxyActive ? 'bg-emerald-500 animate-pulse' : 'bg-blue-500'
-                }`}
-              />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono border border-border bg-muted text-foreground">
+              <div className="w-2 h-2 rounded-full bg-brand" />
               <span>{proxyActive ? 'Local Proxy Active (8787)' : 'Edge Compression Engine'}</span>
             </div>
 
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -152,13 +140,13 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center px-6 bg-slate-50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800 text-xs">
+        <div className="flex items-center px-6 bg-card border-b border-border text-xs">
           <button
             onClick={() => setActiveTab('telemetry')}
-            className={`py-3 px-4 font-semibold border-b-2 flex items-center gap-2 transition ${
+            className={`py-3 px-4 font-medium border-b-2 flex items-center gap-2 transition ${
               activeTab === 'telemetry'
-                ? 'border-amber-500 text-amber-600 dark:text-amber-400'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'border-brand text-brand'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             <TrendingDown className="w-4 h-4" />
@@ -166,10 +154,10 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
           </button>
           <button
             onClick={() => setActiveTab('optimizer')}
-            className={`py-3 px-4 font-semibold border-b-2 flex items-center gap-2 transition ${
+            className={`py-3 px-4 font-medium border-b-2 flex items-center gap-2 transition ${
               activeTab === 'optimizer'
-                ? 'border-amber-500 text-amber-600 dark:text-amber-400'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'border-brand text-brand'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -179,55 +167,55 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
 
         {/* Tab 1: Telemetry */}
         {activeTab === 'telemetry' && (
-          <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
-            {/* Hero Metric Cards */}
+          <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs text-foreground">
+            {/* Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-              <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1">
-                <span className="text-[11px] text-slate-400 font-medium">Original Tokens</span>
-                <div className="text-xl font-bold font-mono text-slate-100">
+              <div className="bg-background border border-border rounded-xl p-3.5 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-medium">Original Tokens</span>
+                <div className="text-xl font-bold font-mono text-foreground">
                   {metrics?.originalTokens ?? 0}
                 </div>
-                <span className="text-[10px] text-slate-500">Uncompressed context</span>
+                <span className="text-[10px] text-muted-foreground">Uncompressed context</span>
               </div>
 
-              <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1">
-                <span className="text-[11px] text-slate-400 font-medium">Compressed Tokens</span>
-                <div className="text-xl font-bold font-mono text-amber-400">
+              <div className="bg-background border border-border rounded-xl p-3.5 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-medium">Compressed Tokens</span>
+                <div className="text-xl font-bold font-mono text-brand">
                   {metrics?.compressedTokens ?? 0}
                 </div>
-                <span className="text-[10px] text-slate-500">Post-Headroom Smart Crush</span>
+                <span className="text-[10px] text-muted-foreground">Post-Headroom Smart Crush</span>
               </div>
 
-              <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3.5 space-y-1">
-                <span className="text-[11px] text-emerald-400 font-medium">Token Savings</span>
-                <div className="text-xl font-bold font-mono text-emerald-400 flex items-center gap-1">
+              <div className="bg-accent/40 border border-brand/30 rounded-xl p-3.5 space-y-1">
+                <span className="text-[11px] text-brand font-medium">Token Savings</span>
+                <div className="text-xl font-bold font-mono text-brand flex items-center gap-1">
                   <span>-{metrics?.savingsPercentage ?? 0}%</span>
                 </div>
-                <span className="text-[10px] text-emerald-500/80">
+                <span className="text-[10px] text-muted-foreground">
                   {metrics?.tokensSaved ?? 0} tokens pruned
                 </span>
               </div>
 
-              <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1">
-                <span className="text-[11px] text-slate-400 font-medium">Cost Saved (10k Calls)</span>
-                <div className="text-xl font-bold font-mono text-slate-100">
+              <div className="bg-background border border-border rounded-xl p-3.5 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-medium">Cost Saved (10k Calls)</span>
+                <div className="text-xl font-bold font-mono text-foreground">
                   ${((metrics?.costSavedUSD?.gpt4o ?? 0) * 10000).toFixed(2)}
                 </div>
-                <span className="text-[10px] text-slate-500">Calculated on GPT-4o</span>
+                <span className="text-[10px] text-muted-foreground">Calculated on GPT-4o</span>
               </div>
             </div>
 
             {/* Savings Breakdown */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-200 flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-amber-400" />
+                <span className="font-semibold text-foreground flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-brand" />
                   <span>Compression Breakdown</span>
                 </span>
                 <button
                   onClick={runCompression}
                   disabled={loading}
-                  className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-200 transition"
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition"
                 >
                   <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
                   <span>Recalculate</span>
@@ -235,32 +223,32 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800/80">
-                  <span className="text-slate-400 text-[11px]">JSON & Structural Crushing</span>
-                  <div className="text-base font-bold font-mono text-slate-200 mt-1">
+                <div className="bg-card p-3 rounded-lg border border-border">
+                  <span className="text-muted-foreground text-[11px]">JSON & Structural Crushing</span>
+                  <div className="text-base font-bold font-mono text-foreground mt-1">
                     {metrics?.breakdown?.jsonStructureCrushedTokens ?? 0} tokens
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
                     Schema bloat, repeated keys, and metadata pruned
                   </p>
                 </div>
 
-                <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800/80">
-                  <span className="text-slate-400 text-[11px]">Whitespace & Newline Noise</span>
-                  <div className="text-base font-bold font-mono text-slate-200 mt-1">
+                <div className="bg-card p-3 rounded-lg border border-border">
+                  <span className="text-muted-foreground text-[11px]">Whitespace & Newline Noise</span>
+                  <div className="text-base font-bold font-mono text-foreground mt-1">
                     {metrics?.breakdown?.whitespaceReducedTokens ?? 0} tokens
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
                     Formatting tabs, multi-breaks, and indentation normalized
                   </p>
                 </div>
 
-                <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800/80">
-                  <span className="text-slate-400 text-[11px]">Semantic Redundancy</span>
-                  <div className="text-base font-bold font-mono text-slate-200 mt-1">
+                <div className="bg-card p-3 rounded-lg border border-border">
+                  <span className="text-muted-foreground text-[11px]">Semantic Redundancy</span>
+                  <div className="text-base font-bold font-mono text-foreground mt-1">
                     {metrics?.breakdown?.semanticRedundancyTokens ?? 0} tokens
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
                     Weak filler phrases ("responsible for", "helped with") trimmed
                   </p>
                 </div>
@@ -269,21 +257,21 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
 
             {/* Compressed Context Preview Diff */}
             <div className="space-y-2">
-              <span className="font-semibold text-slate-200 flex items-center gap-2">
-                <FileCode className="w-4 h-4 text-blue-400" />
+              <span className="font-medium text-foreground flex items-center gap-2">
+                <FileCode className="w-4 h-4 text-brand" />
                 <span>Headroom Compressed Prompt Stream (Sent to LLM)</span>
               </span>
-              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] text-slate-300 max-h-48 overflow-y-auto whitespace-pre-wrap leading-relaxed select-all">
+              <div className="bg-background border border-border rounded-xl p-3 font-mono text-[11px] text-foreground max-h-48 overflow-y-auto whitespace-pre-wrap leading-relaxed select-all">
                 {metrics?.compressedContent}
               </div>
             </div>
 
             {/* Architecture Dogfooding Callout */}
-            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3 text-slate-300">
-              <Zap className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="bg-accent/30 border border-brand/20 rounded-xl p-4 flex items-start gap-3 text-foreground">
+              <Zap className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <span className="font-semibold text-amber-300 text-xs">Production AI Dogfooding</span>
-                <p className="text-[11px] text-slate-400 leading-normal">
+                <span className="font-semibold text-foreground text-xs">Production AI Context Optimization</span>
+                <p className="text-[11px] text-muted-foreground leading-normal">
                   Production AI systems hit rate limits and steep inference bills when sending full resumes,
                   system prompts, and job specifications on every turn. Headroom compresses unstructured and
                   JSON contexts by up to <strong>90%</strong> without degrading model reasoning quality.
@@ -293,7 +281,7 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
                     href="https://github.com/headroomlabs-ai/headroom"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-amber-400 hover:underline flex items-center gap-1 font-medium"
+                    className="text-brand hover:underline flex items-center gap-1 font-medium"
                   >
                     <span>GitHub Repo</span>
                     <ExternalLink className="w-3 h-3" />
@@ -302,7 +290,7 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
                     href="https://headroom-docs.vercel.app/docs"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-amber-400 hover:underline flex items-center gap-1 font-medium"
+                    className="text-brand hover:underline flex items-center gap-1 font-medium"
                   >
                     <span>Official Docs</span>
                     <ExternalLink className="w-3 h-3" />
@@ -315,10 +303,10 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
 
         {/* Tab 2: AI Optimizer */}
         {activeTab === 'optimizer' && (
-          <div className="p-6 overflow-y-auto space-y-5 flex-1 text-xs">
+          <div className="p-6 overflow-y-auto space-y-5 flex-1 text-xs text-foreground">
             {/* Action Presets */}
             <div className="space-y-2">
-              <label className="font-semibold text-slate-200 block">Select AI Optimization Strategy</label>
+              <label className="font-medium text-foreground block">Select AI Optimization Strategy</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'star', title: 'STAR Method', desc: 'Situation, Task, Action, Metric' },
@@ -331,12 +319,12 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
                     onClick={() => setOptimizationMode(item.id as any)}
                     className={`p-3 text-left rounded-xl border transition ${
                       optimizationMode === item.id
-                        ? 'bg-amber-500/15 border-amber-500/60 text-amber-200'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'bg-accent/50 border-brand text-accent-foreground shadow-card'
+                        : 'bg-card border-border text-foreground hover:bg-muted'
                     }`}
                   >
                     <div className="font-semibold text-xs">{item.title}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 leading-tight">{item.desc}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{item.desc}</div>
                   </button>
                 ))}
               </div>
@@ -345,8 +333,8 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
             {/* Job Description Matching Input */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="font-semibold text-slate-200">Target Job Description (Optional)</label>
-                <span className="text-[10px] text-amber-400 font-mono">
+                <label className="font-medium text-foreground">Target Job Description (Optional)</label>
+                <span className="text-[10px] text-brand font-mono">
                   Headroom will compress both inputs
                 </span>
               </div>
@@ -355,14 +343,14 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
                 onChange={(e) => setJobDescription(e.target.value)}
                 placeholder="Paste the job posting requirements here to tailor bullet points and match ATS keywords..."
                 rows={3}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 font-mono text-[11px] focus:outline-none focus:border-amber-500 resize-none"
+                className="w-full bg-background border border-border rounded-xl p-3 text-foreground font-mono text-[11px] focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-hidden resize-none"
               />
             </div>
 
             {/* Run Button */}
             <div className="flex items-center justify-between pt-1">
-              <div className="text-slate-400 text-[11px] flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="text-muted-foreground text-[11px] flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-brand" />
                 <span>
                   Using <strong>{metrics?.compressedTokens ?? 0} compressed tokens</strong> (saved {metrics?.tokensSaved ?? 0} tokens via Headroom)
                 </span>
@@ -371,31 +359,31 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
               <button
                 onClick={handleEnhance}
                 disabled={loading}
-                className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 py-2 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition"
+                className="flex items-center gap-2 bg-primary text-primary-foreground font-medium px-4 py-2 rounded-xl shadow-card hover:opacity-90 active:scale-[0.99] transition"
               >
-                <Sparkles className="w-4 h-4 fill-slate-950" />
+                <Sparkles className="w-4 h-4 text-brand" />
                 <span>{loading ? 'Optimizing with Headroom...' : 'Run Compressed AI Optimization'}</span>
               </button>
             </div>
 
             {/* Generated Output Preview */}
             {enhancedMarkdown && (
-              <div className="space-y-3 border-t border-slate-800 pt-4">
+              <div className="space-y-3 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-100 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <span className="font-medium text-foreground flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-brand" />
                     <span>Optimized Resume Preview</span>
                   </span>
                   <button
                     onClick={handleApplyToEditor}
-                    className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg shadow-sm transition"
+                    className="flex items-center gap-1.5 bg-primary text-primary-foreground font-medium text-xs px-3.5 py-1.5 rounded-lg shadow-card hover:opacity-90 active:scale-[0.99] transition"
                   >
-                    {applied ? <Check className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                    {applied ? <Check className="w-3.5 h-3.5 text-brand" /> : <ArrowRight className="w-3.5 h-3.5 text-brand" />}
                     <span>{applied ? 'Applied!' : 'Apply to Resume Editor'}</span>
                   </button>
                 </div>
 
-                <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] text-slate-300 max-h-56 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                <div className="bg-background border border-border rounded-xl p-3 font-mono text-[11px] text-foreground max-h-56 overflow-y-auto whitespace-pre-wrap leading-relaxed">
                   {enhancedMarkdown}
                 </div>
               </div>
@@ -404,13 +392,13 @@ export const HeadroomStudio: React.FC<HeadroomStudioProps> = ({ isOpen, onClose 
         )}
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-6 py-3 bg-card border-t border-border flex items-center justify-between text-xs text-muted-foreground">
           <div>
             Token limits matter: <em>"Build intelligent systems that are efficient, observable, and economically sustainable."</em>
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition font-medium"
+            className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition font-medium"
           >
             Close Studio
           </button>

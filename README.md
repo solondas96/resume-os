@@ -1,7 +1,18 @@
 # ResumeLabs 🧪 + Headroom ⚡
 
-> **Modern, English-first, in-browser Markdown resume builder with Headroom context compression.**  
-> 100% Client-Side • Zero Backend • Privacy-First • Pixel-Perfect A4 Vector PDF Export • GitHub Pages Ready • Headroom AI Context Compression.
+> **Calm, minimal, precision Markdown resume builder with Headroom context compression.**  
+> 100% Client-Side • Zero Backend • Warm Claude-Inspired Design System • Vitest Tested • Pixel-Perfect A4 Vector PDF Export • Headroom AI Context Compression.
+
+---
+
+## 🎨 Claude-Inspired Warm Minimalist Design System
+
+ResumeLabs features a refined, calm, and distraction-free design aesthetic inspired by Claude:
+- **Warm Neutral Palette**: Ivory light theme (`#faf9f5` background, `#141413` charcoal text) and warm charcoal dark theme (`#262624` background, `#f5f4ee` text).
+- **Restrained Terracotta Accent**: Signature `#c96442` brand color and `#f5e9e2` subtle accent tints.
+- **Quiet Typography**: Geist & Geist Mono with clean tracking, balanced heading wraps, and optimal reading line-height.
+- **Two Soft Shadows**: Tailored elevation tokens for resting cards and lifted drawers without visual clutter or heavy blur.
+- **Accessible & Tested**: Full keyboard navigation, visible brand focus rings, reduced motion support, and 100% passing Vitest test suite.
 
 ---
 
@@ -44,9 +55,20 @@ headroom proxy --port 8787
 
 ---
 
+## 🛠️ Intelligent Resume Parser Service
+
+Includes a modular, zero-dependency resume parsing engine (`src/services/parsing.ts`) verified by a Vitest test suite (`npm run test`):
+- **Line Break & Bullet Preservation**: Normalizes lines without collapsing bullet items.
+- **Broad Skills Taxonomy**: Detects 50+ modern data, engineering, and product terms (`PySpark`, `Databricks`, `Snowflake`, `Kafka`, `Delta Lake`, `Airflow`, `dbt`, `RAG`, `LLM`, `Figma`, etc.).
+- **Smart Experience Extraction**: Parses explicit phrases (`"7+ years of experience"`, `"10+ years of total experience"`) and extracts maximum tenure.
+- **Heading Alias Normalization**: Maps `"Work Experience"` and `"Professional Experience"` to canonical sections and merges duplicates.
+- **Safe Empty State Handling**: Gracefully handles blank or partial inputs without throwing.
+
+---
+
 ## ✨ Core Features
 
-- **🧪 Modern ResumeLabs Brand & Logo**: Custom geometric document & lab flask synthesis mark with vibrant electric gradient and dark/light adaptive chrome.
+- **🧪 Modern ResumeLabs Brand & Logo**: Custom geometric document monogram in warm terracotta `#c96442`.
 - **🌓 Cohesive Dark & Light Mode**: Complete, seamless dark and light theme integration across all navigation, editor toolbars, modals, and drawing canvases.
 - **🎯 Live ATS Job Description Matcher**: Real-time keyword scanner comparing job postings against your resume, calculating instant match percentages, and offering 1-click missing keyword injection.
 - **⚡ 1-Click Direct Download PDF**: Native client-side PDF export powered by `html2pdf.js` with progress animations and celebratory confetti.
@@ -74,6 +96,12 @@ npm run dev
 ```
 Open `http://localhost:5173` in your browser.
 
+### Run Tests & Lint
+```bash
+npm run test
+npm run lint
+```
+
 ### Production Build
 ```bash
 npm run build
@@ -87,7 +115,7 @@ npm run preview
 1. Push this repository to GitHub:
    ```bash
    git add .
-   git commit -m "feat: integrate Headroom context compression and telemetry"
+   git commit -m "feat: redesign ResumeLabs with Claude-inspired warm minimalism and tested parser"
    git push origin main
    ```
 2. In your GitHub repository:
