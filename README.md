@@ -1,104 +1,111 @@
 # ResumeLabs 🧪 + Headroom ⚡
 
-> **Calm, minimal, precision Markdown resume builder with Headroom context compression.**  
-> 100% Client-Side • Zero Backend • Warm Claude-Inspired Design System • Vitest Tested • Pixel-Perfect A4 Vector PDF Export • Headroom AI Context Compression.
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20GitHub%20Pages-c96442?style=for-the-badge&logo=github)](https://solondas96.github.io/resume-os/)
+[![Built With](https://img.shields.io/badge/Stack-React%2018%20•%20Vite%206%20•%20TypeScript%20•%20Tailwind-141413?style=for-the-badge)](https://github.com/solondas96/resume-os)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passing%20(6%2F6)-059669?style=for-the-badge)](https://github.com/solondas96/resume-os)
+[![License](https://img.shields.io/badge/License-MIT-3a3a37?style=for-the-badge)](LICENSE)
+
+> **Precision Markdown resume builder with Headroom context compression and a calm, Claude-inspired warm minimalist aesthetic.**  
+> 100% Client-Side • Zero Backend Telemetry • In-Browser Privacy • Pixel-Perfect Vector PDF Export • Instant GitHub Pages Hosting.
 
 ---
 
-## 🎨 Claude-Inspired Warm Minimalist Design System
+### 🌐 Live Application
 
-ResumeLabs features a refined, calm, and distraction-free design aesthetic inspired by Claude:
-- **Warm Neutral Palette**: Ivory light theme (`#faf9f5` background, `#141413` charcoal text) and warm charcoal dark theme (`#262624` background, `#f5f4ee` text).
-- **Restrained Terracotta Accent**: Signature `#c96442` brand color and `#f5e9e2` subtle accent tints.
-- **Quiet Typography**: Geist & Geist Mono with clean tracking, balanced heading wraps, and optimal reading line-height.
-- **Two Soft Shadows**: Tailored elevation tokens for resting cards and lifted drawers without visual clutter or heavy blur.
-- **Accessible & Tested**: Full keyboard navigation, visible brand focus rings, reduced motion support, and 100% passing Vitest test suite.
+👉 **Try it live right now:** **[https://solondas96.github.io/resume-os/](https://solondas96.github.io/resume-os/)**
 
 ---
 
-## ⚡ Headroom AI Integration
+## 🎨 Claude-Inspired Warm Minimalist Aesthetic
 
-ResumeLabs demonstrates production-grade integration of **[Headroom](https://github.com/headroomlabs-ai/headroom)** — the context compression layer for AI agents that slashes LLM token usage by **60–95% for structured data** and **15–20% for coding and text agents**.
+ResumeLabs is engineered to feel calm, focused, and distraction-free:
+- **Warm Neutral Color Tokens**: Restful ivory light theme (`#faf9f5` background, `#141413` charcoal text) paired with a warm charcoal dark theme (`#262624` background, `#f5f4ee` text).
+- **Restrained Terracotta Brand Accent**: Signature `#c96442` brand accent (and dark `#d97757`) with subtle `#f5e9e2` tint surfaces.
+- **Quiet Typography**: Geist & Geist Mono fonts with clean tracking, balanced heading wraps (`[text-wrap:balance]`), and optimal reading line-height.
+- **Two Soft Shadows**: Pure CSS elevation tokens for resting cards and lifted popover drawers without artificial blur or gradient noise.
+- **Single Brand Call to Action**: Clear visual hierarchy with at most one primary brand-focused action per screen.
+
+---
+
+## ⚡ Headroom AI Context Compression
+
+ResumeLabs dogfoods **[Headroom](https://github.com/headroomlabs-ai/headroom)** — an intelligent context compression layer that slashes LLM token consumption by **60–95% for structured data** and **15–20% for agentic text workflows**.
 
 ### Why Headroom in ResumeLabs?
 
-When using AI agents to tailor resumes to job descriptions, score ATS keyword alignment, or rewrite bullet points with the STAR method, raw prompt contexts rapidly explode into thousands of redundant tokens. 
+When AI agents analyze resumes against 5-page job descriptions, calculate ATS keyword overlap, or re-engineer bullet points into the STAR format, raw prompt tokens multiply rapidly. 
 
-ResumeLabs dogfoods Headroom to:
-- **Compress Resume & Job Contexts**: Removes structural JSON bloat, repeated keys, and formatting noise before hitting LLMs.
-- **Save 60–85% on Token Costs**: Delivers massive cost reductions across GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5.
-- **Live In-Browser Telemetry**: Inspect real-time token savings, cost analytics, and compression breakdown cards directly in the **Headroom Studio**.
-- **Edge & Proxy Support**: Connects seamlessly to a local Headroom proxy (`http://localhost:8787`) or operates in high-performance Client-Edge Smart Crushing mode in pure browser environments.
-
-### Key Headroom Capabilities in ResumeLabs
-
-| Feature | ResumeLabs Implementation |
-| :--- | :--- |
-| **Smart Crushing** | Eliminates schema overhead and redundant formatting from resume models. |
-| **Message Compression** | Prunes system directives down to high-density semantic instructions. |
-| **STAR Method Optimizer** | Compresses prompt contexts to generate quantified achievement bullets. |
-| **Cost & Token Analytics** | Real-time dollar and token counter estimating savings on high-volume queries. |
-
-### Optional: Running the Local Headroom Proxy
-
-To route AI requests through the local Headroom Python compression proxy:
+ResumeLabs integrates Headroom to:
+- **Prune Redundant Schema & Formatting**: Compresses JSON trees and Markdown structures before hitting LLMs.
+- **Slash Inference Costs by 60–85%**: Lowers token overhead across GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5.
+- **Real-Time Telemetry Studio**: Open the built-in **Headroom AI Studio** to inspect live token savings, calculated dollar savings, and compression breakdowns.
+- **Dual Mode Support**: Operates out of the box with the browser-based Client-Edge Smart Crusher or connects to a local Headroom Python proxy (`http://localhost:8787`).
 
 ```bash
-# 1. Install the Python CLI proxy
+# Optional: run the local Python Headroom compression proxy
 pip install "headroom-ai[proxy]"
-
-# 2. Run the proxy locally
 headroom proxy --port 8787
-
-# 3. ResumeLabs will automatically detect the active proxy at http://localhost:8787!
+# ResumeLabs auto-detects the proxy at http://localhost:8787!
 ```
 
 ---
 
 ## 🛠️ Intelligent Resume Parser Service
 
-Includes a modular, zero-dependency resume parsing engine (`src/services/parsing.ts`) verified by a Vitest test suite (`npm run test`):
-- **Line Break & Bullet Preservation**: Normalizes lines without collapsing bullet items.
-- **Broad Skills Taxonomy**: Detects 50+ modern data, engineering, and product terms (`PySpark`, `Databricks`, `Snowflake`, `Kafka`, `Delta Lake`, `Airflow`, `dbt`, `RAG`, `LLM`, `Figma`, etc.).
-- **Smart Experience Extraction**: Parses explicit phrases (`"7+ years of experience"`, `"10+ years of total experience"`) and extracts maximum tenure.
-- **Heading Alias Normalization**: Maps `"Work Experience"` and `"Professional Experience"` to canonical sections and merges duplicates.
-- **Safe Empty State Handling**: Gracefully handles blank or partial inputs without throwing.
+ResumeLabs includes a tested, modular resume parser (`src/services/parsing.ts`) verified by a Vitest unit test suite:
+- **Bullet & Line Break Preservation**: Normalizes lines without collapsing bullet points into run-on strings.
+- **Broad Skills Taxonomy**: Automatically identifies 50+ data, cloud, engineering, and product skills (`PySpark`, `Databricks`, `Snowflake`, `Kafka`, `Delta Lake`, `Airflow`, `dbt`, `RAG`, `LLM`, `Figma`, etc.).
+- **Smart Experience Extraction**: Parses explicit phrases (`"7+ years of experience"`, `"10+ years of total experience"`) and extracts the maximum tenure.
+- **Canonical Heading Aliases**: Normalizes `"Work Experience"` and `"Professional Experience"` to `"Experience"`, and merges duplicate sections.
+- **Fail-Safe & Tested**: Gracefully handles blank or partial inputs without throwing errors.
 
 ---
 
-## ✨ Core Features
+## ✨ Key Features
 
-- **🧪 Modern ResumeLabs Brand & Logo**: Custom geometric document monogram in warm terracotta `#c96442`.
-- **🌓 Cohesive Dark & Light Mode**: Complete, seamless dark and light theme integration across all navigation, editor toolbars, modals, and drawing canvases.
-- **🎯 Live ATS Job Description Matcher**: Real-time keyword scanner comparing job postings against your resume, calculating instant match percentages, and offering 1-click missing keyword injection.
-- **⚡ 1-Click Direct Download PDF**: Native client-side PDF export powered by `html2pdf.js` with progress animations and celebratory confetti.
-- **📂 Starter Role Presets**: Ready-to-use blueprints for Staff Software Engineer, Senior Product Designer, Lead Technical PM, and New Graduate.
-- **📝 Markdown-First & Section Cards**: Switch seamlessly between raw CodeMirror 6 markdown and card view with drag/move reordering.
-- **📏 Fine-Grained Typography & Margin Controls**: Dynamic font size (`small`, `medium`, `large`), page margins (`narrow`, `normal`, `relaxed`), and line-height controls.
-- **⚡ 100% Client-Side**: Zero telemetry, no external database or serverless dependencies. Your resume data stays strictly in your browser.
-- **📐 Multi-Sheet A4 Canvas & Manual Breaks**: Physical page break indicators and `::: page-break` directive support.
+- **🎯 Live In-Browser ATS Matcher**: Paste any job description to instantly compute keyword overlap, match percentage, and inject missing keywords with 1 click.
+- **⚡ 1-Click Direct Vector PDF Export**: Zero-backend vector PDF download via `html2pdf.js` with progress feedback.
 - **🏛️ 4 Curated English Templates**:
   - **Modern Minimalist**: Crisp Silicon Valley sans-serif typography with tag badges.
   - **Classic Ivy**: Traditional Harvard/Wall Street serif typography with centered headers.
   - **Executive Two-Tone**: Two-tone shaded section badges for senior leaders.
   - **Mono Compact**: High-density engineering layout for 1-page resumes.
-- **💾 Autosave & Revisions**: Automatically persists to `localStorage` with a 20-revision history rollback buffer.
-- **🚀 One-Click GitHub Pages Deployment**: Fully automated via GitHub Actions workflow.
+- **📂 Starter Role Presets**: Ready-to-use professional blueprints for Staff Software Engineer, Senior Product Designer, Lead Technical PM, and New Graduate.
+- **📝 Dual Editor Modes**: Switch seamlessly between CodeMirror 6 markdown editor (with slash `/` shortcuts) and drag-to-reorder section cards.
+- **📏 Fine-Grained Layout Controls**: Dynamic font sizes (`small`, `medium`, `large`), page margins (`narrow`, `normal`, `relaxed`), and line-height controls.
+- **📐 Multi-Page A4 Sheet Canvas**: Visual page-break guides and manual `::: page-break :::` container support.
+- **💾 Auto-Save & Revision Rollback**: Persists changes to local storage with a 20-snapshot revision history.
+- **⌨️ Command Palette (`Cmd+K` / `Ctrl+K`)**: Rapid keyboard navigation across every tool, preset, template, and export format.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started Locally
 
-### Development
+### Prerequisites
+- Node.js 18+ or 20+
+- npm 9+
+
+### Installation & Development
 ```bash
+# Clone the repository
+git clone https://github.com/solondas96/resume-os.git
+cd resume-os
+
+# Install dependencies
 npm install
+
+# Start local development server
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
-### Run Tests & Lint
+Visit `http://localhost:5173` in your browser.
+
+### Run Tests & Type Checks
 ```bash
+# Run Vitest unit tests
 npm run test
+
+# Run TypeScript type check
 npm run lint
 ```
 
@@ -110,38 +117,32 @@ npm run preview
 
 ---
 
-## 🚢 Deploying to GitHub Pages
+## 🚢 GitHub Pages Deployment
 
-1. Push this repository to GitHub:
+The repository is configured for automated deployments via GitHub Actions (`.github/workflows/deploy.yml`):
+
+1. Fork or push changes to your repository's `main` branch:
    ```bash
    git add .
-   git commit -m "feat: redesign ResumeLabs with Claude-inspired warm minimalism and tested parser"
+   git commit -m "feat: custom updates"
    git push origin main
    ```
-2. In your GitHub repository:
-   - Go to **Settings** > **Pages**.
-   - Under **Build and deployment** > **Source**, select **GitHub Actions**.
-3. Every push to `main` will automatically build and publish your site at:  
-   `https://<your-username>.github.io/resume-os/`
+2. In GitHub, navigate to **Settings** > **Pages**.
+3. Under **Build and deployment** > **Source**, choose **GitHub Actions**.
+4. The workflow will automatically compile and publish your site at:  
+   **`https://<your-username>.github.io/resume-os/`**
 
 ---
 
-## 📚 Headroom Resources
+## 📚 Resources & Links
 
-- **GitHub**: [https://github.com/headroomlabs-ai/headroom](https://github.com/headroomlabs-ai/headroom)
-- **Documentation**: [https://headroom-docs.vercel.app/docs](https://headroom-docs.vercel.app/docs)
+- **Live Site**: [https://solondas96.github.io/resume-os/](https://solondas96.github.io/resume-os/)
+- **GitHub Repository**: [https://github.com/solondas96/resume-os](https://github.com/solondas96/resume-os)
+- **Headroom AI GitHub**: [https://github.com/headroomlabs-ai/headroom](https://github.com/headroomlabs-ai/headroom)
+- **Headroom AI Docs**: [https://headroom-docs.vercel.app/docs](https://headroom-docs.vercel.app/docs)
 - **Model Card**: [https://huggingface.co/chopratejas/kompress-v2-base](https://huggingface.co/chopratejas/kompress-v2-base)
-- **Discord Community**: [https://discord.gg/yRmaUNpsPJ](https://discord.gg/yRmaUNpsPJ)
-
----
-
-## 💡 Philosophy
-
-> *"Use limits wisely" — Token budgets are real constraints in production AI systems. Headroom makes it practical to build cost-effective, scalable AI features without sacrificing quality.*
-
-This reflects our approach: **build intelligent systems that are efficient, observable, and economically sustainable.**
 
 ---
 
 ## 📄 License
-MIT License.
+MIT License. Open source and private by design.
