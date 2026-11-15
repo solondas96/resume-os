@@ -292,17 +292,23 @@ html, body, #root {
 .resume-columns {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 20px;
   margin-bottom: 0.6rem;
 }
 .resume-col {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
 }
 .resume-col-left {
   text-align: left;
 }
 .resume-col-right {
   text-align: right;
+}
+.resume-col-right ul,
+.resume-col-right ol {
+  text-align: left;
 }
 
 .resume-contact-link {
@@ -468,6 +474,7 @@ html, body, #root {
 .template-classic ul {
   margin: 4px 0 6px 18px;
   padding: 0;
+  list-style-type: disc;
 }
 .template-classic li {
   font-size: 0.85rem;
@@ -527,6 +534,7 @@ html, body, #root {
 .template-executive ul {
   margin: 3px 0 6px 18px;
   padding: 0;
+  list-style-type: disc;
 }
 
 /* --- 4. MONO COMPACT --- */
@@ -571,6 +579,7 @@ html, body, #root {
 .template-minimal ul {
   margin: 2px 0 4px 16px;
   padding: 0;
+  list-style-type: disc;
 }
 .template-minimal .skill-pill {
   font-family: var(--font-mono);

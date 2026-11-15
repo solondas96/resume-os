@@ -1,7 +1,81 @@
 import { describe, it, expect } from 'vitest';
 import { parseResume } from './parsing';
+import { parseResumeMarkdown } from '../parser/markdown';
+import { ROLE_PRESETS } from '../data/rolePresets';
 
 describe('Resume Parser Service', () => {
+  it('renders Jordan Lee markdown without literal colons or broken layout', () => {
+    const jordan = ROLE_PRESETS.find((p) => p.id === 'product-designer')!;
+    const html = parseResumeMarkdown(jordan.markdown);
+    expect(html).not.toContain(':::');
+    expect(html).toContain('class="resume-columns"');
+    expect(html).toContain('class="resume-col resume-col-left"');
+    expect(html).toContain('class="resume-col resume-col-right"');
+    // Ensure both columns are nested inside .resume-columns
+    const matches = html.match(/<div class="resume-columns">[\s\S]*?<\/div>\s*<\/div>/g);
+    expect(matches).not.toBeNull();
+    expect(matches!.length).toBeGreaterThanOrEqual(2); // Header links + Skills columns
+  });
+
+  it('renders all role presets without leaking container markers or breaking columns', () => {
+    for (const preset of ROLE_PRESETS) {
+      const html = parseResumeMarkdown(preset.markdown);
+      expect(html, `Preset ${preset.id} contains leaked colons`).not.toContain(':::');
+      if (preset.markdown.includes('::: left')) {
+        expect(html, `Preset ${preset.id} should wrap columns`).toContain('class="resume-columns"');
+        expect(html, `Preset ${preset.id} should have left column`).toContain('class="resume-col resume-col-left"');
+        expect(html, `Preset ${preset.id} should have right column`).toContain('class="resume-col resume-col-right"');
+      }
+    }
+  });
+
+  it('handles explicit ::: cols and standalone columns safely', () => {
+    const markdownWithCols = `
+# Jane Doe
+::: cols
+::: left
+Left info
+:::
+::: right
+Right info
+:::
+:::
+`;
+    const html = parseResumeMarkdown(markdownWithCols);
+    expect(html).not.toContain(':::');
+    expect(html).toContain('class="resume-columns"');
+    expect(html).toContain('Left info');
+    expect(html).toContain('Right info');
+
+    const markdownStandalone = `
+# Only Left
+::: left
+Only left column
+:::
+`;
+    const standaloneHtml = parseResumeMarkdown(markdownStandalone);
+    expect(standaloneHtml).not.toContain(':::');
+    expect(standaloneHtml).toContain('class="resume-col resume-col-left"');
+    expect(standaloneHtml).toContain('Only left column');
+  });
+
+  it('transforms manual page breaks into .manual-page-break elements', () => {
+    const content = `
+Page 1
+::: page-break :::
+Page 2
+---page-break---
+Page 3
+<!-- pagebreak -->
+Page 4
+`;
+    const html = parseResumeMarkdown(content);
+    expect(html).not.toContain(':::');
+    expect(html).not.toContain('---page-break---');
+    expect(html).not.toContain('<!-- pagebreak -->');
+    const pageBreakMatches = html.match(/class="manual-page-break"/g);
+    expect(pageBreakMatches?.length).toBe(3);
+  });
   it('handles empty input without throwing', () => {
     const emptyResult = parseResume('');
     expect(emptyResult.summary).toBe('Resume content parsed successfully.');

@@ -105,19 +105,40 @@ md.use(sectionPlugin);
 export function parseResumeMarkdown(content: string): string {
   if (!content) return '';
 
-  // Pre-process: Automatically pair ::: left and ::: right into a .resume-columns wrapper if not already wrapped
-  let processed = content.replace(
-    /(:::\s*left[\s\S]*?:::\s*\n+)(:::\s*right[\s\S]*?:::)/g,
-    '::: cols\n$1$2\n:::'
+  let processed = content;
+
+  // 1. Pre-process manual page breaks (::: page-break :::, ::: pagebreak, ---page-break---, <!-- pagebreak -->)
+  processed = processed.replace(
+    /(?:::+|---|<!--)[ \t]*page[-]?break[ \t]*(?:::+|---|-->|\r?\n[ \t]*:::+)?/gi,
+    '\n<div class="manual-page-break"></div>\n'
   );
 
-  // Pre-process: Handle raw page breaks such as ---page-break--- or <!-- pagebreak -->
-  processed = processed.replace(/(?:---|<!--)\s*page[-]?break\s*(?:---|-->)/gi, '\n::: page-break\n:::\n');
+  // 2. Strip explicit ::: cols or :::: cols wrappers if present
+  processed = processed.replace(/^[ \t]*:{3,}[ \t]*cols[ \t]*$/gm, '');
 
-  // Render raw HTML through markdown-it
+  // 3. Transform paired ::: left and ::: right into a single .resume-columns wrapper
+  processed = processed.replace(
+    /:::[ \t]*left[ \t]*(?:\r?\n)([\s\S]*?)(?:\r?\n):::[ \t]*(?:\r?\n\s*)*:::[ \t]*right[ \t]*(?:\r?\n)([\s\S]*?)(?:\r?\n):::[ \t]*/g,
+    '\n<div class="resume-columns">\n<div class="resume-col resume-col-left">\n\n$1\n\n</div>\n<div class="resume-col resume-col-right">\n\n$2\n\n</div>\n</div>\n'
+  );
+
+  // 4. Transform any standalone ::: left or ::: right blocks
+  processed = processed.replace(
+    /:::[ \t]*left[ \t]*(?:\r?\n)([\s\S]*?)(?:\r?\n):::[ \t]*/g,
+    '\n<div class="resume-col resume-col-left">\n\n$1\n\n</div>\n'
+  );
+  processed = processed.replace(
+    /:::[ \t]*right[ \t]*(?:\r?\n)([\s\S]*?)(?:\r?\n):::[ \t]*/g,
+    '\n<div class="resume-col resume-col-right">\n\n$1\n\n</div>\n'
+  );
+
+  // 5. Clean up any remaining standalone container markers
+  processed = processed.replace(/^[ \t]*:{3,}[ \t]*$/gm, '');
+
+  // 6. Render raw HTML through markdown-it
   let html = md.render(processed);
 
-  // Transform [icon:name text](url) into rich clickable icon links
+  // 7. Transform [icon:name text](url) into rich clickable icon links
   html = html.replace(
     /<a\s+href="([^"]+)">\[icon:([a-zA-Z0-9_-]+)\s*([^\]]*)\]<\/a>/g,
     (_, href, iconName, text) => {
@@ -127,14 +148,18 @@ export function parseResumeMarkdown(content: string): string {
     }
   );
 
-  // Transform raw icon:name in text into inline SVG
+  // 8. Transform raw icon:name in text into inline SVG
   html = html.replace(/\bicon:([a-zA-Z0-9_-]+)\b/g, (_, iconName) => {
     const svg = getIconSvg(iconName);
     return `<span class="inline-icon-badge">${svg}</span>`;
   });
 
-  // Transform standard inline code tags `Tech` into skill pills
+  // 9. Transform standard inline code tags `Tech` into skill pills
   html = html.replace(/<code>(.*?)<\/code>/g, '<span class="skill-pill">$1</span>');
+
+  // 10. Clean up any leaked colons or empty paragraph wrappers
+  html = html.replace(/<p>\s*:{3,}\s*<\/p>/g, '');
+  html = html.replace(/::{3,}/g, '');
 
   return html;
 }
