@@ -17,6 +17,7 @@
     "@uiw/react-codemirror": "^4.23.7",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "headroom-ai": "^0.44.0",
     "lucide-react": "^0.468.0",
     "markdown-it": "^14.1.0",
     "markdown-it-container": "^4.0.0",

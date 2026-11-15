@@ -9,10 +9,12 @@ import {
   Upload,
   FileText,
   Sliders,
-  ChevronDown
+  ChevronDown,
+  Zap
 } from 'lucide-react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { ACCENT_COLORS, TEMPLATES } from '../../data/templates';
+import { HeadroomStudio } from '../headroom/HeadroomStudio';
 import confetti from 'canvas-confetti';
 
 export const Header: React.FC = () => {
@@ -34,6 +36,7 @@ export const Header: React.FC = () => {
   const [colorMenuOpen, setColorMenuOpen] = useState(false);
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [headroomOpen, setHeadroomOpen] = useState(false);
 
   const handlePrintPdf = () => {
     saveRevision('Pre-export auto-save');
@@ -179,6 +182,16 @@ export const Header: React.FC = () => {
 
       {/* Right Controls: History, Help, Export */}
       <div className="flex items-center gap-2">
+        {/* Headroom AI Studio Button */}
+        <button
+          onClick={() => setHeadroomOpen(true)}
+          title="Headroom AI Context Compression & Optimization Studio"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 text-amber-300 font-semibold text-xs shadow-sm shadow-amber-500/10 transition active:scale-95"
+        >
+          <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+          <span>Headroom AI</span>
+        </button>
+
         <button
           onClick={() => setActiveModal('shortcuts')}
           title="Markdown & Icon Shortcuts"
@@ -263,6 +276,12 @@ export const Header: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Headroom Studio Modal */}
+      <HeadroomStudio
+        isOpen={headroomOpen}
+        onClose={() => setHeadroomOpen(false)}
+      />
     </header>
   );
 };
