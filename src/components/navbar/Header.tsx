@@ -8,7 +8,10 @@ import {
   FileText,
   ChevronDown,
   Zap,
-  Edit3
+  Edit3,
+  Sun,
+  Moon,
+  Command
 } from 'lucide-react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { HeadroomStudio } from '../headroom/HeadroomStudio';
@@ -22,7 +25,10 @@ export const Header: React.FC = () => {
     markdown,
     documentTitle,
     setDocumentTitle,
-    saveRevision
+    saveRevision,
+    uiTheme,
+    toggleUiTheme,
+    setCommandPaletteOpen
   } = useResumeStore();
 
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
@@ -115,8 +121,27 @@ export const Header: React.FC = () => {
         </button>
       </div>
 
-      {/* Right Controls: History, Help, Import & Prominent Export */}
+      {/* Right Controls: Palette, Theme, History, Help, Import & Prominent Export */}
       <div className="flex items-center gap-2">
+        {/* Cmd+K Quick Search Trigger */}
+        <button
+          onClick={() => setCommandPaletteOpen(true)}
+          title="Command Palette (Cmd+K / Ctrl+K)"
+          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 transition text-xs font-mono"
+        >
+          <Command className="w-3 h-3 text-slate-500" />
+          <span>Cmd+K</span>
+        </button>
+
+        {/* Theme Toggle (Light / Dark) */}
+        <button
+          onClick={toggleUiTheme}
+          title={`Switch to ${uiTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition"
+        >
+          {uiTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+        </button>
+
         <button
           onClick={() => setActiveModal('shortcuts')}
           title="Markdown & Icon Shortcuts (?)"

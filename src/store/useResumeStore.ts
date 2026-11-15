@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ResumeRevision, TemplateId } from '../types';
+import { ResumeRevision, TemplateId, UiTheme, EditorViewMode } from '../types';
 import { SAMPLE_RESUME } from '../data/sampleResume';
 import { ACCENT_COLORS } from '../data/templates';
 
@@ -12,13 +12,18 @@ interface StoredState {
   accentColor: string;
   onePageMode: boolean;
   compactSpacing: boolean;
+  uiTheme: UiTheme;
 }
 
 function loadInitialState(): StoredState {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      return {
+        ...parsed,
+        uiTheme: parsed.uiTheme || 'dark',
+      };
     }
   } catch (e) {
     console.error('Failed to load saved resume state:', e);
@@ -29,6 +34,7 @@ function loadInitialState(): StoredState {
     accentColor: ACCENT_COLORS[1].hex, // Pacific Blue
     onePageMode: false,
     compactSpacing: false,
+    uiTheme: 'dark',
   };
 }
 
@@ -52,6 +58,8 @@ interface ResumeStoreState extends StoredState {
   pageCount: number;
   isSaving: boolean;
   documentTitle: string;
+  editorViewMode: EditorViewMode;
+  commandPaletteOpen: boolean;
 
   setMarkdown: (markdown: string) => void;
   setTheme: (theme: TemplateId) => void;
@@ -63,6 +71,10 @@ interface ResumeStoreState extends StoredState {
   setPageCount: (count: number) => void;
   setIsSaving: (isSaving: boolean) => void;
   setDocumentTitle: (title: string) => void;
+  setUiTheme: (theme: UiTheme) => void;
+  toggleUiTheme: () => void;
+  setEditorViewMode: (mode: EditorViewMode) => void;
+  setCommandPaletteOpen: (open: boolean) => void;
   saveRevision: (title?: string) => void;
   restoreRevision: (revision: ResumeRevision) => void;
   resetToSample: () => void;
@@ -80,6 +92,26 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
   pageCount: 1,
   isSaving: false,
   documentTitle: 'Alex Morgan - Resume',
+  editorViewMode: 'markdown',
+  commandPaletteOpen: false,
+
+  setUiTheme: (uiTheme) => {
+    set({ uiTheme });
+    persistCurrentState({ ...get(), uiTheme });
+    if (uiTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  },
+
+  toggleUiTheme: () => {
+    const next = get().uiTheme === 'dark' ? 'light' : 'dark';
+    get().setUiTheme(next);
+  },
+
+  setEditorViewMode: (editorViewMode) => set({ editorViewMode }),
+  setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),
 
   setMarkdown: (markdown) => {
     set({ markdown, isSaving: true });
@@ -157,6 +189,7 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
       accentColor: ACCENT_COLORS[1].hex,
       onePageMode: false,
       compactSpacing: false,
+      uiTheme: get().uiTheme,
     };
     set(sampleState);
     persistCurrentState({ ...get(), ...sampleState });
@@ -173,6 +206,7 @@ function persistCurrentState(state: StoredState) {
       accentColor: state.accentColor,
       onePageMode: state.onePageMode,
       compactSpacing: state.compactSpacing,
+      uiTheme: state.uiTheme,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {

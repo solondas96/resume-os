@@ -1,4 +1,6 @@
 export type TemplateId = 'modern' | 'classic' | 'executive' | 'minimal';
+export type UiTheme = 'dark' | 'light';
+export type EditorViewMode = 'markdown' | 'cards';
 
 export interface AccentColor {
   id: string;

@@ -1,0 +1,380 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useResumeStore } from '../../store/useResumeStore';
+import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
+import {
+  Search,
+  Layout,
+  Sliders,
+  FileText,
+  Printer,
+  Upload,
+  History,
+  Zap,
+  Sun,
+  Moon,
+  Columns,
+  PlusCircle,
+  HelpCircle
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+interface CommandItem {
+  id: string;
+  category: 'Design' | 'Export' | 'AI' | 'Appearance' | 'Sections' | 'Help';
+  title: string;
+  description?: string;
+  icon: React.ReactNode;
+  action: () => void;
+  keywords?: string[];
+}
+
+export const CommandPalette: React.FC = () => {
+  const {
+    commandPaletteOpen,
+    setCommandPaletteOpen,
+    setTheme,
+    setAccentColor,
+    compactSpacing,
+    setCompactSpacing,
+    onePageMode,
+    setOnePageMode,
+    uiTheme,
+    toggleUiTheme,
+    setActiveModal,
+    markdown,
+    setMarkdown,
+    saveRevision,
+    editorViewMode,
+    setEditorViewMode
+  } = useResumeStore();
+
+  const [query, setQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Close on Escape or open on Cmd+K / Ctrl+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(!commandPaletteOpen);
+      } else if (e.key === 'Escape' && commandPaletteOpen) {
+        setCommandPaletteOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [commandPaletteOpen, setCommandPaletteOpen]);
+
+  // Focus input when opened
+  useEffect(() => {
+    if (commandPaletteOpen) {
+      setQuery('');
+      setSelectedIndex(0);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [commandPaletteOpen]);
+
+  const insertSectionAtEnd = (title: string, sampleContent: string) => {
+    setMarkdown(markdown.trim() + `\n\n## ${title}\n` + sampleContent);
+  };
+
+  const commands: CommandItem[] = [
+    // Export & Print
+    {
+      id: 'print-pdf',
+      category: 'Export',
+      title: 'Print / Save as Vector PDF',
+      description: 'Trigger browser print dialog with @page vector CSS',
+      icon: <Printer className="w-4 h-4 text-blue-400" />,
+      action: () => {
+        saveRevision('Pre-print save');
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.1 } });
+        window.print();
+      },
+      keywords: ['export', 'pdf', 'download', 'print'],
+    },
+    {
+      id: 'download-md',
+      category: 'Export',
+      title: 'Download Markdown (.md)',
+      description: 'Export local source markdown file',
+      icon: <FileText className="w-4 h-4 text-emerald-400" />,
+      action: () => {
+        const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resume.md';
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      keywords: ['markdown', 'export', 'download', 'source'],
+    },
+    {
+      id: 'import-md',
+      category: 'Export',
+      title: 'Import Markdown File',
+      description: 'Upload an existing .md file or paste text',
+      icon: <Upload className="w-4 h-4 text-purple-400" />,
+      action: () => setActiveModal('import'),
+      keywords: ['import', 'upload', 'load'],
+    },
+    {
+      id: 'history',
+      category: 'Export',
+      title: 'View Revision History',
+      description: 'Rollback to earlier snapshots with timestamps',
+      icon: <History className="w-4 h-4 text-amber-400" />,
+      action: () => setActiveModal('history'),
+      keywords: ['undo', 'history', 'revisions', 'restore', 'snapshots'],
+    },
+
+    // AI
+    {
+      id: 'headroom-ai',
+      category: 'AI',
+      title: 'Open Headroom AI Studio',
+      description: 'Context compression, STAR optimizer & live token telemetry',
+      icon: <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />,
+      action: () => {
+        // Toggle headroom by dispatching click or active modal
+        const btn = document.querySelector('button[title*="Headroom"]') as HTMLButtonElement;
+        btn?.click();
+      },
+      keywords: ['ai', 'headroom', 'token', 'compression', 'star', 'optimizer'],
+    },
+
+    // Appearance & Views
+    {
+      id: 'toggle-theme',
+      category: 'Appearance',
+      title: `Switch to ${uiTheme === 'dark' ? 'Light' : 'Dark'} Mode`,
+      description: 'Toggle application chrome theme',
+      icon: uiTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />,
+      action: () => toggleUiTheme(),
+      keywords: ['theme', 'dark', 'light', 'mode'],
+    },
+    {
+      id: 'toggle-view-mode',
+      category: 'Appearance',
+      title: `Switch to ${editorViewMode === 'markdown' ? 'Section Cards View' : 'Raw Markdown View'}`,
+      description: 'Toggle between code editor and structured card editor',
+      icon: <Columns className="w-4 h-4 text-blue-400" />,
+      action: () => setEditorViewMode(editorViewMode === 'markdown' ? 'cards' : 'markdown'),
+      keywords: ['cards', 'view', 'sections', 'toggle', 'editor'],
+    },
+
+    // Layout & Density
+    {
+      id: 'toggle-compact',
+      category: 'Design',
+      title: `Toggle Compact Spacing (${compactSpacing ? 'Currently On' : 'Currently Off'})`,
+      description: 'Tighten line-height and margins to fit on fewer pages',
+      icon: <Sliders className="w-4 h-4 text-blue-400" />,
+      action: () => setCompactSpacing(!compactSpacing),
+      keywords: ['density', 'compact', 'spacing', 'tight', 'margin'],
+    },
+    {
+      id: 'toggle-onepage',
+      category: 'Design',
+      title: `Toggle 1-Page Fit Mode (${onePageMode ? 'Currently On' : 'Currently Off'})`,
+      description: 'Lock canvas strictly to 1123px A4 height',
+      icon: <FileText className="w-4 h-4 text-amber-400" />,
+      action: () => setOnePageMode(!onePageMode),
+      keywords: ['1-page', 'one page', 'clamp', 'fit'],
+    },
+
+    // Templates
+    ...TEMPLATES.map((tmpl) => ({
+      id: `tmpl-${tmpl.id}`,
+      category: 'Design' as const,
+      title: `Template: ${tmpl.name}`,
+      description: tmpl.description,
+      icon: <Layout className="w-4 h-4 text-blue-400" />,
+      action: () => setTheme(tmpl.id),
+      keywords: ['template', tmpl.name.toLowerCase(), tmpl.id],
+    })),
+
+    // Accent Colors
+    ...ACCENT_COLORS.map((col) => ({
+      id: `color-${col.id}`,
+      category: 'Design' as const,
+      title: `Accent Color: ${col.name}`,
+      description: `Apply ${col.hex} to titles, dividers, and skill chips`,
+      icon: <div className="w-3.5 h-3.5 rounded-full border border-white/20" style={{ backgroundColor: col.hex }} />,
+      action: () => setAccentColor(col.hex),
+      keywords: ['color', col.name.toLowerCase(), col.hex],
+    })),
+
+    // Insert Sections
+    {
+      id: 'insert-exp',
+      category: 'Sections',
+      title: 'Insert Work Experience Section',
+      description: 'Add a new company, title, dates, and STAR bullet template',
+      icon: <PlusCircle className="w-4 h-4 text-emerald-400" />,
+      action: () =>
+        insertSectionAtEnd(
+          'Work Experience',
+          '\n### Company Name — Senior Role\n*Location* | *2022 – Present*\n\n`Skill 1` `Skill 2`\n\n- Spearheaded [initiative], delivering [X% measurable outcome] by [action].\n- Engineered [system], scaling throughput from [X] to [Y].\n'
+        ),
+      keywords: ['experience', 'work', 'job', 'insert', 'add'],
+    },
+    {
+      id: 'insert-projects',
+      category: 'Sections',
+      title: 'Insert Key Projects Section',
+      description: 'Add open source or product achievements',
+      icon: <PlusCircle className="w-4 h-4 text-emerald-400" />,
+      action: () =>
+        insertSectionAtEnd(
+          'Key Projects',
+          '\n### Project Name — Title\n*Role* | [icon:github github.com/user/repo](https://github.com)\n\n- Built [product description] solving [problem].\n'
+        ),
+      keywords: ['projects', 'portfolio', 'insert'],
+    },
+    {
+      id: 'insert-edu',
+      category: 'Sections',
+      title: 'Insert Education Section',
+      description: 'Add university, degree, graduation year, and GPA',
+      icon: <PlusCircle className="w-4 h-4 text-emerald-400" />,
+      action: () =>
+        insertSectionAtEnd(
+          'Education',
+          '\n### University of California, Berkeley\n*Bachelor of Science in Computer Science* | *2018 – 2022*\n- Graduated with Honors (GPA: 3.8/4.0)\n'
+        ),
+      keywords: ['education', 'degree', 'university', 'school'],
+    },
+
+    // Help
+    {
+      id: 'help-shortcuts',
+      category: 'Help',
+      title: 'Markdown & Icon Syntax Guide',
+      description: 'View cheat-sheet for two-column headers and icon badges',
+      icon: <HelpCircle className="w-4 h-4 text-blue-400" />,
+      action: () => setActiveModal('shortcuts'),
+      keywords: ['help', 'shortcuts', 'syntax', 'icons', 'guide'],
+    },
+  ];
+
+  // Filter commands by query
+  const filtered = commands.filter((cmd) => {
+    if (!query.trim()) return true;
+    const q = query.toLowerCase();
+    return (
+      cmd.title.toLowerCase().includes(q) ||
+      (cmd.description && cmd.description.toLowerCase().includes(q)) ||
+      cmd.category.toLowerCase().includes(q) ||
+      cmd.keywords?.some((k) => k.includes(q))
+    );
+  });
+
+  const handleSelect = (cmd: CommandItem) => {
+    setCommandPaletteOpen(false);
+    cmd.action();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % Math.max(1, filtered.length));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + filtered.length) % Math.max(1, filtered.length));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filtered[selectedIndex]) {
+        handleSelect(filtered[selectedIndex]);
+      }
+    }
+  };
+
+  if (!commandPaletteOpen) return null;
+
+  return (
+    <div
+      onClick={() => setCommandPaletteOpen(false)}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-24 p-4 select-none animate-in fade-in duration-100"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-slate-900 border border-slate-750 rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[70vh]"
+      >
+        {/* Search Input Bar */}
+        <div className="h-13 px-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950">
+          <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(0);
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a command or search (e.g. 'pdf', 'template', 'compact', 'star')..."
+            className="w-full bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+          />
+          <kbd className="hidden sm:inline-block text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700 px-1.5 py-0.5 rounded">
+            ESC
+          </kbd>
+        </div>
+
+        {/* Command Results List */}
+        <div className="overflow-y-auto p-2 flex-1 space-y-1">
+          {filtered.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-500">
+              No matching commands found for "{query}".
+            </div>
+          ) : (
+            filtered.map((cmd, idx) => (
+              <button
+                key={cmd.id}
+                onClick={() => handleSelect(cmd)}
+                onMouseEnter={() => setSelectedIndex(idx)}
+                className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs transition ${
+                  selectedIndex === idx
+                    ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30'
+                    : 'text-slate-300 hover:bg-slate-800/60 border border-transparent'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-800/80">
+                    {cmd.icon}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-200 block">{cmd.title}</span>
+                    {cmd.description && (
+                      <span className="text-[11px] text-slate-400 line-clamp-1">
+                        {cmd.description}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <span className="text-[10px] uppercase font-mono font-medium text-slate-500 bg-slate-800/60 px-1.5 py-0.5 rounded">
+                  {cmd.category}
+                </span>
+              </button>
+            ))
+          )}
+        </div>
+
+        {/* Footer Shortcut Hints */}
+        <div className="h-8 px-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+          <div className="flex items-center gap-2">
+            <span>↑↓ Navigate</span>
+            <span>•</span>
+            <span>↵ Select</span>
+            <span>•</span>
+            <span>ESC Close</span>
+          </div>
+          <span className="font-mono text-[10px]">ResumeOS Cmd+K</span>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Header } from './components/navbar/Header';
 import { EditorPane } from './components/editor/EditorPane';
 import { A4Canvas } from './components/preview/A4Canvas';
@@ -6,8 +6,19 @@ import { HistoryModal } from './components/modals/HistoryModal';
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { ImportModal } from './components/modals/ImportModal';
 import { StatusBar } from './components/statusbar/StatusBar';
+import { CommandPalette } from './components/palette/CommandPalette';
+import { useResumeStore } from './store/useResumeStore';
 
 export const App: React.FC = () => {
+  const { uiTheme } = useResumeStore();
+
+  useEffect(() => {
+    if (uiTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [uiTheme]);
   const [editorWidth, setEditorWidth] = useState<number>(() => {
     // Default to 45% of screen width or minimum 450px
     if (typeof window !== 'undefined') {
@@ -73,10 +84,11 @@ export const App: React.FC = () => {
       {/* Bottom Unified Status Bar */}
       <StatusBar />
 
-      {/* Modals */}
+      {/* Modals & Command Palette */}
       <HistoryModal />
       <ShortcutsModal />
       <ImportModal />
+      <CommandPalette />
     </div>
   );
 };
