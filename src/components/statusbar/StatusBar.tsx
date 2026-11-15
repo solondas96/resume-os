@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
 import {
   ZoomIn,
@@ -8,28 +8,38 @@ import {
   Loader2,
   FileText,
   AlertTriangle,
-  Sliders
+  Sparkles,
+  Target
 } from 'lucide-react';
+import { analyzeBullets } from '../../utils/bulletLinter';
 
 export const StatusBar: React.FC = () => {
   const {
     markdown,
+    workspaceMode,
+    coverLetterMarkdown,
     pageCount,
     isSaving,
     zoom,
     setZoom,
     autoFitZoom,
     setAutoFitZoom,
-    compactSpacing,
-    setCompactSpacing
+    fitToOnePage,
+    activeSidePanel,
+    setActiveSidePanel,
   } = useResumeStore();
 
-  const wordCount = markdown.trim().split(/\s+/).filter(Boolean).length;
-  const lineCount = markdown.split('\n').length;
+  const activeContent = workspaceMode === 'cover-letter' ? coverLetterMarkdown : markdown;
+  const wordCount = activeContent.trim().split(/\s+/).filter(Boolean).length;
+  const lineCount = activeContent.split('\n').length;
   const isSpill = pageCount > 1;
 
+  const linterResult = useMemo(() => {
+    return analyzeBullets(markdown);
+  }, [markdown]);
+
   return (
-    <footer className="no-print h-8 bg-card border-t border-border flex items-center justify-between px-3 text-[11px] text-muted-foreground select-none z-30 flex-shrink-0 transition-colors">
+    <footer className="no-print h-8 bg-card border-t border-border flex items-center justify-between px-3 text-[11px] text-muted-foreground select-none z-30 shrink-0 transition-colors">
       {/* Left: Editor Metrics & Autosave */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 font-mono">
@@ -54,9 +64,42 @@ export const StatusBar: React.FC = () => {
             </>
           )}
         </div>
+
+        {/* Bullet Linter Pill */}
+        {workspaceMode === 'resume' && (
+          <>
+            <div className="h-3 w-[1px] bg-border mx-1 hidden sm:block" />
+            <button
+              onClick={() => setActiveSidePanel(activeSidePanel === 'linter' ? 'none' : 'linter')}
+              title="Open Bullet Point Linter & XYZ Impact Scorer"
+              className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
+                activeSidePanel === 'linter'
+                  ? 'bg-accent text-accent-foreground border border-brand/30'
+                  : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Sparkles className="w-3 h-3 text-brand" />
+              <span>Impact: {linterResult.overallScore}%</span>
+            </button>
+          </>
+        )}
+
+        {/* Job Tailor Pill */}
+        <button
+          onClick={() => setActiveSidePanel(activeSidePanel === 'tailor' ? 'none' : 'tailor')}
+          title="Open Job Match Tailor"
+          className={`hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
+            activeSidePanel === 'tailor'
+              ? 'bg-accent text-accent-foreground border border-brand/30'
+              : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Target className="w-3 h-3 text-brand" />
+          <span>Tailor</span>
+        </button>
       </div>
 
-      {/* Center: Page Count & Spill Indicator */}
+      {/* Center: Page Count & Auto-Fit to 1 Page */}
       <div className="flex items-center gap-2">
         {isSpill ? (
           <div className="flex items-center gap-2">
@@ -67,16 +110,15 @@ export const StatusBar: React.FC = () => {
               <AlertTriangle className="w-3 h-3 text-brand" />
               <span>{pageCount} Pages (Spill)</span>
             </div>
-            {!compactSpacing && (
-              <button
-                onClick={() => setCompactSpacing(true)}
-                className="text-[10px] text-brand hover:underline flex items-center gap-0.5 font-medium"
-                title="Enable compact line-height and margins to help fit onto 1 page"
-              >
-                <Sliders className="w-2.5 h-2.5" />
-                <span>Try Compact</span>
-              </button>
-            )}
+
+            <button
+              onClick={fitToOnePage}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand text-white font-medium text-[10px] hover:bg-brand-hover transition active:scale-[0.98]"
+              title="Automatically optimize line-height, margins and font size to pull content onto 1 page"
+            >
+              <Sparkles className="w-2.5 h-2.5" />
+              <span>Auto-Fit 1 Page</span>
+            </button>
           </div>
         ) : (
           <div
@@ -84,7 +126,7 @@ export const StatusBar: React.FC = () => {
             className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground font-mono"
           >
             <FileText className="w-3 h-3 text-brand" />
-            <span>1 Page</span>
+            <span>1 Page (Fit)</span>
           </div>
         )}
       </div>

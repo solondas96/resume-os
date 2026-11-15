@@ -2,7 +2,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20GitHub%20Pages-c96442?style=for-the-badge&logo=github)](https://solondas96.github.io/resume-os/)
 [![Built With](https://img.shields.io/badge/Stack-React%2018%20•%20Vite%206%20•%20TypeScript%20•%20Tailwind-141413?style=for-the-badge)](https://github.com/solondas96/resume-os)
-[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passing%20(10%2F10)-059669?style=for-the-badge)](https://github.com/solondas96/resume-os)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passing%20(18%2F18)-059669?style=for-the-badge)](https://github.com/solondas96/resume-os)
 [![License](https://img.shields.io/badge/License-MIT-3a3a37?style=for-the-badge)](LICENSE)
 
 > **Precision Markdown resume builder with a calm, Claude-inspired warm minimalist aesthetic.**  
@@ -24,6 +24,39 @@ ResumeLabs is engineered to feel calm, focused, and distraction-free:
 - **Quiet Typography**: Geist & Geist Mono fonts with clean tracking, balanced heading wraps (`[text-wrap:balance]`), and optimal reading line-height.
 - **Two Soft Shadows**: Pure CSS elevation tokens for resting cards and lifted popover drawers without artificial blur or gradient noise.
 - **Single Brand Call to Action**: Clear visual hierarchy with at most one primary brand-focused action per screen.
+
+---
+
+## 🚀 Advanced Engineering & Job Hunt Features
+
+### 1. 📁 Multi-Resume Library & Targeted Versions
+Maintain customized resumes for different target companies and roles (*"Stripe — Staff Backend"*, *"Google — Distributed Systems"*, *"Startup — Lead Architect"*). Clone existing resumes in 1 click, rename, delete, and backup or restore your entire library as JSON.
+
+### 2. 📏 Smart "Fit to 1 Page" Assistant & Page-Budget Gauge
+Never struggle with trailing 3-line spills onto page 2. The real-time status bar monitors A4 sheet height and offers a 1-click **Auto-Fit 1 Page** optimization that conservatively tunes line-height, margins, and font scale to lock your content cleanly onto a single page.
+
+### 3. ✍️ Bullet Point Linter & XYZ Impact Scorer
+Evaluates every achievement bullet against Google’s **XYZ Formula** (*"Accomplished [X] as measured by [Y], by doing [Z]"*):
+- Identifies 50+ strong action verbs (`Architected`, `Spearheaded`, `Orchestrated`, `Overhauled`, `Scaled`).
+- Flags passive phrases (`worked on`, `helped with`, `responsible for`) with 1-click strong verb replacements.
+- Checks for quantifiable metrics (`$12B+`, `42%`, `180k req/s`, `99.999% SLA`) and conciseness.
+
+### 4. 🎯 Side-by-Side Job Match Tailor
+Dock your target job description in a dedicated side-by-side inspector panel. Track keyword overlap and missing qualifications live as you edit your resume without leaving the workspace.
+
+### 5. ✉️ Matching Cover Letter Companion
+Seamlessly switch between your Resume and a matching Cover Letter companion. Shares your candidate header details, accent colors, and typography to export a unified, professional 2-document packet.
+
+### 6. 🎨 6 Curated Professional Templates
+- **Modern Minimalist**: Silicon Valley sans-serif typography with tag badges.
+- **Classic Ivy**: Traditional Harvard/Wall Street serif typography with centered headers.
+- **Executive Two-Tone**: Two-tone shaded section badges for senior leaders.
+- **Mono Compact**: High-density engineering layout for 1-page resumes.
+- **Swiss Editorial**: International typographic style with bold grotesque headers and hairline rules.
+- **Academic CV**: Traditional Newsreader serifs, formal honorifics, and publication numbering.
+
+### 7. 🔗 1-Click Shareable Web Resume Link (Recruiter View)
+Encode your resume into a private, client-side URL hash link. Send `/#view=...` directly to hiring managers or recruiters to present a clean, responsive web view with an instant "Download PDF" button.
 
 ---
 

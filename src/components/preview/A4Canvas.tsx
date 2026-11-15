@@ -8,6 +8,8 @@ const A4_WIDTH_PX = 794;   // 210mm at 96 DPI
 export const A4Canvas: React.FC = () => {
   const {
     markdown,
+    workspaceMode,
+    coverLetterMarkdown,
     theme,
     accentColor,
     compactSpacing,
@@ -25,10 +27,11 @@ export const A4Canvas: React.FC = () => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const [sheetHeight, setSheetHeight] = useState(A4_HEIGHT_PX);
 
-  // Parse markdown into sanitized HTML with icons and containers
+  // Parse active markdown into sanitized HTML with icons and containers
+  const activeMarkdown = workspaceMode === 'cover-letter' ? coverLetterMarkdown : markdown;
   const parsedHtml = useMemo(() => {
-    return parseResumeMarkdown(markdown);
-  }, [markdown]);
+    return parseResumeMarkdown(activeMarkdown);
+  }, [activeMarkdown]);
 
   // Derive light tint of accent color for background accents
   const primaryLightHex = useMemo(() => {

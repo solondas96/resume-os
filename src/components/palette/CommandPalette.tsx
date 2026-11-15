@@ -19,7 +19,10 @@ import {
   Sparkles,
   Download,
   FileCode,
-  FileSpreadsheet
+  FileSpreadsheet,
+  FolderGit2,
+  Share2,
+  Mail
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -50,7 +53,13 @@ export const CommandPalette: React.FC = () => {
     setMarkdown,
     saveRevision,
     editorViewMode,
-    setEditorViewMode
+    setEditorViewMode,
+    setLibraryModalOpen,
+    setShareModalOpen,
+    workspaceMode,
+    setWorkspaceMode,
+    setActiveSidePanel,
+    fitToOnePage
   } = useResumeStore();
 
   const [query, setQuery] = useState('');
@@ -132,6 +141,60 @@ export const CommandPalette: React.FC = () => {
       icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
       action: () => exportJsonResume(markdown, 'resume.json'),
       keywords: ['json', 'resume', 'schema', 'export', 'data'],
+    },
+    {
+      id: 'resume-library',
+      category: 'Sections',
+      title: 'Open Resume Library',
+      description: 'Switch between tailored resumes, clone, or create new versions',
+      icon: <FolderGit2 className="w-4 h-4 text-brand" />,
+      action: () => setLibraryModalOpen(true),
+      keywords: ['library', 'resumes', 'profiles', 'switch', 'clone', 'duplicate'],
+    },
+    {
+      id: 'job-tailor-side',
+      category: 'AI',
+      title: 'Open Job Match Tailor Panel',
+      description: 'Dock target job description side-by-side with live keyword scanner',
+      icon: <Target className="w-4 h-4 text-brand" />,
+      action: () => setActiveSidePanel('tailor'),
+      keywords: ['tailor', 'job', 'side', 'dock', 'keywords', 'ats'],
+    },
+    {
+      id: 'bullet-linter-side',
+      category: 'AI',
+      title: 'Open Bullet Point Linter & STAR Scorer',
+      description: 'Audit action verbs, quantifiable metrics, and impact scores',
+      icon: <Sparkles className="w-4 h-4 text-brand" />,
+      action: () => setActiveSidePanel('linter'),
+      keywords: ['linter', 'bullets', 'verbs', 'star', 'impact', 'audit'],
+    },
+    {
+      id: 'share-resume-web',
+      category: 'Export',
+      title: 'Share Web Resume (Recruiter Link)',
+      description: 'Generate private client-side URL link to share with recruiters',
+      icon: <Share2 className="w-4 h-4 text-brand" />,
+      action: () => setShareModalOpen(true),
+      keywords: ['share', 'link', 'url', 'recruiter', 'public', 'portfolio'],
+    },
+    {
+      id: 'auto-fit-onepage',
+      category: 'Design',
+      title: 'Auto-Fit Content to Exactly 1 Page',
+      description: 'Intelligently optimize margins, line height and font scale to fit on 1 page',
+      icon: <Sparkles className="w-4 h-4 text-emerald-400" />,
+      action: () => fitToOnePage(),
+      keywords: ['autofit', 'fit', '1-page', 'one page', 'shrink', 'compact'],
+    },
+    {
+      id: 'toggle-workspace-mode',
+      category: 'Sections',
+      title: `Switch Workspace to ${workspaceMode === 'resume' ? 'Cover Letter' : 'Resume'}`,
+      description: 'Toggle between Resume and matching Cover Letter companion',
+      icon: <Mail className="w-4 h-4 text-blue-400" />,
+      action: () => setWorkspaceMode(workspaceMode === 'resume' ? 'cover-letter' : 'resume'),
+      keywords: ['cover letter', 'letter', 'mode', 'switch', 'resume'],
     },
     {
       id: 'ats-scan',

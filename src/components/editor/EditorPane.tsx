@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
-import { markdown } from '@codemirror/lang-markdown';
+import { markdown as markdownLang } from '@codemirror/lang-markdown';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { useResumeStore } from '../../store/useResumeStore';
 import { SectionCardView } from './SectionCardView';
@@ -38,13 +38,26 @@ interface SlashCommand {
 
 export const EditorPane: React.FC = () => {
   const {
-    markdown: content,
+    markdown,
     setMarkdown,
+    workspaceMode,
+    coverLetterMarkdown,
+    setCoverLetterMarkdown,
     saveRevision,
     editorViewMode,
     setEditorViewMode,
     uiTheme,
   } = useResumeStore();
+
+  const isCoverLetter = workspaceMode === 'cover-letter';
+  const content = isCoverLetter ? coverLetterMarkdown : markdown;
+  const setContent = (val: string) => {
+    if (isCoverLetter) {
+      setCoverLetterMarkdown(val);
+    } else {
+      setMarkdown(val);
+    }
+  };
 
   const editorRef = useRef<ReactCodeMirrorRef>(null);
 
@@ -191,7 +204,7 @@ export const EditorPane: React.FC = () => {
     (snippet: string) => {
       const view = editorRef.current?.view;
       if (!view) {
-        setMarkdown(content + '\n' + snippet);
+        setContent(content + '\n' + snippet);
         return;
       }
       const state = view.state;
@@ -395,8 +408,8 @@ export const EditorPane: React.FC = () => {
             value={content}
             height="100%"
             theme={uiTheme === 'dark' ? oneDark : 'light'}
-            extensions={[markdown()]}
-            onChange={(val) => setMarkdown(val)}
+            extensions={[markdownLang()]}
+            onChange={(val) => setContent(val)}
             onUpdate={handleUpdate}
             basicSetup={{
               lineNumbers: true,

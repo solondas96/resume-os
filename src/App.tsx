@@ -9,10 +9,29 @@ import { PresetsModal } from './components/modals/PresetsModal';
 import { AtsMatcherModal } from './components/ats/AtsMatcherModal';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { CommandPalette } from './components/palette/CommandPalette';
+import { ResumeLibraryModal } from './components/library/ResumeLibraryModal';
+import { ShareModal } from './components/share/ShareModal';
+import { BulletLinterDrawer } from './components/audit/BulletLinterDrawer';
+import { JobTailorPanel } from './components/tailor/JobTailorPanel';
+import { RecruiterView } from './components/preview/RecruiterView';
 import { useResumeStore } from './store/useResumeStore';
+import { decodeSharedResume } from './utils/shareResume';
 
 export const App: React.FC = () => {
-  const { uiTheme, mobileTab, setMobileTab } = useResumeStore();
+  const {
+    uiTheme,
+    mobileTab,
+    setMobileTab,
+    recruiterViewMode,
+    setRecruiterViewMode,
+    setDocumentTitle,
+    setMarkdown,
+    setTheme,
+    setAccentColor,
+    setFontSize,
+    setMarginSize,
+    setLineHeight,
+  } = useResumeStore();
 
   useEffect(() => {
     if (uiTheme === 'dark') {
@@ -21,6 +40,24 @@ export const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [uiTheme]);
+
+  // Check URL hash for shared recruiter link on initial load
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash.startsWith('#view=')) {
+      const code = window.location.hash.replace('#view=', '');
+      const decoded = decodeSharedResume(code);
+      if (decoded) {
+        setDocumentTitle(decoded.title);
+        setMarkdown(decoded.markdown);
+        setTheme(decoded.theme);
+        setAccentColor(decoded.accentColor);
+        setFontSize(decoded.fontSize);
+        setMarginSize(decoded.marginSize);
+        setLineHeight(decoded.lineHeight);
+        setRecruiterViewMode(true);
+      }
+    }
+  }, [setDocumentTitle, setMarkdown, setTheme, setAccentColor, setFontSize, setMarginSize, setLineHeight, setRecruiterViewMode]);
 
   const [editorWidth, setEditorWidth] = useState<number>(() => {
     if (typeof window !== 'undefined') {
@@ -50,6 +87,11 @@ export const App: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   }, []);
+
+  // If in Recruiter View Mode, render the dedicated public preview view
+  if (recruiterViewMode) {
+    return <RecruiterView />;
+  }
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground font-sans transition-colors duration-150">
@@ -89,7 +131,7 @@ export const App: React.FC = () => {
           {/* Left Editor */}
           <div
             style={{ width: `${editorWidth}px` }}
-            className="h-full flex-shrink-0 bg-card border-r border-border"
+            className="h-full shrink-0 bg-card border-r border-border"
           >
             <EditorPane />
           </div>
@@ -97,7 +139,7 @@ export const App: React.FC = () => {
           {/* Resizable Splitter Bar */}
           <div
             onMouseDown={handleMouseDown}
-            className="no-print w-1 bg-border hover:bg-brand active:bg-brand cursor-col-resize transition-colors flex items-center justify-center relative group z-20 flex-shrink-0"
+            className="no-print w-1 bg-border hover:bg-brand active:bg-brand cursor-col-resize transition-colors flex items-center justify-center relative group z-20 shrink-0"
             title="Drag to resize editor pane"
           >
             <div className="w-2.5 h-7 bg-muted-foreground/30 group-hover:bg-brand rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-card">
@@ -128,7 +170,13 @@ export const App: React.FC = () => {
       {/* Bottom Unified Status Bar */}
       <StatusBar />
 
+      {/* Slide-over Side Panels */}
+      <BulletLinterDrawer />
+      <JobTailorPanel />
+
       {/* Modals & Command Palette */}
+      <ResumeLibraryModal />
+      <ShareModal />
       <HistoryModal />
       <ShortcutsModal />
       <ImportModal />

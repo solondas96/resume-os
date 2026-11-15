@@ -29,6 +29,20 @@ export const TEMPLATES: TemplateConfig[] = [
     fontFamily: 'Inter, JetBrains Mono, monospace',
     author: 'ResumeOS Team',
   },
+  {
+    id: 'swiss',
+    name: 'Swiss Editorial',
+    description: 'International typographic style with bold grotesque headers, hairline dividers, and crisp asymmetrical dates.',
+    fontFamily: 'Geist, Inter, system-ui, sans-serif',
+    author: 'ResumeLabs Team',
+  },
+  {
+    id: 'academic',
+    name: 'Academic CV',
+    description: 'Scholarly curriculum vitae layout with traditional Newsreader serifs, formal honorifics, and publication numbering.',
+    fontFamily: 'Newsreader, Georgia, serif',
+    author: 'ResumeLabs Team',
+  },
 ];
 
 export const ACCENT_COLORS: AccentColor[] = [
