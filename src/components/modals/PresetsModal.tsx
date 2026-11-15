@@ -7,7 +7,13 @@ import {
   Code,
   Palette,
   Briefcase,
-  GraduationCap
+  GraduationCap,
+  Cpu,
+  Database,
+  Users,
+  Server,
+  BookOpen,
+  Megaphone
 } from 'lucide-react';
 
 export const PresetsModal: React.FC = () => {
@@ -43,6 +49,18 @@ export const PresetsModal: React.FC = () => {
         return <Briefcase className="w-5 h-5 text-brand" />;
       case 'graduation-cap':
         return <GraduationCap className="w-5 h-5 text-brand" />;
+      case 'cpu':
+        return <Cpu className="w-5 h-5 text-brand" />;
+      case 'database':
+        return <Database className="w-5 h-5 text-brand" />;
+      case 'users':
+        return <Users className="w-5 h-5 text-brand" />;
+      case 'server':
+        return <Server className="w-5 h-5 text-brand" />;
+      case 'book-open':
+        return <BookOpen className="w-5 h-5 text-brand" />;
+      case 'megaphone':
+        return <Megaphone className="w-5 h-5 text-brand" />;
       default:
         return <Sparkles className="w-5 h-5 text-brand" />;
     }

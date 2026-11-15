@@ -80,7 +80,7 @@ ResumeLabs includes a tested, modular resume parser (`src/services/parsing.ts`) 
   - **Classic Ivy**: Traditional Harvard/Wall Street serif typography with centered headers.
   - **Executive Two-Tone**: Two-tone shaded section badges for senior leaders.
   - **Mono Compact**: High-density engineering layout for 1-page resumes.
-- **📂 Starter Role Presets**: Ready-to-use professional blueprints for Staff Software Engineer, Senior Product Designer, Lead Technical PM, and New Graduate.
+- **📂 Starter Role Presets (10 Curated Industry Blueprints)**: Pre-configured, high-impact resumes with STAR/Google XYZ metrics, tech skill tags, and custom themes: Staff Software Engineer, Senior Product Designer, Lead Technical PM, New Graduate, Staff AI/ML Research Engineer, Principal Data Architect, Director of Engineering, Senior Staff SRE, Postdoctoral Fellow (Academic CV), and Lead Product Marketing Manager.
 - **📝 Dual Editor Modes**: Switch seamlessly between CodeMirror 6 markdown editor (with slash `/` shortcuts) and drag-to-reorder section cards.
 - **📏 Fine-Grained Layout Controls**: Dynamic font sizes (`small`, `medium`, `large`), page margins (`narrow`, `normal`, `relaxed`), and line-height controls.
 - **📐 Multi-Page A4 Sheet Canvas**: Visual page-break guides and manual `::: page-break :::` container support.
