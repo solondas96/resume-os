@@ -4,6 +4,8 @@ import {
   GripVertical,
   ChevronDown,
   ChevronUp,
+  ArrowUp,
+  ArrowDown,
   Plus,
   Trash2,
   FileText,
@@ -117,6 +119,22 @@ export const SectionCardView: React.FC = () => {
     }
   };
 
+  const moveSection = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= sections.length) return;
+
+    saveRevision(`Move ${sections[index].title} ${direction}`);
+    const updated = [...sections];
+    const [moved] = updated.splice(index, 1);
+    updated.splice(targetIndex, 0, moved);
+
+    const reconstructed =
+      headerBlock +
+      '\n\n' +
+      updated.map((s) => `## ${s.title}\n${s.rawContent}`).join('\n\n');
+    setMarkdown(reconstructed);
+  };
+
   const getSectionIcon = (title: string) => {
     const lower = title.toLowerCase();
     if (lower.includes('experience') || lower.includes('work')) {
@@ -171,7 +189,27 @@ export const SectionCardView: React.FC = () => {
                 <span className="font-bold text-xs text-slate-100">{section.title}</span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                {/* Reorder Buttons */}
+                <div className="flex items-center gap-0.5 border-r border-slate-800 pr-1.5 mr-0.5">
+                  <button
+                    onClick={() => moveSection(idx, 'up')}
+                    disabled={idx === 0}
+                    className="p-1 text-slate-400 hover:text-slate-100 disabled:opacity-25 disabled:hover:text-slate-400 rounded transition"
+                    title="Move section up"
+                  >
+                    <ArrowUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => moveSection(idx, 'down')}
+                    disabled={idx === sections.length - 1}
+                    className="p-1 text-slate-400 hover:text-slate-100 disabled:opacity-25 disabled:hover:text-slate-400 rounded transition"
+                    title="Move section down"
+                  >
+                    <ArrowDown className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
                 <button
                   onClick={() => addBulletToSection(idx)}
                   className="flex items-center gap-1 text-[11px] bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded transition"

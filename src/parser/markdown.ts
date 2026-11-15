@@ -41,6 +41,27 @@ md.use(MdContainer as any, 'cols', {
   },
 });
 
+// Manual Page Break Container Plugin
+md.use(MdContainer as any, 'page-break', {
+  render: function (tokens: any, idx: number) {
+    if (tokens[idx].nesting === 1) {
+      return '<div class="manual-page-break"></div>';
+    } else {
+      return '';
+    }
+  },
+});
+
+md.use(MdContainer as any, 'pagebreak', {
+  render: function (tokens: any, idx: number) {
+    if (tokens[idx].nesting === 1) {
+      return '<div class="manual-page-break"></div>';
+    } else {
+      return '';
+    }
+  },
+});
+
 // 2. Custom Sectioning Plugin: Wraps ## H2 sections into <section class="resume-section">
 function sectionPlugin(mdInstance: MarkdownIt) {
   mdInstance.core.ruler.push('wrap_sections', function (state) {
@@ -89,6 +110,9 @@ export function parseResumeMarkdown(content: string): string {
     /(:::\s*left[\s\S]*?:::\s*\n+)(:::\s*right[\s\S]*?:::)/g,
     '::: cols\n$1$2\n:::'
   );
+
+  // Pre-process: Handle raw page breaks such as ---page-break--- or <!-- pagebreak -->
+  processed = processed.replace(/(?:---|<!--)\s*page[-]?break\s*(?:---|-->)/gi, '\n::: page-break\n:::\n');
 
   // Render raw HTML through markdown-it
   let html = md.render(processed);

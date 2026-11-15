@@ -23,7 +23,8 @@ import {
   Linkedin,
   Github,
   Globe,
-  MapPin
+  MapPin,
+  Scissors
 } from 'lucide-react';
 
 interface SlashCommand {
@@ -114,6 +115,14 @@ export const EditorPane: React.FC = () => {
       desc: 'Quantified accomplishment template with metric placeholders',
       snippet: '- Spearheaded [initiative], achieving **[X% metric]** improvement by [action].\n',
       icon: <Sparkles className="w-4 h-4 text-amber-400" />,
+    },
+    {
+      id: 'tmpl-pagebreak',
+      category: 'Templates',
+      title: 'Manual Page Break',
+      desc: 'Force subsequent content onto the next printed A4 page',
+      snippet: '\n::: page-break\n:::\n',
+      icon: <Scissors className="w-4 h-4 text-rose-400" />,
     },
 
     // Icons

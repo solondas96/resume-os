@@ -5,12 +5,14 @@ import { A4Canvas } from './components/preview/A4Canvas';
 import { HistoryModal } from './components/modals/HistoryModal';
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { ImportModal } from './components/modals/ImportModal';
+import { PresetsModal } from './components/modals/PresetsModal';
+import { AtsMatcherModal } from './components/ats/AtsMatcherModal';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { CommandPalette } from './components/palette/CommandPalette';
 import { useResumeStore } from './store/useResumeStore';
 
 export const App: React.FC = () => {
-  const { uiTheme } = useResumeStore();
+  const { uiTheme, mobileTab, setMobileTab } = useResumeStore();
 
   useEffect(() => {
     if (uiTheme === 'dark') {
@@ -19,6 +21,7 @@ export const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [uiTheme]);
+
   const [editorWidth, setEditorWidth] = useState<number>(() => {
     // Default to 45% of screen width or minimum 450px
     if (typeof window !== 'undefined') {
@@ -54,30 +57,72 @@ export const App: React.FC = () => {
       {/* Top Navbar */}
       <Header />
 
-      {/* Main Workspace (Editor + Split Divider + A4 Preview) */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Left Editor */}
-        <div
-          style={{ width: `${editorWidth}px` }}
-          className="h-full flex-shrink-0"
-        >
-          <EditorPane />
+      {/* Mobile Tab Switcher (Visible on mobile/tablet screens < md) */}
+      <div className="md:hidden flex items-center justify-center p-1.5 bg-slate-900 border-b border-slate-800 no-print">
+        <div className="grid grid-cols-2 w-full max-w-xs bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-xs">
+          <button
+            onClick={() => setMobileTab('editor')}
+            className={`py-1.5 rounded-md font-semibold transition ${
+              mobileTab === 'editor'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Markdown Editor
+          </button>
+          <button
+            onClick={() => setMobileTab('preview')}
+            className={`py-1.5 rounded-md font-semibold transition ${
+              mobileTab === 'preview'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            A4 Live Preview
+          </button>
         </div>
+      </div>
 
-        {/* Resizable Splitter Bar */}
-        <div
-          onMouseDown={handleMouseDown}
-          className="no-print w-1 bg-slate-800 hover:bg-blue-500 active:bg-blue-600 cursor-col-resize transition-colors flex items-center justify-center relative group z-20 flex-shrink-0"
-          title="Drag to resize editor pane"
-        >
-          <div className="w-3 h-8 bg-slate-700 group-hover:bg-blue-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow">
-            <div className="w-[1px] h-4 bg-white/60" />
+      {/* Main Workspace */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Desktop Side-by-Side Split View (md and up) */}
+        <div className="hidden md:flex w-full h-full overflow-hidden">
+          {/* Left Editor */}
+          <div
+            style={{ width: `${editorWidth}px` }}
+            className="h-full flex-shrink-0"
+          >
+            <EditorPane />
+          </div>
+
+          {/* Resizable Splitter Bar */}
+          <div
+            onMouseDown={handleMouseDown}
+            className="no-print w-1 bg-slate-800 hover:bg-blue-500 active:bg-blue-600 cursor-col-resize transition-colors flex items-center justify-center relative group z-20 flex-shrink-0"
+            title="Drag to resize editor pane"
+          >
+            <div className="w-3 h-8 bg-slate-700 group-hover:bg-blue-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow">
+              <div className="w-[1px] h-4 bg-white/60" />
+            </div>
+          </div>
+
+          {/* Right A4 Canvas Preview */}
+          <div className="flex-1 h-full overflow-hidden bg-slate-900">
+            <A4Canvas />
           </div>
         </div>
 
-        {/* Right A4 Canvas Preview */}
-        <div className="flex-1 h-full overflow-hidden bg-slate-900">
-          <A4Canvas />
+        {/* Mobile Single Tab View (< md) */}
+        <div className="md:hidden flex-1 w-full h-full overflow-hidden">
+          {mobileTab === 'editor' ? (
+            <div className="w-full h-full overflow-hidden">
+              <EditorPane />
+            </div>
+          ) : (
+            <div className="w-full h-full overflow-hidden bg-slate-900">
+              <A4Canvas />
+            </div>
+          )}
         </div>
       </div>
 
@@ -88,6 +133,8 @@ export const App: React.FC = () => {
       <HistoryModal />
       <ShortcutsModal />
       <ImportModal />
+      <PresetsModal />
+      <AtsMatcherModal />
       <CommandPalette />
     </div>
   );

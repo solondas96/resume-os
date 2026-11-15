@@ -1,12 +1,16 @@
 import React from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
+import { FontSizeOption, MarginOption, LineHeightOption } from '../../types';
 import {
   X,
   Palette,
   Sliders,
   FileText,
-  Check
+  Check,
+  Type,
+  Maximize2,
+  AlignJustify
 } from 'lucide-react';
 
 interface DesignPanelProps {
@@ -24,6 +28,12 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
     setCompactSpacing,
     onePageMode,
     setOnePageMode,
+    fontSize,
+    setFontSize,
+    marginSize,
+    setMarginSize,
+    lineHeight,
+    setLineHeight,
   } = useResumeStore();
 
   if (!isOpen) return null;
@@ -127,10 +137,95 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             </div>
           </div>
 
-          {/* 3. Spacing & Page Fit Controls */}
+          {/* 3. Typography & Spacing Sliders */}
           <div className="space-y-4 border-t border-slate-800 pt-5">
             <label className="font-semibold text-slate-200 uppercase tracking-wider text-[11px] block">
-              Layout Density & Dimensions
+              Typography & Spacing Controls
+            </label>
+
+            {/* Font Size */}
+            <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-200 text-xs flex items-center gap-1.5">
+                  <Type className="w-3.5 h-3.5 text-blue-400" />
+                  Base Font Size
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono capitalize">{fontSize}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px]">
+                {(['small', 'medium', 'large'] as FontSizeOption[]).map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setFontSize(size)}
+                    className={`py-1 rounded font-medium capitalize transition ${
+                      fontSize === size
+                        ? 'bg-blue-600 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Page Margins */}
+            <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-200 text-xs flex items-center gap-1.5">
+                  <Maximize2 className="w-3.5 h-3.5 text-emerald-400" />
+                  Page Margins
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono capitalize">{marginSize}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px]">
+                {(['narrow', 'normal', 'relaxed'] as MarginOption[]).map((margin) => (
+                  <button
+                    key={margin}
+                    onClick={() => setMarginSize(margin)}
+                    className={`py-1 rounded font-medium capitalize transition ${
+                      marginSize === margin
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {margin}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Line Height */}
+            <div className="bg-slate-900/60 border border-slate-800 p-3 rounded-xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-200 text-xs flex items-center gap-1.5">
+                  <AlignJustify className="w-3.5 h-3.5 text-purple-400" />
+                  Line Height
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono capitalize">{lineHeight}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px]">
+                {(['tight', 'normal', 'relaxed'] as LineHeightOption[]).map((lh) => (
+                  <button
+                    key={lh}
+                    onClick={() => setLineHeight(lh)}
+                    className={`py-1 rounded font-medium capitalize transition ${
+                      lineHeight === lh
+                        ? 'bg-purple-600 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {lh}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Spacing & Page Fit Controls */}
+          <div className="space-y-4 border-t border-slate-800 pt-5">
+            <label className="font-semibold text-slate-200 uppercase tracking-wider text-[11px] block">
+              Layout Density & Constraints
             </label>
 
             {/* Density Toggle */}

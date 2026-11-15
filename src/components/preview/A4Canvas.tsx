@@ -12,6 +12,9 @@ export const A4Canvas: React.FC = () => {
     accentColor,
     compactSpacing,
     onePageMode,
+    fontSize,
+    marginSize,
+    lineHeight,
     zoom,
     setZoom,
     autoFitZoom,
@@ -62,7 +65,7 @@ export const A4Canvas: React.FC = () => {
     });
     observer.observe(sheetRef.current);
     return () => observer.disconnect();
-  }, [parsedHtml, compactSpacing, theme, setPageCount]);
+  }, [parsedHtml, compactSpacing, theme, fontSize, marginSize, lineHeight, setPageCount]);
 
   // Calculate page break positions
   const numPages = Math.max(1, Math.ceil((sheetHeight - 20) / A4_HEIGHT_PX));
@@ -95,9 +98,9 @@ export const A4Canvas: React.FC = () => {
       >
         <div
           ref={sheetRef}
-          className={`a4-sheet template-${theme} ${compactSpacing ? 'compact-spacing' : ''} ${
-            onePageMode ? 'one-page-clamped' : ''
-          }`}
+          className={`a4-sheet template-${theme} font-size-${fontSize} margin-${marginSize} line-height-${lineHeight} ${
+            compactSpacing ? 'compact-spacing' : ''
+          } ${onePageMode ? 'one-page-clamped' : ''}`}
         >
           {/* Visual dashed lines at each A4 page split */}
           {pageBreaks.map((breakTop, idx) => (

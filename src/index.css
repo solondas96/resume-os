@@ -59,8 +59,73 @@ html, body, #root {
   box-sizing: border-box;
 }
 
+/* Margin Variants */
+.a4-sheet.margin-narrow {
+  padding: 24px 32px;
+}
+.a4-sheet.margin-normal {
+  padding: 40px 48px;
+}
+.a4-sheet.margin-relaxed {
+  padding: 56px 64px;
+}
+
+/* Font Size Variants */
+.a4-sheet.font-size-small {
+  font-size: 0.82rem;
+}
+.a4-sheet.font-size-small h1 {
+  font-size: 1.55rem !important;
+}
+.a4-sheet.font-size-small h2 {
+  font-size: 0.88rem !important;
+}
+.a4-sheet.font-size-small h3 {
+  font-size: 0.82rem !important;
+}
+
+.a4-sheet.font-size-medium {
+  font-size: 0.9rem;
+}
+.a4-sheet.font-size-medium h1 {
+  font-size: 1.85rem !important;
+}
+.a4-sheet.font-size-medium h2 {
+  font-size: 1rem !important;
+}
+.a4-sheet.font-size-medium h3 {
+  font-size: 0.9rem !important;
+}
+
+.a4-sheet.font-size-large {
+  font-size: 0.98rem;
+}
+.a4-sheet.font-size-large h1 {
+  font-size: 2.15rem !important;
+}
+.a4-sheet.font-size-large h2 {
+  font-size: 1.15rem !important;
+}
+.a4-sheet.font-size-large h3 {
+  font-size: 0.98rem !important;
+}
+
+/* Line Height Variants */
+.a4-sheet.line-height-tight p,
+.a4-sheet.line-height-tight li {
+  line-height: 1.35 !important;
+}
+.a4-sheet.line-height-normal p,
+.a4-sheet.line-height-normal li {
+  line-height: 1.5 !important;
+}
+.a4-sheet.line-height-relaxed p,
+.a4-sheet.line-height-relaxed li {
+  line-height: 1.7 !important;
+}
+
 .a4-sheet.compact-spacing {
-  padding: 30px 38px;
+  padding: 24px 32px !important;
 }
 .a4-sheet.compact-spacing .resume-section {
   margin-top: 10px !important;
@@ -68,6 +133,30 @@ html, body, #root {
 .a4-sheet.compact-spacing p,
 .a4-sheet.compact-spacing li {
   line-height: 1.35 !important;
+}
+
+/* Manual Page Break */
+.manual-page-break {
+  break-after: page;
+  page-break-after: always;
+  height: 0;
+  margin: 1.5rem 0;
+  border-top: 1.5px dashed #3b82f6;
+  position: relative;
+}
+.manual-page-break::after {
+  content: '✂ Manual Page Break';
+  position: absolute;
+  right: 12px;
+  top: -9px;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.02em;
 }
 
 /* One page constraint mode */
@@ -440,6 +529,17 @@ html, body, #root {
   .resume-section {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+  }
+
+  .manual-page-break {
+    border: none !important;
+    margin: 0 !important;
+    height: 0 !important;
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+  .manual-page-break::after {
+    display: none !important;
   }
 
   h1, h2, h3 {

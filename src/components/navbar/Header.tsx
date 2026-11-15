@@ -11,11 +11,18 @@ import {
   Edit3,
   Sun,
   Moon,
-  Command
+  Command,
+  Target,
+  Sparkles,
+  Download,
+  FileCode,
+  FileSpreadsheet,
+  Loader2
 } from 'lucide-react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { HeadroomStudio } from '../headroom/HeadroomStudio';
 import { DesignPanel } from '../design/DesignPanel';
+import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import confetti from 'canvas-confetti';
 
 export const Header: React.FC = () => {
@@ -35,6 +42,7 @@ export const Header: React.FC = () => {
   const [headroomOpen, setHeadroomOpen] = useState(false);
   const [designOpen, setDesignOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   const handlePrintPdf = () => {
     saveRevision('Pre-export auto-save');
@@ -46,6 +54,26 @@ export const Header: React.FC = () => {
     window.print();
   };
 
+  const handleDirectPdf = async () => {
+    saveRevision('Pre-export auto-save');
+    setIsExportingPdf(true);
+    setExportMenuOpen(false);
+
+    try {
+      const target = document.querySelector('.a4-sheet') as HTMLElement;
+      const success = await exportDirectPdf(target, `${documentTitle.replace(/\s+/g, '-').toLowerCase() || 'resume'}.pdf`);
+      if (success) {
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          origin: { y: 0.1 }
+        });
+      }
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
+
   const handleDownloadMarkdown = () => {
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -54,6 +82,14 @@ export const Header: React.FC = () => {
     link.download = `${documentTitle.replace(/\s+/g, '-').toLowerCase() || 'resume'}.md`;
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPlainText = () => {
+    exportPlainText(markdown, `${documentTitle.replace(/\s+/g, '-').toLowerCase() || 'resume'}.txt`);
+  };
+
+  const handleExportJson = () => {
+    exportJsonResume(markdown, `${documentTitle.replace(/\s+/g, '-').toLowerCase() || 'resume'}.json`);
   };
 
   return (
@@ -94,8 +130,28 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Center: Consolidated Action Buttons (Design & Headroom AI) */}
+      {/* Center: Consolidated Action Buttons (Presets, ATS Scan, Design & Headroom AI) */}
       <div className="flex items-center gap-2">
+        {/* Starter Role Presets */}
+        <button
+          onClick={() => setActiveModal('presets')}
+          title="Browse Professional Starter Presets"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition active:scale-95 shadow-xs"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+          <span className="hidden lg:inline">Presets</span>
+        </button>
+
+        {/* ATS Job Matcher Scanner */}
+        <button
+          onClick={() => setActiveModal('ats')}
+          title="ATS Keyword Scanner & Job Description Matcher"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition active:scale-95 shadow-xs"
+        >
+          <Target className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="hidden sm:inline">ATS Scan</span>
+        </button>
+
         {/* Consolidated Design Panel Trigger */}
         <button
           onClick={() => setDesignOpen(true)}
@@ -186,27 +242,72 @@ export const Header: React.FC = () => {
           </div>
 
           {exportMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-1.5 z-50">
-              <button
-                onClick={() => {
-                  setExportMenuOpen(false);
-                  handlePrintPdf();
-                }}
-                className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2"
-              >
-                <Printer className="w-3.5 h-3.5 text-blue-400" />
-                <span>Save as Vector PDF</span>
-              </button>
-              <button
-                onClick={() => {
-                  setExportMenuOpen(false);
-                  handleDownloadMarkdown();
-                }}
-                className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2"
-              >
-                <FileText className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Download .md Source</span>
-              </button>
+            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-1.5 z-50 divide-y divide-slate-800/60">
+              <div className="pb-1">
+                <button
+                  onClick={handleDirectPdf}
+                  disabled={isExportingPdf}
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center justify-between group transition"
+                >
+                  <div className="flex items-center gap-2">
+                    {isExportingPdf ? (
+                      <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
+                    ) : (
+                      <Download className="w-3.5 h-3.5 text-blue-400" />
+                    )}
+                    <span className="font-medium">1-Click Direct PDF</span>
+                  </div>
+                  <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded font-mono">
+                    Instant
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setExportMenuOpen(false);
+                    handlePrintPdf();
+                  }}
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                >
+                  <Printer className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Print Dialog / Vector PDF</span>
+                </button>
+              </div>
+
+              <div className="pt-1 space-y-0.5">
+                <button
+                  onClick={() => {
+                    setExportMenuOpen(false);
+                    handleDownloadMarkdown();
+                  }}
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                >
+                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Download .md Source</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setExportMenuOpen(false);
+                    handleExportPlainText();
+                  }}
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Export Clean Text (.txt for ATS)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setExportMenuOpen(false);
+                    handleExportJson();
+                  }}
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Export JSON Resume (.json)</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

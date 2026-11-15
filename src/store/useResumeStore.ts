@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import { ResumeRevision, TemplateId, UiTheme, EditorViewMode } from '../types';
+import {
+  ResumeRevision,
+  TemplateId,
+  UiTheme,
+  EditorViewMode,
+  FontSizeOption,
+  MarginOption,
+  LineHeightOption,
+  MobileViewTab,
+} from '../types';
 import { SAMPLE_RESUME } from '../data/sampleResume';
 import { ACCENT_COLORS } from '../data/templates';
 
@@ -13,6 +22,9 @@ interface StoredState {
   onePageMode: boolean;
   compactSpacing: boolean;
   uiTheme: UiTheme;
+  fontSize: FontSizeOption;
+  marginSize: MarginOption;
+  lineHeight: LineHeightOption;
 }
 
 function loadInitialState(): StoredState {
@@ -23,6 +35,9 @@ function loadInitialState(): StoredState {
       return {
         ...parsed,
         uiTheme: parsed.uiTheme || 'dark',
+        fontSize: parsed.fontSize || 'medium',
+        marginSize: parsed.marginSize || 'normal',
+        lineHeight: parsed.lineHeight || 'normal',
       };
     }
   } catch (e) {
@@ -35,6 +50,9 @@ function loadInitialState(): StoredState {
     onePageMode: false,
     compactSpacing: false,
     uiTheme: 'dark',
+    fontSize: 'medium',
+    marginSize: 'normal',
+    lineHeight: 'normal',
   };
 }
 
@@ -54,12 +72,13 @@ interface ResumeStoreState extends StoredState {
   zoom: number;
   autoFitZoom: boolean;
   history: ResumeRevision[];
-  activeModal: 'history' | 'shortcuts' | 'import' | null;
+  activeModal: 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | 'headroom' | null;
   pageCount: number;
   isSaving: boolean;
   documentTitle: string;
   editorViewMode: EditorViewMode;
   commandPaletteOpen: boolean;
+  mobileTab: MobileViewTab;
 
   setMarkdown: (markdown: string) => void;
   setTheme: (theme: TemplateId) => void;
@@ -68,6 +87,10 @@ interface ResumeStoreState extends StoredState {
   setAutoFitZoom: (autoFit: boolean) => void;
   setOnePageMode: (onePage: boolean) => void;
   setCompactSpacing: (compact: boolean) => void;
+  setFontSize: (fontSize: FontSizeOption) => void;
+  setMarginSize: (marginSize: MarginOption) => void;
+  setLineHeight: (lineHeight: LineHeightOption) => void;
+  setMobileTab: (tab: MobileViewTab) => void;
   setPageCount: (count: number) => void;
   setIsSaving: (isSaving: boolean) => void;
   setDocumentTitle: (title: string) => void;
@@ -78,7 +101,7 @@ interface ResumeStoreState extends StoredState {
   saveRevision: (title?: string) => void;
   restoreRevision: (revision: ResumeRevision) => void;
   resetToSample: () => void;
-  setActiveModal: (modal: 'history' | 'shortcuts' | 'import' | null) => void;
+  setActiveModal: (modal: 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | 'headroom' | null) => void;
 }
 
 const initial = loadInitialState();
@@ -94,6 +117,7 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
   documentTitle: 'Alex Morgan - Resume',
   editorViewMode: 'markdown',
   commandPaletteOpen: false,
+  mobileTab: 'editor',
 
   setUiTheme: (uiTheme) => {
     set({ uiTheme });
@@ -112,6 +136,7 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
 
   setEditorViewMode: (editorViewMode) => set({ editorViewMode }),
   setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),
+  setMobileTab: (mobileTab) => set({ mobileTab }),
 
   setMarkdown: (markdown) => {
     set({ markdown, isSaving: true });
@@ -129,6 +154,21 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
   setAccentColor: (accentColor) => {
     set({ accentColor });
     persistCurrentState({ ...get(), accentColor });
+  },
+
+  setFontSize: (fontSize) => {
+    set({ fontSize });
+    persistCurrentState({ ...get(), fontSize });
+  },
+
+  setMarginSize: (marginSize) => {
+    set({ marginSize });
+    persistCurrentState({ ...get(), marginSize });
+  },
+
+  setLineHeight: (lineHeight) => {
+    set({ lineHeight });
+    persistCurrentState({ ...get(), lineHeight });
   },
 
   setZoom: (zoom) => set({ zoom, autoFitZoom: false }),
@@ -190,6 +230,9 @@ export const useResumeStore = create<ResumeStoreState>((set, get) => ({
       onePageMode: false,
       compactSpacing: false,
       uiTheme: get().uiTheme,
+      fontSize: 'medium' as FontSizeOption,
+      marginSize: 'normal' as MarginOption,
+      lineHeight: 'normal' as LineHeightOption,
     };
     set(sampleState);
     persistCurrentState({ ...get(), ...sampleState });
@@ -207,6 +250,9 @@ function persistCurrentState(state: StoredState) {
       onePageMode: state.onePageMode,
       compactSpacing: state.compactSpacing,
       uiTheme: state.uiTheme,
+      fontSize: state.fontSize,
+      marginSize: state.marginSize,
+      lineHeight: state.lineHeight,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
+import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import {
   Search,
   Layout,
@@ -14,7 +15,12 @@ import {
   Moon,
   Columns,
   PlusCircle,
-  HelpCircle
+  HelpCircle,
+  Target,
+  Sparkles,
+  Download,
+  FileCode,
+  FileSpreadsheet
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -82,6 +88,22 @@ export const CommandPalette: React.FC = () => {
   const commands: CommandItem[] = [
     // Export & Print
     {
+      id: 'direct-pdf',
+      category: 'Export',
+      title: '1-Click Direct Download PDF',
+      description: 'Download high-DPI A4 PDF directly in the browser',
+      icon: <Download className="w-4 h-4 text-blue-400" />,
+      action: async () => {
+        saveRevision('Pre-export save');
+        const target = document.querySelector('.a4-sheet') as HTMLElement;
+        const success = await exportDirectPdf(target, 'resume.pdf');
+        if (success) {
+          confetti({ particleCount: 70, spread: 60, origin: { y: 0.1 } });
+        }
+      },
+      keywords: ['export', 'pdf', 'download', 'direct', 'instant'],
+    },
+    {
       id: 'print-pdf',
       category: 'Export',
       title: 'Print / Save as Vector PDF',
@@ -93,6 +115,42 @@ export const CommandPalette: React.FC = () => {
         window.print();
       },
       keywords: ['export', 'pdf', 'download', 'print'],
+    },
+    {
+      id: 'export-txt',
+      category: 'Export',
+      title: 'Export Plain Text (.txt for ATS)',
+      description: 'Clean formatted plain text without markdown symbols',
+      icon: <FileCode className="w-4 h-4 text-amber-400" />,
+      action: () => exportPlainText(markdown, 'resume.txt'),
+      keywords: ['txt', 'text', 'ats', 'plain', 'export'],
+    },
+    {
+      id: 'export-json',
+      category: 'Export',
+      title: 'Export JSON Resume Schema (.json)',
+      description: 'Export structured resume data per schema.jsonresume.org',
+      icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
+      action: () => exportJsonResume(markdown, 'resume.json'),
+      keywords: ['json', 'resume', 'schema', 'export', 'data'],
+    },
+    {
+      id: 'ats-scan',
+      category: 'AI',
+      title: 'Open ATS Resume & Job Scanner',
+      description: 'Compare against job posting for missing keywords & match score',
+      icon: <Target className="w-4 h-4 text-emerald-400" />,
+      action: () => setActiveModal('ats'),
+      keywords: ['ats', 'scanner', 'job', 'match', 'keywords'],
+    },
+    {
+      id: 'role-presets',
+      category: 'Design',
+      title: 'Browse Starter Role Presets',
+      description: 'Load pre-built templates for SWE, Product Designer, PM, or New Grad',
+      icon: <Sparkles className="w-4 h-4 text-blue-400" />,
+      action: () => setActiveModal('presets'),
+      keywords: ['presets', 'templates', 'starter', 'roles', 'sample'],
     },
     {
       id: 'download-md',
