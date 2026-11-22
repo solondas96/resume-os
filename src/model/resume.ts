@@ -1,18 +1,12 @@
 /**
- * Structured Resume Data Model (v2)
- * Source of truth for resume content, replacing flat markdown string.
- * Supports round-trip serialization to markdown and back.
+ * Structured Resume Data Model (v2).
+ * The source of truth for resume content. Markdown is a view of this model:
+ * markdownToResume parses it, resumeToMarkdown renders it (see serialize.ts).
  */
 
 export interface Resume {
   id: string;
   schemaVersion: 2;
-  /**
-   * The exact editor text this resume was written in. The structured fields
-   * are parsed from it, and it is the buffer the editor shows, so text the
-   * parser does not model is never lost.
-   */
-  source?: string;
   meta: {
     title: string;
     targetRole?: string;
@@ -27,7 +21,8 @@ export interface Resume {
     phone?: string;
     location?: string;
     links: ContactLink[];
-    summary?: string;
+    /** True when the header contact block is laid out in two columns */
+    headerColumns?: boolean;
   };
   sections: Section[];
   design: {
@@ -45,7 +40,8 @@ export interface ContactLink {
   id: string;
   label: string;
   url: string;
-  icon?: string; // e.g., 'github', 'linkedin', 'email'
+  icon?: string; // e.g. 'github', 'linkedin', 'globe'
+  column?: 'left' | 'right'; // header column, when headerColumns is set
 }
 
 export interface Bullet {
@@ -58,60 +54,73 @@ export interface Bullet {
 export interface YearMonth {
   year: number;
   month?: number; // 1-12, omitted if no month
+  season?: 'Spring' | 'Summer' | 'Fall' | 'Winter'; // e.g. "Summer 2018"
 }
 
-export interface SimpleItem {
+export interface Line {
   id: string;
-  title: string;
-  subtitle?: string;
-  description?: string;
+  kind: 'bullet' | 'text' | 'pagebreak';
+  text: string;
 }
 
-export interface ExperienceItem {
+interface DatedItem {
+  start?: YearMonth;
+  end?: YearMonth | 'present';
+  tags: string[];
+  bullets: Bullet[];
+  /** Text that is part of the entry but not a bullet, kept in order */
+  notes: string[];
+}
+
+export interface ExperienceItem extends DatedItem {
   id: string;
   company: string;
   role: string;
   location?: string;
-  start: YearMonth;
-  end: YearMonth | 'present';
-  bullets: Bullet[];
 }
 
-export interface EducationItem {
+export interface EducationItem extends DatedItem {
   id: string;
   school: string;
   degree?: string;
-  field?: string;
-  start: YearMonth;
-  end?: YearMonth;
-  bullets?: Bullet[];
 }
 
-export interface ProjectItem {
+export interface ProjectItem extends DatedItem {
   id: string;
   title: string;
-  description?: string;
-  link?: string;
-  start: YearMonth;
-  end?: YearMonth | 'present';
-  bullets: Bullet[];
+  subtitle?: string;
+  link?: { label: string; url: string; icon?: string };
 }
 
 export interface SkillGroup {
   id: string;
-  label: string;
+  label: string; // '' for an ungrouped list
   skills: string[];
+  column?: 'left' | 'right';
 }
 
-export type SectionKind = 'experience' | 'education' | 'projects' | 'skills' | 'certifications' | 'custom';
+export type Section =
+  | { id: string; kind: 'summary'; title: string; hidden?: boolean; paragraphs: string[] }
+  | { id: string; kind: 'experience'; title: string; hidden?: boolean; items: ExperienceItem[] }
+  | { id: string; kind: 'education'; title: string; hidden?: boolean; items: EducationItem[] }
+  | { id: string; kind: 'projects'; title: string; hidden?: boolean; items: ProjectItem[] }
+  | { id: string; kind: 'skills'; title: string; hidden?: boolean; groups: SkillGroup[] }
+  | { id: string; kind: 'certifications' | 'custom'; title: string; hidden?: boolean; lines: Line[] };
 
-export interface Section {
-  id: string;
-  kind: SectionKind;
-  title: string;
-  hidden?: boolean;
-  items?: ExperienceItem[] | EducationItem[] | ProjectItem[] | SimpleItem[];
-  groups?: SkillGroup[]; // Only for 'skills' sections
+export type SectionKind = Section['kind'];
+
+/** Items that carry bullets (experience, education, projects) */
+export function sectionItems(section: Section): (ExperienceItem | EducationItem | ProjectItem)[] {
+  return section.kind === 'experience' || section.kind === 'education' || section.kind === 'projects'
+    ? (section.items as (ExperienceItem | EducationItem | ProjectItem)[])
+    : [];
+}
+
+/** Every bullet in the resume, with the section it belongs to */
+export function allBullets(resume: Resume): { sectionId: string; bullet: Bullet }[] {
+  return resume.sections.flatMap((section) =>
+    sectionItems(section).flatMap((item) => item.bullets.map((bullet) => ({ sectionId: section.id, bullet })))
+  );
 }
 
 /**
@@ -141,7 +150,6 @@ export function createResume(
       phone: '',
       location: '',
       links: [],
-      summary: '',
     },
     sections: [],
     design: {

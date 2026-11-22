@@ -9,6 +9,7 @@ import { X, Upload, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { importResume, ImportResult } from '../../services/importResume';
 import { markdownToResume } from '../../model/serialize';
+import { allBullets, sectionItems } from '../../model/resume';
 
 const ACCEPT = '.pdf,.docx,.txt,.md';
 
@@ -49,13 +50,13 @@ export const ImportModal: React.FC = () => {
   const summary = useMemo(() => {
     const resume = result?.resume;
     if (!resume) return null;
-    const bullets = resume.sections.reduce(
-      (n, s) => n + ((s.items ?? []) as { bullets?: unknown[] }[]).reduce((m, i) => m + (i.bullets?.length ?? 0), 0),
-      0
-    );
+    const bullets = allBullets(resume).length;
     return {
       name: resume.basics.name || '(not detected)',
-      sections: resume.sections.map((s) => `${s.title} (${s.items?.length ?? s.groups?.length ?? 0})`),
+      sections: resume.sections.map((s) => {
+        const count = s.kind === 'skills' ? s.groups.length : s.kind === 'summary' ? s.paragraphs.length : s.kind === 'custom' || s.kind === 'certifications' ? s.lines.length : sectionItems(s).length;
+        return `${s.title} (${count})`;
+      }),
       bullets,
     };
   }, [result]);

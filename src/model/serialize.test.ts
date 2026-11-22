@@ -1,187 +1,193 @@
 import { describe, it, expect } from 'vitest';
-import { markdownToResume, resumeToMarkdown } from './serialize';
+import { markdownToResume, resumeToMarkdown, parseDateRange } from './serialize';
+import { Resume, sectionItems } from './resume';
+import { ROLE_PRESETS } from '../data/rolePresets';
+import { SAMPLE_RESUME } from '../data/sampleResume';
 
-const SAMPLE_MARKDOWN = `# John Doe
-john@example.com · (555) 123-4567 · San Francisco, CA
+/** The model without ids, metadata and design: what must survive a round trip */
+function shape(r: Resume) {
+  const strip = (v: unknown): unknown => {
+    if (Array.isArray(v)) return v.map(strip);
+    if (v && typeof v === 'object') {
+      return Object.fromEntries(
+        Object.entries(v as Record<string, unknown>)
+          .filter(([k, val]) => k !== 'id' && k !== 'hidden' && val !== undefined && val !== null && val !== '' && !(Array.isArray(val) && val.length === 0 && k !== 'sections' && k !== 'items' && k !== 'groups' && k !== 'lines' && k !== 'paragraphs'))
+          .map(([k, val]) => [k, strip(val)])
+      );
+    }
+    return v;
+  };
+  return strip({ basics: r.basics, sections: r.sections });
+}
 
-Experienced software engineer with 10+ years building scalable systems.
+const FIXTURE_TEXT = `# Maya Chen
+maya.chen@example.com · +1 (415) 555-0134 · Lisbon, Portugal
+
+## Summary
+Software engineer with 8 years building reliable backend platforms.
 
 ## Experience
+### Acme Corp — Senior Software Engineer
+*2019 – Present*
+- Led migration of 40 services to Kubernetes, cutting deploy time by 60%
+- Mentored 5 engineers across 3 teams
 
-### Acme Corp — Senior Engineer
-- Led team of 5 engineers building payment infrastructure
-- Reduced latency by 40% through database optimization
-- Mentored 3 junior engineers to promotion
-
-### StartupXYZ — Software Engineer
-- Built real-time analytics dashboard in React
-- Designed API serving 100k requests/second
-- Established testing practices, achieving 85% coverage
+### Globex — Software Engineer
+*2016 – 2019*
+- Built a billing pipeline processing 2M events per day
 
 ## Education
-
-### University of California — BS Computer Science
-- GPA: 3.8
-- Dean's List all 4 years
+### State University
+*BSc Computer Science* | *2012 – 2016*
 
 ## Skills
-
-**Languages**
-- Python, Go, TypeScript, SQL
-
-**Infrastructure**
-- AWS, Docker, Kubernetes, PostgreSQL
+- TypeScript, React, Kubernetes, PostgreSQL, Terraform
 `;
 
-describe('Serialize - Round-trip Markdown ↔ Resume', () => {
-  it('should parse markdown into Resume model', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'John Doe Resume');
+const corpora: [string, string][] = [
+  ['sample resume', SAMPLE_RESUME],
+  ['import fixture (Maya Chen)', FIXTURE_TEXT],
+  ...ROLE_PRESETS.map((p): [string, string] => [`preset: ${p.roleName}`, p.markdown]),
+];
 
-    expect(resume.schemaVersion).toBe(2);
-    expect(resume.meta.title).toBe('John Doe Resume');
-    expect(resume.basics.name).toBe('John Doe');
-    expect(resume.basics.email).toBe('john@example.com');
-    expect(resume.sections.length).toBeGreaterThan(0);
+describe('round trip: markdown -> model -> markdown -> model', () => {
+  it.each(corpora)('%s keeps the same model, and the Markdown is stable after one pass', (_name, md) => {
+    const model1 = markdownToResume(md, 'Doc');
+    const md2 = resumeToMarkdown(model1);
+    const model2 = markdownToResume(md2, 'Doc');
+
+    expect(shape(model2)).toEqual(shape(model1));
+    expect(resumeToMarkdown(model2)).toBe(md2);
   });
 
-  it('should preserve all section types', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    const sectionTitles = resume.sections.map((s: any) => s.title);
-    expect(sectionTitles).toContain('Experience');
-    expect(sectionTitles).toContain('Education');
-    expect(sectionTitles).toContain('Skills');
-  });
-
-  it('should detect experience section', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    const expSection = resume.sections.find((s: any) => s.kind === 'experience');
-    expect(expSection?.kind).toBe('experience');
-  });
-
-  it('should detect education section', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    const eduSection = resume.sections.find((s: any) => s.kind === 'education');
-    expect(eduSection?.kind).toBe('education');
-  });
-
-  it('should parse skills groups', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    const skillsSection = resume.sections.find((s: any) => s.kind === 'skills');
-    expect(skillsSection?.groups?.length).toBeGreaterThan(0);
-
-    const languages = (skillsSection?.groups as any)?.[0];
-    expect(languages?.label).toBeTruthy();
-    expect(languages?.skills?.length).toBeGreaterThan(0);
-  });
-
-  it('should convert Resume model back to markdown', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-    const converted = resumeToMarkdown(resume);
-
-    // Verify core structure is preserved
-    expect(converted).toContain('John Doe');
-    expect(converted).toContain('john@example.com');
-    expect(converted).toContain('## Experience');
-    expect(converted).toContain('## Education');
-    expect(converted).toContain('## Skills');
-  });
-
-  it('should convert Resume model back to markdown', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-    const converted = resumeToMarkdown(resume);
-
-    expect(converted).toContain('John Doe');
-    // Basic structure is preserved
-    expect(converted.length > 0).toBe(true);
-  });
-
-  it('should preserve bullet content when present', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-    const expSection = resume.sections.find((s) => s.kind === 'experience');
-
-    // If items are parsed, check bullet content
-    if (expSection?.items && (expSection.items as any)[0]?.bullets?.length > 0) {
-      const firstBullet = (expSection?.items as any)?.[0]?.bullets?.[0]?.text;
-      expect(firstBullet).toBeTruthy();
+  it.each(corpora)('%s loses no content: every bullet and text line shows up in the rendered model', (_name, md) => {
+    const rendered = resumeToMarkdown(markdownToResume(md, 'Doc'));
+    const model = markdownToResume(md, 'Doc');
+    const lines = md.split('\n').map((l) => l.trim()).filter(Boolean).filter((l) => !/^:{3,}/.test(l));
+    for (const line of lines) {
+      // Contact lines are regenerated from the model; check each value lands in its field
+      const icon = line.match(/^\[icon:(email|phone|location)\s+([^\]]+)\]/);
+      if (icon) {
+        expect(model.basics[icon[1] as 'email' | 'phone' | 'location'], line).toBe(icon[2]);
+        continue;
+      }
+      if (line.includes(' · ')) {
+        const values = line.split(/\s*·\s*/);
+        const fields = [model.basics.email, model.basics.phone, model.basics.location];
+        for (const v of values) expect(fields, `missing contact: ${v}`).toContain(v);
+        continue;
+      }
+      expect(rendered, `missing line: ${line}`).toContain(line);
     }
   });
+});
 
-  it('should handle empty resume gracefully', () => {
-    const resume = markdownToResume('', 'Empty');
-
-    expect(resume.schemaVersion).toBe(2);
-    expect(resume.meta.title).toBe('Empty');
-    expect(resume.basics.name).toBe('');
-    expect(resume.sections).toEqual([]);
+describe('parsing the dialect', () => {
+  it('reads dates into year and month, and open ranges as present', () => {
+    expect(parseDateRange('2021 – Present')).toEqual({ start: { year: 2021 }, end: 'present' });
+    expect(parseDateRange('May 2024')).toEqual({ start: { year: 2024, month: 5 } });
+    expect(parseDateRange('2016 - 2019')).toEqual({ start: { year: 2016 }, end: { year: 2019 } });
   });
 
-  it('should extract email from contact info', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    expect(resume.basics.email).toBe('john@example.com');
+  it('reads a season as a date and keeps its name', () => {
+    expect(parseDateRange('Summer 2018')).toEqual({ start: { year: 2018, season: 'Summer' } });
   });
 
-  it('should generate unique IDs for sections', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    const sectionIds = new Set(resume.sections.map((s: any) => s.id));
-    expect(sectionIds.size).toBe(resume.sections.length);
+  it('negative: free text is not a date range', () => {
+    expect(parseDateRange('Summer internship')).toBeNull();
+    expect(parseDateRange('Remote')).toBeNull();
   });
 
-  it('should generate unique IDs for all items', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    const allIds = new Set<string>();
-
-    // Collect all IDs
-    resume.sections.forEach((s) => {
-      allIds.add(s.id);
-      if (s.items) {
-        (s.items as any[]).forEach((item) => {
-          allIds.add(item.id);
-          if (item.bullets) {
-            item.bullets.forEach((bullet: any) => {
-              allIds.add(bullet.id);
-            });
-          }
-        });
-      }
-      if (s.groups) {
-        s.groups.forEach((g) => {
-          allIds.add(g.id);
-        });
-      }
-    });
-
-    // All IDs should be unique
-    const idArray = Array.from(allIds);
-    expect(idArray.length).toBe(allIds.size);
+  it('reads experience header, meta line and tags', () => {
+    const r = markdownToResume('# A\n\n## Experience\n### Acme — Engineer\n*Remote* | *2019 – 2021*\n`Go` `Kafka`\n- Built things\n', 'A');
+    const item = sectionItems(r.sections[0])[0] as any;
+    expect(item.company).toBe('Acme');
+    expect(item.role).toBe('Engineer');
+    expect(item.location).toBe('Remote');
+    expect(item.start).toEqual({ year: 2019 });
+    expect(item.end).toEqual({ year: 2021 });
+    expect(item.tags).toEqual(['Go', 'Kafka']);
+    expect(item.bullets[0].text).toBe('Built things');
   });
 
-  it('should preserve design settings in metadata', () => {
-    const resume = markdownToResume(SAMPLE_MARKDOWN, 'Test');
-
-    expect(resume.design.template).toBe('modern');
-    expect(resume.design.accent).toBe('#c96442');
-    expect(resume.design.fontSize).toBe('medium');
-    expect(resume.design.margin).toBe('normal');
-    expect(resume.design.lineHeight).toBe('normal');
+  it('keeps two degrees under one school as two education entries', () => {
+    const r = markdownToResume('# A\n\n## Education\n### Columbia\n*MBA* | *2016 – 2018*\n*BSc* | *2010 – 2014*\n', 'A');
+    const items = sectionItems(r.sections[0]) as any[];
+    expect(items.map((i) => i.degree)).toEqual(['MBA', 'BSc']);
+    expect(items.every((i) => i.school === 'Columbia')).toBe(true);
   });
 
-  it('should handle markdown with no sections gracefully', () => {
-    const md = `# Jane Smith
-jane@test.com
+  it('reads project subtitle and link', () => {
+    const r = markdownToResume('# A\n\n## Projects\n### HyperCache\n*Open source* | [icon:github github.com/a/hc](https://github.com/a/hc)\n', 'A');
+    const item = sectionItems(r.sections[0])[0] as any;
+    expect(item.subtitle).toBe('Open source');
+    expect(item.link).toEqual({ label: 'github.com/a/hc', url: 'https://github.com/a/hc', icon: 'github' });
+  });
 
-A capable engineer.`;
+  it('reads skill groups with their column, and an ungrouped list', () => {
+    const r = markdownToResume('# A\n\n## Skills\n::: left\n- **Languages:** TypeScript, Go\n:::\n::: right\n- **Cloud:** AWS\n:::\n- Plain, list\n', 'A');
+    const groups = (r.sections[0] as any).groups;
+    expect(groups[0]).toMatchObject({ label: 'Languages', skills: ['TypeScript', 'Go'], column: 'left' });
+    expect(groups[1]).toMatchObject({ label: 'Cloud', column: 'right' });
+    expect(groups[2]).toMatchObject({ label: '', skills: ['Plain', 'list'] });
+  });
 
-    const resume = markdownToResume(md, 'Jane Smith');
+  it('header contact: icon links set fields; the two-column layout is remembered', () => {
+    const r = markdownToResume('# Jane\n::: left\n[icon:email j@x.io](mailto:j@x.io)\n:::\n::: right\n[icon:github gh/jane](https://github.com/jane)\n:::\n', 'J');
+    expect(r.basics.email).toBe('j@x.io');
+    expect(r.basics.headerColumns).toBe(true);
+    expect(r.basics.links[0]).toMatchObject({ icon: 'github', column: 'right' });
+  });
+});
 
-    expect(resume.basics.name).toBe('Jane Smith');
-    expect(resume.basics.email).toBe('jane@test.com');
-    expect(resume.basics.headline || resume.basics.summary).toContain('engineer');
+describe('nothing is dropped', () => {
+  it('an unknown heading becomes a custom section with its own title', () => {
+    const r = markdownToResume('# A\n\n## Volunteering\n- Mentored at school\nSome note\n', 'A');
+    const s = r.sections.find((x) => x.title === 'Volunteering')!;
+    expect(s.kind).toBe('custom');
+    expect(s.kind === 'custom' && s.lines.map((l) => l.text)).toEqual(['Mentored at school', 'Some note']);
+  });
+
+  it('text under a known heading that fits no entry goes to an "Other" section', () => {
+    const r = markdownToResume('# A\n\n## Experience\nA stray line before any role\n### Acme — Engineer\n- Did it\n', 'A');
+    const other = r.sections.find((s) => s.title === 'Other')!;
+    expect(other.kind === 'custom' && other.lines[0].text).toBe('A stray line before any role');
+    expect(sectionItems(r.sections[0])).toHaveLength(1);
+  });
+
+  it('extra header text beyond the headline goes to an "Other" section', () => {
+    const r = markdownToResume('# A\nHeadline here\nA second header paragraph that is not contact info.\n\n## Skills\n- x\n', 'A');
+    expect(r.basics.headline).toBe('Headline here');
+    expect(r.sections[0].title).toBe('Other');
+  });
+
+  it('a page break inside a custom section is kept', () => {
+    const md = '# A\n\n## Notes\n- one\n::: page-break\n- two\n';
+    const r = markdownToResume(md, 'A');
+    const again = resumeToMarkdown(r);
+    expect(again).toContain('::: page-break');
+    expect(markdownToResume(again, 'A').sections[0]).toMatchObject({ kind: 'custom' });
+  });
+
+  it('numbered publication lines are kept as text', () => {
+    const r = markdownToResume('# A\n\n## Publications\n1. **Lee, A.** (2024). A paper.\n', 'A');
+    const s = r.sections[0] as any;
+    expect(s.lines[0]).toMatchObject({ kind: 'text', text: '1. **Lee, A.** (2024). A paper.' });
+  });
+});
+
+describe('rendering', () => {
+  it('writes entries in the dialect the preview expects', () => {
+    const md = resumeToMarkdown(markdownToResume('# A\n\n## Experience\n### Acme — Engineer\n*2019 – Present*\n`Go`\n- Built it\n', 'A'));
+    expect(md).toContain('### Acme — Engineer');
+    expect(md).toContain('*2019 – Present*');
+    expect(md).toContain('`Go`');
+    expect(md).toContain('- Built it');
+  });
+
+  it('empty input gives an empty resume with no sections', () => {
+    const r = markdownToResume('   ', 'Blank');
+    expect(r.sections).toEqual([]);
+    expect(r.basics.name).toBe('');
   });
 });

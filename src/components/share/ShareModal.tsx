@@ -8,12 +8,12 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
+import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { getShareableUrl } from '../../utils/shareResume';
 
 export const ShareModal: React.FC = () => {
   const {
     documentTitle,
-    markdown,
     theme,
     accentColor,
     fontSize,
@@ -26,18 +26,19 @@ export const ShareModal: React.FC = () => {
 
   const [copied, setCopied] = useState(false);
 
+  const modelMarkdown = useModelMarkdown();
   const shareUrl = useMemo(() => {
     if (!shareModalOpen) return '';
     return getShareableUrl({
       title: documentTitle,
-      markdown,
+      markdown: modelMarkdown,
       theme,
       accentColor,
       fontSize,
       marginSize,
       lineHeight,
     });
-  }, [shareModalOpen, documentTitle, markdown, theme, accentColor, fontSize, marginSize, lineHeight]);
+  }, [shareModalOpen, documentTitle, modelMarkdown, theme, accentColor, fontSize, marginSize, lineHeight]);
 
   if (!shareModalOpen) return null;
 

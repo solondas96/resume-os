@@ -3,7 +3,7 @@
  * Built from the model (the same source the PDF is rendered from), in reading order.
  */
 
-import { Resume, Section } from '../model/resume';
+import { Resume, Section, sectionItems } from '../model/resume';
 
 export interface AtsProblem {
   rule: string;
@@ -24,23 +24,28 @@ const SYMBOL_RE = /[☀-➿\u{1F300}-\u{1FAFF}]/u;
 
 function sectionLines(section: Section): string[] {
   const out: string[] = [section.title.toUpperCase()];
-  if (section.kind === 'skills') {
-    for (const g of section.groups ?? []) {
-      out.push(g.label ? `${g.label}: ${g.skills.join(', ')}` : g.skills.join(', '));
-    }
-    return out;
+  switch (section.kind) {
+    case 'summary':
+      return [...out, ...section.paragraphs];
+    case 'skills':
+      for (const g of section.groups) out.push(g.label ? `${g.label}: ${g.skills.join(', ')}` : g.skills.join(', '));
+      return out;
+    case 'custom':
+    case 'certifications':
+      return [...out, ...section.lines.filter((l) => l.kind !== 'pagebreak').map((l) => l.text)];
+    default:
+      break;
   }
-  for (const item of (section.items ?? []) as any[]) {
+  for (const item of sectionItems(section) as any[]) {
     if ('company' in item) {
       const end = item.end === 'present' ? 'Present' : item.end ? String(item.end.year) : '';
       out.push(`${item.role} | ${item.company} | ${item.start?.year ?? ''} - ${end}`);
-      for (const b of item.bullets ?? []) out.push(`- ${b.text}`);
     } else if ('school' in item) {
       out.push(`${item.degree ?? ''} | ${item.school}`);
     } else {
       out.push(item.title ?? '');
-      if (item.description) out.push(item.description);
     }
+    for (const b of item.bullets ?? []) out.push(`- ${b.text}`);
   }
   return out;
 }
@@ -51,7 +56,6 @@ export function buildAtsPreview(resume: Resume): AtsPreview {
   const lines: string[] = [basics.name];
   if (basics.headline) lines.push(basics.headline);
   if (contact) lines.push(contact);
-  if (basics.summary) lines.push('SUMMARY', basics.summary);
 
   const visible = resume.sections.filter((s) => !s.hidden);
   for (const s of visible) lines.push(...sectionLines(s));
@@ -71,7 +75,8 @@ export function buildAtsPreview(resume: Resume): AtsPreview {
         why: 'Standard headings (Experience, Education, Skills) are the ones parsers map reliably.',
       });
     }
-    const empty = s.kind === 'skills' ? (s.groups ?? []).length === 0 : (s.items ?? []).length === 0;
+    const empty =
+      s.kind === 'skills' ? s.groups.length === 0 : s.kind === 'summary' ? s.paragraphs.length === 0 : s.kind === 'custom' || s.kind === 'certifications' ? s.lines.length === 0 : sectionItems(s).length === 0;
     if (empty) {
       problems.push({ rule: 'ats.empty-section', message: `"${s.title}" has no content`, why: 'An empty heading adds nothing for the parser or the reader.' });
     }

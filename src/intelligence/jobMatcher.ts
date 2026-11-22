@@ -3,7 +3,7 @@
  * Requirement extraction, keyword matching, evidence linking
  */
 
-import { Resume } from '../model/resume';
+import { Resume, sectionItems } from '../model/resume';
 import { extractSkills, stemWord } from './skills';
 import { hasMetric } from './healthScore';
 
@@ -100,7 +100,7 @@ function findEvidence(requirement: ParsedRequirement, resume: Resume): ParsedReq
   let best: { strength: 'strong' | 'moderate'; bulletText: string; sectionId: string } | null = null;
 
   for (const section of resume.sections) {
-    for (const item of (section.items ?? []) as { bullets?: { text: string }[] }[]) {
+    for (const item of sectionItems(section) as { bullets?: { text: string }[] }[]) {
       for (const bullet of item.bullets ?? []) {
         const overlap = extractSkillsFromText(bullet.text).filter((s) => wanted.has(s)).length;
         if (overlap === 0) continue;

@@ -70,7 +70,7 @@ function deriveFields(resume: Resume | null): Partial<DerivedFields> {
   }
   return {
     documentTitle: resume.meta.title,
-    markdown: resume.source ?? resumeToMarkdown(resume),
+    markdown: resumeToMarkdown(resume),
     theme: resume.design.template as TemplateId,
     accentColor: resume.design.accent,
     fontSize: resume.design.fontSize as FontSizeOption,
@@ -217,6 +217,22 @@ function persistDebounced(resume: Resume, set: (p: Partial<ResumeStoreV2>) => vo
   }, DEBOUNCE_MS);
 }
 
+type LegacyResume = Resume & { source?: string };
+
+/**
+ * Records saved before the model was authoritative carry the editor text as `source`.
+ * Re-parse that text once with the current parser, so the model has everything it can hold.
+ */
+function upgradeLegacyRecord(record: Resume): { resume: Resume; changed: boolean } {
+  const legacy = record as LegacyResume;
+  if (typeof legacy.source !== 'string') return { resume: record, changed: false };
+  const parsed = markdownToResume(legacy.source, record.meta.title);
+  return {
+    resume: { ...parsed, id: record.id, meta: record.meta, design: record.design, schemaVersion: 2 },
+    changed: true,
+  };
+}
+
 function stamp(resume: Resume): Resume {
   return { ...resume, meta: { ...resume.meta, updatedAt: Date.now() } };
 }
@@ -247,12 +263,12 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
 
     if (prev && opts.record !== false) {
       const now = Date.now();
-      if (now - lastRecordAt > COALESCE_MS) undoRedoManager.record(prev);
+      if (now - lastRecordAt > COALESCE_MS) undoRedoManager.record({ resume: prev, text: state.markdown });
       lastRecordAt = now;
     }
 
-    const source = opts.markdown ?? next.source ?? state.markdown;
-    const stamped = stamp({ ...next, source });
+    const text = opts.markdown ?? resumeToMarkdown(next);
+    const stamped = stamp(next);
     set({
       currentResume: stamped,
       activeResumeId: stamped.id,
@@ -260,6 +276,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
         ? state.resumes.map((r) => (r.id === stamped.id ? stamped : r))
         : [stamped, ...state.resumes],
       ...deriveFields(stamped),
+      markdown: text,
     });
 
     if (opts.debounce) persistDebounced(stamped, set);
@@ -268,10 +285,11 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
 
   const requireResume = (): Resume | null => get().currentResume;
 
+  // Design changes keep the text exactly as it is
   const setDesign = (patch: Partial<Resume['design']>) => {
     const cur = requireResume();
     if (!cur) return;
-    commit({ ...cur, design: { ...cur.design, ...patch } });
+    commit({ ...cur, design: { ...cur.design, ...patch } }, { markdown: get().markdown });
   };
 
   return {
@@ -291,7 +309,11 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     onePageMode: false,
 
     loadResumes: async () => {
-      const resumes = await loadAllResumes();
+      const loaded = await loadAllResumes();
+      // Re-parse records saved with the old editor-text field, and persist the result once
+      const upgraded = loaded.map(upgradeLegacyRecord);
+      for (const u of upgraded) if (u.changed) void saveResume(u.resume);
+      const resumes = upgraded.map((u) => u.resume);
       const sorted = [...resumes].sort((a, b) => b.meta.updatedAt - a.meta.updatedAt);
       const first = sorted[0] ?? null;
       set({
@@ -316,12 +338,11 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
         : createResume(title, { targetRole });
       const resume: Resume = {
         ...base,
-        source: templateMarkdown ?? resumeToMarkdown(base),
         meta: { ...base.meta, title, targetRole: targetRole ?? base.meta.targetRole },
       };
       lastRecordAt = 0;
       set({ resumes: [resume, ...get().resumes] });
-      commit(resume, { markdown: resume.source, record: false });
+      commit(resume, { markdown: templateMarkdown ?? resumeToMarkdown(resume), record: false });
       void get().loadRevisionHistory();
       return resume.id;
     },
@@ -332,7 +353,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
       const copy = cloneResume(source);
       lastRecordAt = 0;
       set({ resumes: [copy, ...get().resumes] });
-      commit(copy, { markdown: copy.source, record: false });
+      commit(copy, { record: false });
       return copy.id;
     },
 
@@ -387,7 +408,6 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
           schemaVersion: 2,
           meta: cur.meta,
           design: cur.design,
-          source: markdown,
         },
         { markdown, debounce: true }
       );
@@ -427,7 +447,6 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
         id: cur.id,
         schemaVersion: 2,
         meta: cur.meta,
-        source: SAMPLE_RESUME,
         design: {
           template: 'modern',
           accent: '#c96442',
@@ -444,19 +463,19 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     undo: () => {
       const cur = requireResume();
       if (!cur) return;
-      const previous = undoRedoManager.undo(cur);
+      const previous = undoRedoManager.undo({ resume: cur, text: get().markdown });
       if (!previous) return;
       lastRecordAt = 0;
-      commit(previous, { markdown: previous.source ?? resumeToMarkdown(previous), record: false });
+      commit(previous.resume, { markdown: previous.text, record: false });
     },
 
     redo: () => {
       const cur = requireResume();
       if (!cur) return;
-      const next = undoRedoManager.redo(cur);
+      const next = undoRedoManager.redo({ resume: cur, text: get().markdown });
       if (!next) return;
       lastRecordAt = 0;
-      commit(next, { markdown: next.source ?? resumeToMarkdown(next), record: false });
+      commit(next.resume, { markdown: next.text, record: false });
     },
 
     canUndo: () => undoRedoManager.canUndo(),
@@ -507,7 +526,6 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
           id: cur.id,
           schemaVersion: 2,
           meta: cur.meta,
-          source: revision.markdown,
           design: {
             ...cur.design,
             template: revision.theme,
@@ -611,7 +629,6 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
       const view: Resume = {
         ...resume,
         id: 'shared-view',
-        source: shared.markdown,
         schemaVersion: 2,
         meta: { ...resume.meta, title: shared.title },
         design: {
@@ -636,7 +653,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
       if (!cur) return;
       const kept: Resume = { ...cur, id: `resume-${Date.now()}`, meta: { ...cur.meta, createdAt: Date.now() } };
       set({ resumes: [kept, ...get().resumes], recruiterViewMode: false });
-      commit(kept, { markdown: kept.source, record: false });
+      commit(kept, { record: false });
     },
 
     // ---- lifecycle --------------------------------------------------------

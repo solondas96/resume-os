@@ -8,23 +8,29 @@ import { Resume } from '../model/resume';
 
 const MAX_STACK_SIZE = 50;
 
-function clone(resume: Resume): Resume {
-  return JSON.parse(JSON.stringify(resume));
+/** A point in history: the structured model, and the exact editor text it came from */
+export interface Snapshot {
+  resume: Resume;
+  text: string;
+}
+
+function clone(snapshot: Snapshot): Snapshot {
+  return JSON.parse(JSON.stringify(snapshot));
 }
 
 class UndoRedoManager {
-  private undoStack: Resume[] = [];
-  private redoStack: Resume[] = [];
+  private undoStack: Snapshot[] = [];
+  private redoStack: Snapshot[] = [];
 
   /** Record a state before a change. Clears redo history, as any editor does. */
-  record(previous: Resume): void {
+  record(previous: Snapshot): void {
     this.undoStack.push(clone(previous));
     this.redoStack = [];
     if (this.undoStack.length > MAX_STACK_SIZE) this.undoStack.shift();
   }
 
   /** Undo: returns the previous state, and keeps `current` available for redo. */
-  undo(current: Resume): Resume | null {
+  undo(current: Snapshot): Snapshot | null {
     const previous = this.undoStack.pop();
     if (!previous) return null;
     this.redoStack.push(clone(current));
@@ -33,7 +39,7 @@ class UndoRedoManager {
   }
 
   /** Redo: returns the next state, and keeps `current` available for undo. */
-  redo(current: Resume): Resume | null {
+  redo(current: Snapshot): Snapshot | null {
     const next = this.redoStack.pop();
     if (!next) return null;
     this.undoStack.push(clone(current));

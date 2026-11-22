@@ -107,7 +107,6 @@ function migrateProfile(v1Profile: any, index: number): Resume | null {
     const resume = markdownToResume(markdown, title);
     // Deterministic id so a retried migration overwrites instead of duplicating
     resume.id = `v1-${v1Profile.id ?? index}`;
-    resume.source = markdown;
 
     // Preserve design settings
     resume.meta.targetRole = v1Profile.targetRole;

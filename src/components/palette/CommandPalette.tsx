@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
+import { useModelMarkdown } from '../../store/useModelMarkdown';
 import {
   Search,
   Layout,
@@ -37,6 +38,8 @@ interface CommandItem {
 }
 
 export const CommandPalette: React.FC = () => {
+  const modelMarkdown = useModelMarkdown();
+  const markdown = useResumeStoreV2((s) => s.markdown); // editor text, for inserting sections
   const {
     commandPaletteOpen,
     setCommandPaletteOpen,
@@ -49,7 +52,7 @@ export const CommandPalette: React.FC = () => {
     uiTheme,
     toggleUiTheme,
     setActiveModal,
-    markdown,
+    
     setMarkdown,
     saveRevision,
     editorViewMode,
@@ -130,7 +133,7 @@ export const CommandPalette: React.FC = () => {
       title: 'Export Plain Text (.txt for ATS)',
       description: 'Clean formatted plain text without markdown symbols',
       icon: <FileCode className="w-4 h-4 text-amber-400" />,
-      action: () => exportPlainText(markdown, 'resume.txt'),
+      action: () => exportPlainText(modelMarkdown, 'resume.txt'),
       keywords: ['txt', 'text', 'ats', 'plain', 'export'],
     },
     {
@@ -139,7 +142,7 @@ export const CommandPalette: React.FC = () => {
       title: 'Export JSON Resume Schema (.json)',
       description: 'Export structured resume data per schema.jsonresume.org',
       icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
-      action: () => exportJsonResume(markdown, 'resume.json'),
+      action: () => exportJsonResume(modelMarkdown, 'resume.json'),
       keywords: ['json', 'resume', 'schema', 'export', 'data'],
     },
     {
@@ -230,7 +233,7 @@ export const CommandPalette: React.FC = () => {
       description: 'Export local source markdown file',
       icon: <FileText className="w-4 h-4 text-emerald-400" />,
       action: () => {
-        const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+        const blob = new Blob([modelMarkdown], { type: 'text/markdown;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

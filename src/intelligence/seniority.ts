@@ -3,7 +3,7 @@
  * Counts scope, ownership and leadership signals in bullets against a lexicon.
  */
 
-import { Resume } from '../model/resume';
+import { Resume, sectionItems } from '../model/resume';
 
 export type SeniorityLevel = 'entry' | 'mid' | 'senior' | 'staff' | 'principal';
 
@@ -54,7 +54,7 @@ const EXAMPLES: Record<SignalType, string> = {
 function countSignals(resume: Resume): Record<SignalType, number> {
   const signals: Record<SignalType, number> = { scope: 0, ownership: 0, leadership: 0 };
   for (const s of resume.sections) {
-    for (const item of (s.items ?? []) as { bullets?: { text: string }[] }[]) {
+    for (const item of sectionItems(s) as { bullets?: { text: string }[] }[]) {
       for (const b of item.bullets ?? []) {
         const lower = b.text.toLowerCase();
         for (const type of Object.keys(LEXICON) as SignalType[]) {

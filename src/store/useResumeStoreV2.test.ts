@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useResumeStoreV2 } from './useResumeStoreV2';
 import { undoRedoManager } from '../services/undoRedo';
+import { saveResume } from '../services/persistence';
+import type { Resume } from '../model/resume';
 
 const store = () => useResumeStoreV2.getState();
 
@@ -136,5 +138,25 @@ describe('useResumeStoreV2', () => {
     expect(store().stats.byStatus.interview).toBe(1);
     store().deleteApplication(id);
     expect(store().applications.length).toBe(0);
+  });
+
+  it('re-parses a record saved with the old source field, then drops the field', async () => {
+    const legacy = {
+      id: 'legacy-1',
+      schemaVersion: 2,
+      meta: { title: 'Old', createdAt: 1, updatedAt: 2 },
+      basics: { name: 'Stale Name', links: [] },
+      sections: [],
+      design: { template: 'modern', accent: '#c96442', fontSize: 'medium', margin: 'normal', lineHeight: 'normal' },
+      source: '# Fresh Name\n\n## Experience\n### Acme — Engineer\n- Built things\n',
+    } as unknown as Resume;
+    await saveResume(legacy);
+
+    await store().loadResumes();
+
+    const loaded = store().currentResume!;
+    expect(loaded.basics.name).toBe('Fresh Name');
+    expect(JSON.stringify(loaded.sections)).toContain('Built things');
+    expect('source' in loaded).toBe(false);
   });
 });

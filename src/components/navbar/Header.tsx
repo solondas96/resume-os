@@ -22,6 +22,7 @@ import {
   Mail
 } from 'lucide-react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
+import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
 import { DesignPanel } from '../design/DesignPanel';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
@@ -31,7 +32,6 @@ export const Header: React.FC = () => {
   const {
     theme,
     setActiveModal,
-    markdown,
     documentTitle,
     setDocumentTitle,
     saveRevision,
@@ -53,7 +53,8 @@ export const Header: React.FC = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
-  const activeContent = workspaceMode === 'cover-letter' ? coverLetterMarkdown : markdown;
+  const modelMarkdown = useModelMarkdown();
+  const activeContent = workspaceMode === 'cover-letter' ? coverLetterMarkdown : modelMarkdown;
 
   const handlePrintPdf = () => {
     saveRevision('Pre-export auto-save');

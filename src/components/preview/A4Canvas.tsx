@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
+import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { parseResumeMarkdown } from '../../parser/markdown';
 
 const A4_HEIGHT_PX = 1123; // 297mm at 96 DPI
@@ -7,7 +8,6 @@ const A4_WIDTH_PX = 794;   // 210mm at 96 DPI
 
 export const A4Canvas: React.FC = () => {
   const {
-    markdown,
     workspaceMode,
     coverLetterMarkdown,
     theme,
@@ -28,7 +28,8 @@ export const A4Canvas: React.FC = () => {
   const [sheetHeight, setSheetHeight] = useState(A4_HEIGHT_PX);
 
   // Parse active markdown into sanitized HTML with icons and containers
-  const activeMarkdown = workspaceMode === 'cover-letter' ? coverLetterMarkdown : markdown;
+  const modelMarkdown = useModelMarkdown();
+  const activeMarkdown = workspaceMode === 'cover-letter' ? coverLetterMarkdown : modelMarkdown;
   const parsedHtml = useMemo(() => {
     return parseResumeMarkdown(activeMarkdown);
   }, [activeMarkdown]);

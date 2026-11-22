@@ -3,7 +3,7 @@
  * 0-100 score with 5 categories: impact, clarity, ATS, consistency, length
  */
 
-import { Resume } from '../model/resume';
+import { Resume, sectionItems } from '../model/resume';
 
 export interface CategoryScore {
   name: string;
@@ -48,8 +48,8 @@ function scoreImpact(resume: Resume): CategoryScore {
 
   // Scan all bullets
   resume.sections.forEach((section) => {
-    if (!!section.items?.length && 'bullets' in section.items[0]) {
-      section.items.forEach((item: any) => {
+    if (sectionItems(section).length > 0) {
+      sectionItems(section).forEach((item: any) => {
         item.bullets?.forEach((bullet: any) => {
           bulletCount++;
           const text = bullet.text.toLowerCase();
@@ -127,8 +127,8 @@ function scoreClarity(resume: Resume): CategoryScore {
   let bulletCount = 0;
 
   resume.sections.forEach((section) => {
-    if (!!section.items?.length && 'bullets' in section.items[0]) {
-      section.items.forEach((item: any) => {
+    if (sectionItems(section).length > 0) {
+      sectionItems(section).forEach((item: any) => {
         item.bullets?.forEach((bullet: any) => {
           bulletCount++;
           const words = bullet.text.split(/\s+/).length;
@@ -232,8 +232,8 @@ function scoreConsistency(resume: Resume): CategoryScore {
   let bulletCount = 0;
 
   resume.sections.forEach((section) => {
-    if (!!section.items?.length && 'bullets' in section.items[0]) {
-      section.items.forEach((item: any) => {
+    if (sectionItems(section).length > 0) {
+      sectionItems(section).forEach((item: any) => {
         item.bullets?.forEach((bullet: any) => {
           bulletCount++;
           const text = bullet.text;
@@ -297,8 +297,8 @@ function scoreLength(resume: Resume): CategoryScore {
   let bulletCount = 0;
 
   resume.sections.forEach((section) => {
-    if (!!section.items?.length && 'bullets' in section.items[0]) {
-      section.items.forEach((item: any) => {
+    if (sectionItems(section).length > 0) {
+      sectionItems(section).forEach((item: any) => {
         bulletCount += item.bullets?.length || 0;
       });
     }
