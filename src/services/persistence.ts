@@ -4,7 +4,6 @@
  */
 
 import { Resume } from '../model/resume';
-import { migrateV1ToV2, needsMigration, getV1Backup } from '../model/migrate';
 
 const DB_NAME = 'resumelabs';
 const DB_VERSION = 1;
@@ -297,23 +296,9 @@ export async function loadRevisions(resumeId: string): Promise<any[]> {
 }
 
 /**
- * Perform initial setup: migrate v1 data if needed
+ * Perform initial setup: open the database.
+ * The v1 → v2 migration is run separately (see runMigrationOnStartup in model/migrate).
  */
 export async function initializePersistence(): Promise<void> {
-  // Check if migration needed
-  if (needsMigration()) {
-    console.log('Running v1 → v2 migration...');
-    const result = await migrateV1ToV2();
-    if (result.success) {
-      console.log(`✓ Migrated ${result.migratedCount} resumes`);
-      if (result.backupCreated) {
-        console.log('✓ Backup created:', getV1Backup());
-      }
-    } else {
-      console.error('Migration errors:', result.errors);
-    }
-  }
-
-  // Initialize IndexedDB
   await initDB();
 }

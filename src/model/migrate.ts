@@ -5,6 +5,7 @@
 
 import { Resume } from './resume';
 import { markdownToResume } from './serialize';
+import { saveResume } from '../services/persistence';
 
 export interface MigrationResult {
   success: boolean;
@@ -51,28 +52,42 @@ export async function migrateV1ToV2(): Promise<MigrationResult> {
       result.errors.push(`Failed to create backup: ${e}`);
     }
 
-    // 2. Migrate profiles (resumes)
+    // 2. Migrate profiles (resumes). Each one is saved through persistence.
     const profilesData = localStorage.getItem('resumeos_profiles_v1');
+    let allSaved = true;
     if (profilesData) {
       try {
         const profiles = JSON.parse(profilesData);
         if (Array.isArray(profiles)) {
-          for (const profile of profiles) {
-            const migrated = migrateProfile(profile);
-            if (migrated) {
+          for (let i = 0; i < profiles.length; i++) {
+            const migrated = migrateProfile(profiles[i], i);
+            if (!migrated) {
+              allSaved = false;
+              result.errors.push(`Profile ${i} could not be converted`);
+              continue;
+            }
+            const saved = await saveResume(migrated);
+            if (saved) {
               result.migratedCount++;
+            } else {
+              allSaved = false;
+              result.errors.push(`Failed to save migrated resume "${migrated.basics.name || i}"`);
             }
           }
         }
       } catch (e) {
+        allSaved = false;
         result.errors.push(`Failed to migrate profiles: ${e}`);
       }
     }
 
-    // 3. Mark v1 as migrated (don't delete yet, keep backup)
-    localStorage.setItem('resumeos_v1_migrated', 'true');
+    // 3. Mark v1 as migrated ONLY when every resume was saved.
+    // The v1 data is kept either way so nothing is lost.
+    if (allSaved) {
+      localStorage.setItem('resumeos_v1_migrated', 'true');
+    }
 
-    result.success = result.errors.length === 0 || result.migratedCount > 0;
+    result.success = allSaved;
     return result;
   } catch (e) {
     result.success = false;
@@ -84,12 +99,14 @@ export async function migrateV1ToV2(): Promise<MigrationResult> {
 /**
  * Convert a v1 profile to v2 Resume model
  */
-function migrateProfile(v1Profile: any): Resume | null {
+function migrateProfile(v1Profile: any, index: number): Resume | null {
   try {
     const markdown = v1Profile.markdown || '';
     const title = v1Profile.title || 'Untitled Resume';
 
     const resume = markdownToResume(markdown, title);
+    // Deterministic id so a retried migration overwrites instead of duplicating
+    resume.id = `v1-${v1Profile.id ?? index}`;
 
     // Preserve design settings
     resume.meta.targetRole = v1Profile.targetRole;
@@ -106,6 +123,14 @@ function migrateProfile(v1Profile: any): Resume | null {
     console.error(`Failed to migrate profile:`, e);
     return null;
   }
+}
+
+/**
+ * Startup hook: run the v1 → v2 migration once, if needed.
+ */
+export async function runMigrationOnStartup(): Promise<MigrationResult | null> {
+  if (!needsMigration()) return null;
+  return migrateV1ToV2();
 }
 
 /**
