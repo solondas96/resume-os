@@ -24,18 +24,26 @@ export const PresetsModal: React.FC = () => {
     setTheme,
     setAccentColor,
     setDocumentTitle,
-    saveRevision
+    saveRevision,
+    currentResume,
+    createResume,
   } = useResumeStoreV2();
 
   if (activeModal !== 'presets') return null;
 
   const handleSelectPreset = (preset: typeof ROLE_PRESETS[0]) => {
-    saveRevision(`Before loading ${preset.roleName}`);
-    setMarkdown(preset.markdown);
+    const title = `${preset.candidateName} - Resume`;
+    if (!currentResume) {
+      // First run: there is no resume yet, so create one from the preset
+      createResume(title, preset.markdown, preset.roleName);
+    } else {
+      saveRevision(`Before loading ${preset.roleName}`);
+      setMarkdown(preset.markdown);
+      saveRevision(`Loaded ${preset.roleName} Preset`);
+    }
     setTheme(preset.theme);
     setAccentColor(preset.accentColor);
-    setDocumentTitle(`${preset.candidateName} - Resume`);
-    saveRevision(`Loaded ${preset.roleName} Preset`);
+    setDocumentTitle(title);
     setActiveModal(null);
   };
 

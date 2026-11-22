@@ -76,6 +76,71 @@ function detectSections(text: string): { title: string; content: string; confide
 }
 
 /**
+ * Group PDF text items into lines by their vertical position (top to bottom),
+ * and join each line's items left to right.
+ */
+export function itemsToLines(items: { str: string; transform: number[] }[]): string {
+  const rows: { y: number; parts: { x: number; str: string }[] }[] = [];
+  for (const item of items) {
+    if (!item.str) continue;
+    const y = item.transform[5];
+    const x = item.transform[4];
+    const row = rows.find((r) => Math.abs(r.y - y) < 3);
+    if (row) row.parts.push({ x, str: item.str });
+    else rows.push({ y, parts: [{ x, str: item.str }] });
+  }
+  return rows
+    .sort((a, b) => b.y - a.y)
+    .map((r) => r.parts.sort((a, b) => a.x - b.x).map((p) => p.str).join(' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+const HEADING_CANONICAL: Record<string, string> = {
+  summary: 'Summary',
+  profile: 'Summary',
+  'professional summary': 'Summary',
+  experience: 'Experience',
+  'work experience': 'Experience',
+  'professional experience': 'Experience',
+  employment: 'Experience',
+  'work history': 'Experience',
+  education: 'Education',
+  skills: 'Skills',
+  'technical skills': 'Skills',
+  'core competencies': 'Skills',
+  projects: 'Projects',
+  certifications: 'Certifications',
+  licenses: 'Certifications',
+};
+
+/**
+ * Turn plain section headings ("Experience", "EDUCATION:") into Markdown "## " headings,
+ * and the first line into the "# " name line, so the structured parser can read them.
+ */
+export function normalizeHeadings(text: string): string {
+  const lines = text.split('\n');
+  let sawName = false;
+  return lines
+    .map((raw) => {
+      const line = raw.trim();
+      if (!line) return raw;
+      if (line.startsWith('#')) {
+        sawName = true;
+        return raw;
+      }
+      const key = line.replace(/:$/, '').toLowerCase();
+      if (HEADING_CANONICAL[key]) return `## ${HEADING_CANONICAL[key]}`;
+      if (!sawName) {
+        sawName = true;
+        return `# ${line}`;
+      }
+      return raw;
+    })
+    .join('\n');
+}
+
+/**
  * Extract text from PDF using pdfjs
  */
 export async function extractPdfText(file: File): Promise<string> {
@@ -93,7 +158,7 @@ export async function extractPdfText(file: File): Promise<string> {
     for (let i = 1; i <= pdfDoc.numPages; i++) {
       const page = await pdfDoc.getPage(i);
       const content = await page.getTextContent();
-      text += content.items.map((item: any) => item.str).join(' ') + '\n';
+      text += itemsToLines(content.items as any[]) + '\n';
     }
 
     return text;
@@ -162,9 +227,10 @@ export async function importResume(file: File): Promise<ImportResult> {
     // Detect sections
     result.detectedSections = detectSections(text);
 
-    // Convert to Resume model
+    // Convert to Resume model (plain headings become Markdown headings first)
     const fileNameWithoutExt = file.name.replace(/\.[^.]+$/, '');
-    const resume = markdownToResume(text, fileNameWithoutExt);
+    const normalized = normalizeHeadings(text);
+    const resume = markdownToResume(normalized, fileNameWithoutExt);
 
     // Validate
     if (!resume.basics.name || resume.basics.name.trim().length === 0) {
@@ -175,7 +241,7 @@ export async function importResume(file: File): Promise<ImportResult> {
       result.warnings.push('No structured sections detected. You may need to manually reorganize content.');
     }
 
-    result.text = text;
+    result.text = normalized;
     result.resume = resume;
     result.success = true;
 

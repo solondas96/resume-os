@@ -27,8 +27,8 @@ export const AtsPreviewSection: React.FC = () => {
       </div>
       {preview.problems.length > 0 ? (
         <ul className="space-y-2">
-          {preview.problems.map((p) => (
-            <li key={p.rule} className="text-xs">
+          {preview.problems.map((p, i) => (
+            <li key={`${p.rule}-${i}`} className="text-xs">
               <div className="text-foreground">{p.message}</div>
               <div className="text-[11px] text-muted-foreground">{p.why}</div>
             </li>
