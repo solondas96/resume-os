@@ -191,3 +191,11 @@ describe('rendering', () => {
     expect(r.basics.name).toBe('');
   });
 });
+
+describe('hidden sections', () => {
+  it('are still written by resumeToMarkdown (the caller decides what to show)', () => {
+    const r = markdownToResume('# A\n\n## Skills\n- x\n', 'A');
+    r.sections[0].hidden = true;
+    expect(resumeToMarkdown(r)).toContain('## Skills');
+  });
+});

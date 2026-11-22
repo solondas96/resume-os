@@ -9,5 +9,12 @@ import { resumeToMarkdown } from '../model/serialize';
  */
 export function useModelMarkdown(): string {
   const currentResume = useResumeStoreV2((s) => s.currentResume);
-  return useMemo(() => (currentResume ? resumeToMarkdown(currentResume) : ''), [currentResume]);
+  // Hidden sections are left out of every output (the editor still shows them)
+  return useMemo(
+    () =>
+      currentResume
+        ? resumeToMarkdown({ ...currentResume, sections: currentResume.sections.filter((s) => !s.hidden) })
+        : '',
+    [currentResume]
+  );
 }
