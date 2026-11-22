@@ -1,11 +1,11 @@
 import React from 'react';
 import { Edit3, Printer } from 'lucide-react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { A4Canvas } from './A4Canvas';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
 
 export const RecruiterView: React.FC = () => {
-  const { documentTitle, setRecruiterViewMode } = useResumeStore();
+  const { documentTitle, setRecruiterViewMode } = useResumeStoreV2();
 
   const handlePrint = () => {
     window.print();

@@ -21,7 +21,7 @@ import {
   Share2,
   Mail
 } from 'lucide-react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
 import { DesignPanel } from '../design/DesignPanel';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
@@ -46,7 +46,7 @@ export const Header: React.FC = () => {
     setActiveSidePanel,
     setShareModalOpen,
     coverLetterMarkdown,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [designOpen, setDesignOpen] = useState(false);

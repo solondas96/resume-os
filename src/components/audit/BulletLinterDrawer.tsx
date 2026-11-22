@@ -4,11 +4,11 @@ import {
   Sparkles,
   ArrowRight
 } from 'lucide-react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { analyzeBullets, quickFixBulletVerb } from '../../utils/bulletLinter';
 
 export const BulletLinterDrawer: React.FC = () => {
-  const { markdown, setMarkdown, activeSidePanel, setActiveSidePanel, saveRevision } = useResumeStore();
+  const { markdown, setMarkdown, activeSidePanel, setActiveSidePanel, saveRevision } = useResumeStoreV2();
 
   const isOpen = activeSidePanel === 'linter';
 

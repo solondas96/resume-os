@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import {
   GripVertical,
   ChevronDown,
@@ -22,7 +22,7 @@ interface ParsedSection {
 }
 
 export const SectionCardView: React.FC = () => {
-  const { markdown, setMarkdown, saveRevision } = useResumeStore();
+  const { markdown, setMarkdown, saveRevision } = useResumeStoreV2();
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
   // Parse markdown into Header block and ## Sections

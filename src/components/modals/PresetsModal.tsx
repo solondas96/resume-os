@@ -1,5 +1,5 @@
 import React from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { ROLE_PRESETS } from '../../data/rolePresets';
 import {
   X,
@@ -25,7 +25,7 @@ export const PresetsModal: React.FC = () => {
     setAccentColor,
     setDocumentTitle,
     saveRevision
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   if (activeModal !== 'presets') return null;
 

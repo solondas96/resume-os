@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { parseResumeMarkdown } from '../../parser/markdown';
 
 const A4_HEIGHT_PX = 1123; // 297mm at 96 DPI
@@ -21,7 +21,7 @@ export const A4Canvas: React.FC = () => {
     setZoom,
     autoFitZoom,
     setPageCount,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);

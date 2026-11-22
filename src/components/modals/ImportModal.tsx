@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { X, Upload, FileText } from 'lucide-react';
 
 export const ImportModal: React.FC = () => {
-  const { activeModal, setActiveModal, setMarkdown, saveRevision } = useResumeStore();
+  const { activeModal, setActiveModal, setMarkdown, saveRevision } = useResumeStoreV2();
   const [pasteText, setPasteText] = useState('');
 
   if (activeModal !== 'import') return null;

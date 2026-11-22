@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import {
   X,
   Target,
@@ -30,7 +30,7 @@ Key Requirements:
 - Strong leadership skills, mentoring senior engineers, and driving system design reviews.`;
 
 export const AtsMatcherModal: React.FC = () => {
-  const { activeModal, setActiveModal, markdown, setMarkdown, saveRevision } = useResumeStore();
+  const { activeModal, setActiveModal, markdown, setMarkdown, saveRevision } = useResumeStoreV2();
   const [jobDescription, setJobDescription] = useState<string>(SAMPLE_JOB_DESCRIPTION);
   const [copied, setCopied] = useState(false);
   const [appended, setAppended] = useState(false);

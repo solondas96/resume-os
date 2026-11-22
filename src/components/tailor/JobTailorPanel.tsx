@@ -7,7 +7,7 @@ import {
   Copy,
   Check
 } from 'lucide-react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 
 // Common technical and functional stop words to ignore
 const STOP_WORDS = new Set([
@@ -23,7 +23,7 @@ export const JobTailorPanel: React.FC = () => {
     setActiveSidePanel,
     targetJobDescription,
     setTargetJobDescription,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const [copiedKeyword, setCopiedKeyword] = useState<string | null>(null);
 

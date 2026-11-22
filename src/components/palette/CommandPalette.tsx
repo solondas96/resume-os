@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import {
@@ -60,7 +60,7 @@ export const CommandPalette: React.FC = () => {
     setWorkspaceMode,
     setActiveSidePanel,
     fitToOnePage
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);

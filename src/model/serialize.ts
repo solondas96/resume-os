@@ -35,7 +35,7 @@ export function markdownToResume(markdown: string, title: string = 'Untitled'): 
 
     // Collect all header lines before first ##
     const headerLines: string[] = [];
-    while (currentLine < lines.length && !lines[currentLine].startsWith('##')) {
+    while (currentLine < lines.length && !lines[currentLine].startsWith('## ')) {
       headerLines.push(lines[currentLine]);
       currentLine++;
     }
@@ -114,7 +114,7 @@ export function markdownToResume(markdown: string, title: string = 'Untitled'): 
 
       // Collect section content until next ##
       const sectionLines: string[] = [];
-      while (currentLine < lines.length && !lines[currentLine].startsWith('##')) {
+      while (currentLine < lines.length && !lines[currentLine].startsWith('## ')) {
         sectionLines.push(lines[currentLine]);
         currentLine++;
       }

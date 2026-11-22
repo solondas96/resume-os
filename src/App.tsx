@@ -14,24 +14,42 @@ import { ShareModal } from './components/share/ShareModal';
 import { BulletLinterDrawer } from './components/audit/BulletLinterDrawer';
 import { JobTailorPanel } from './components/tailor/JobTailorPanel';
 import { RecruiterView } from './components/preview/RecruiterView';
-import { useResumeStore } from './store/useResumeStore';
+import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
+import { setupUndoRedoKeyBindings } from './services/undoRedo';
+import { useResumeStoreV2 } from './store/useResumeStoreV2';
 import { decodeSharedResume } from './utils/shareResume';
 
 export const App: React.FC = () => {
-  const {
-    uiTheme,
-    mobileTab,
-    setMobileTab,
-    recruiterViewMode,
-    setRecruiterViewMode,
-    setDocumentTitle,
-    setMarkdown,
-    setTheme,
-    setAccentColor,
-    setFontSize,
-    setMarginSize,
-    setLineHeight,
-  } = useResumeStore();
+  const initialize = useResumeStoreV2((s) => s.initialize);
+  const uiTheme = useResumeStoreV2((s) => s.uiTheme);
+  const mobileTab = useResumeStoreV2((s) => s.mobileTab);
+  const setMobileTab = useResumeStoreV2((s) => s.setMobileTab);
+  const recruiterViewMode = useResumeStoreV2((s) => s.recruiterViewMode);
+  const currentResume = useResumeStoreV2((s) => s.currentResume);
+  const openSharedView = useResumeStoreV2((s) => s.openSharedView);
+  const openImport = useResumeStoreV2((s) => s.openImport);
+  const createResume = useResumeStoreV2((s) => s.createResume);
+  const setActiveModal = useResumeStoreV2((s) => s.setActiveModal);
+  const undo = useResumeStoreV2((s) => s.undo);
+  const redo = useResumeStoreV2((s) => s.redo);
+
+  const [ready, setReady] = useState(false);
+
+  // Startup: open the database, run the v1 -> v2 migration, load resumes
+  useEffect(() => {
+    let cancelled = false;
+    initialize()
+      .catch((e) => console.error('Startup failed:', e))
+      .finally(() => {
+        if (!cancelled) setReady(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [initialize]);
+
+  // Undo / redo keyboard shortcuts
+  useEffect(() => setupUndoRedoKeyBindings(() => undo(), () => redo()), [undo, redo]);
 
   useEffect(() => {
     if (uiTheme === 'dark') {
@@ -41,23 +59,13 @@ export const App: React.FC = () => {
     }
   }, [uiTheme]);
 
-  // Check URL hash for shared recruiter link on initial load
+  // Shared recruiter link (#view=...): previewed in memory, nothing is saved
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hash.startsWith('#view=')) {
-      const code = window.location.hash.replace('#view=', '');
-      const decoded = decodeSharedResume(code);
-      if (decoded) {
-        setDocumentTitle(decoded.title);
-        setMarkdown(decoded.markdown);
-        setTheme(decoded.theme);
-        setAccentColor(decoded.accentColor);
-        setFontSize(decoded.fontSize);
-        setMarginSize(decoded.marginSize);
-        setLineHeight(decoded.lineHeight);
-        setRecruiterViewMode(true);
-      }
-    }
-  }, [setDocumentTitle, setMarkdown, setTheme, setAccentColor, setFontSize, setMarginSize, setLineHeight, setRecruiterViewMode]);
+    if (!ready || typeof window === 'undefined') return;
+    if (!window.location.hash.startsWith('#view=')) return;
+    const decoded = decodeSharedResume(window.location.hash.replace('#view=', ''));
+    if (decoded) openSharedView(decoded);
+  }, [ready, openSharedView]);
 
   const [editorWidth, setEditorWidth] = useState<number>(() => {
     if (typeof window !== 'undefined') {
@@ -90,7 +98,35 @@ export const App: React.FC = () => {
 
   // If in Recruiter View Mode, render the dedicated public preview view
   if (recruiterViewMode) {
-    return <RecruiterView />;
+    return (
+      <>
+        <RecruiterView />
+        <ImportModal />
+      </>
+    );
+  }
+
+  if (!ready) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-background text-muted-foreground text-sm">
+        Loading your resumes…
+      </div>
+    );
+  }
+
+  // First run: no resumes yet
+  if (!currentResume) {
+    return (
+      <>
+        <FirstRunWelcome
+          onUpload={(file) => openImport(file)}
+          onStartFromRole={() => setActiveModal('presets')}
+          onStartBlank={() => createResume('Untitled Resume')}
+        />
+        <ImportModal />
+        <PresetsModal />
+      </>
+    );
   }
 
   return (

@@ -271,6 +271,33 @@ export async function saveRevision(resumeId: string, revision: any): Promise<boo
 }
 
 /**
+ * Delete one revision by id (IndexedDB key path is 'id')
+ */
+export async function deleteRevision(revisionId: string, resumeId: string): Promise<boolean> {
+  const db = await initDB();
+
+  if (!db) {
+    try {
+      const key = `revisions_${resumeId}`;
+      const revisions = JSON.parse(localStorage.getItem(key) || '[]');
+      localStorage.setItem(key, JSON.stringify(revisions.filter((r: any) => r.id !== revisionId)));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  return new Promise((resolve) => {
+    const transaction = db.transaction([HISTORY_STORE], 'readwrite');
+    const store = transaction.objectStore(HISTORY_STORE);
+    const request = store.delete(revisionId);
+
+    request.onerror = () => resolve(false);
+    request.onsuccess = () => resolve(true);
+  });
+}
+
+/**
  * Load revisions for a resume
  */
 export async function loadRevisions(resumeId: string): Promise<any[]> {

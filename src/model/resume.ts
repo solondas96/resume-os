@@ -7,6 +7,12 @@
 export interface Resume {
   id: string;
   schemaVersion: 2;
+  /**
+   * The exact editor text this resume was written in. The structured fields
+   * are parsed from it, and it is the buffer the editor shows, so text the
+   * parser does not model is never lost.
+   */
+  source?: string;
   meta: {
     title: string;
     targetRole?: string;
@@ -30,6 +36,8 @@ export interface Resume {
     fontSize: string; // FontSizeOption
     margin: string; // MarginOption
     lineHeight: string; // LineHeightOption
+    compactSpacing?: boolean;
+    onePageMode?: boolean;
   };
 }
 

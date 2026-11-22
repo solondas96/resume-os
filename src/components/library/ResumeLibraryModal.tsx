@@ -12,7 +12,7 @@ import {
   Upload,
   ArrowRight
 } from 'lucide-react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { SAMPLE_RESUME } from '../../data/sampleResume';
 
 export const ResumeLibraryModal: React.FC = () => {
@@ -26,7 +26,7 @@ export const ResumeLibraryModal: React.FC = () => {
     renameResume,
     libraryModalOpen,
     setLibraryModalOpen,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
@@ -202,7 +202,7 @@ export const ResumeLibraryModal: React.FC = () => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-foreground truncate">{resume.title}</h3>
+                        <h3 className="text-sm font-semibold text-foreground truncate">{resume.meta.title}</h3>
                         {isActive && (
                           <span className="text-[10px] uppercase font-mono tracking-wider font-semibold px-1.5 py-0.5 bg-brand text-white rounded">
                             Active
@@ -214,10 +214,10 @@ export const ResumeLibraryModal: React.FC = () => {
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1 font-mono text-[11px]">
                         <Calendar className="w-3 h-3" />
-                        {new Date(resume.updatedAt).toLocaleDateString()}
+                        {new Date(resume.meta.updatedAt).toLocaleDateString()}
                       </span>
                       <span>•</span>
-                      <span className="capitalize font-mono text-[11px]">{resume.theme} template</span>
+                      <span className="capitalize font-mono text-[11px]">{resume.design.template} template</span>
                     </div>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export const ResumeLibraryModal: React.FC = () => {
                   )}
 
                   <button
-                    onClick={() => handleStartRename(resume.id, resume.title)}
+                    onClick={() => handleStartRename(resume.id, resume.meta.title)}
                     title="Rename"
                     className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
                   >
@@ -255,7 +255,7 @@ export const ResumeLibraryModal: React.FC = () => {
                   {resumes.length > 1 && (
                     <button
                       onClick={() => {
-                        if (confirm(`Delete "${resume.title}"?`)) {
+                        if (confirm(`Delete "${resume.meta.title}"?`)) {
                           deleteResume(resume.id);
                         }
                       }}

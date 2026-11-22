@@ -1,5 +1,5 @@
 import React from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
 import { FontSizeOption, MarginOption, LineHeightOption } from '../../types';
 import {
@@ -34,7 +34,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
     setMarginSize,
     lineHeight,
     setLineHeight,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   if (!isOpen) return null;
 

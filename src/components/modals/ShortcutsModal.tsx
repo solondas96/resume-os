@@ -1,10 +1,10 @@
 import React from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { X, HelpCircle, Copy, Check } from 'lucide-react';
 import { ICON_SVGS } from '../../parser/iconMap';
 
 export const ShortcutsModal: React.FC = () => {
-  const { activeModal, setActiveModal } = useResumeStore();
+  const { activeModal, setActiveModal } = useResumeStoreV2();
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
   if (activeModal !== 'shortcuts') return null;

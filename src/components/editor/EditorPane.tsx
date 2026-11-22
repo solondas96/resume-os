@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { markdown as markdownLang } from '@codemirror/lang-markdown';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { SectionCardView } from './SectionCardView';
 import {
   Bold,
@@ -47,7 +47,7 @@ export const EditorPane: React.FC = () => {
     editorViewMode,
     setEditorViewMode,
     uiTheme,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const isCoverLetter = workspaceMode === 'cover-letter';
   const content = isCoverLetter ? coverLetterMarkdown : markdown;

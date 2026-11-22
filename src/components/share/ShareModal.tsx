@@ -7,7 +7,7 @@ import {
   Eye,
   ShieldCheck
 } from 'lucide-react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { getShareableUrl } from '../../utils/shareResume';
 
 export const ShareModal: React.FC = () => {
@@ -22,7 +22,7 @@ export const ShareModal: React.FC = () => {
     shareModalOpen,
     setShareModalOpen,
     setRecruiterViewMode,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const [copied, setCopied] = useState(false);
 

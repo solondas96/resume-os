@@ -1,144 +1,81 @@
 /**
- * Undo/Redo stack management for the Resume model
- * Separate from named snapshots/revisions
- * Triggered by Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z
+ * Undo/Redo stack for the Resume model.
+ * Separate from named snapshots/revisions.
+ * Triggered by Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z.
  */
 
 import { Resume } from '../model/resume';
 
-interface HistoryEntry {
-  resume: Resume;
-  timestamp: number;
-  label?: string; // Optional label for debugging
+const MAX_STACK_SIZE = 50;
+
+function clone(resume: Resume): Resume {
+  return JSON.parse(JSON.stringify(resume));
 }
 
 class UndoRedoManager {
-  private undoStack: HistoryEntry[] = [];
-  private redoStack: HistoryEntry[] = [];
-  private maxStackSize = 50; // Limit memory usage
+  private undoStack: Resume[] = [];
+  private redoStack: Resume[] = [];
 
-  /**
-   * Push current state onto undo stack
-   */
-  pushState(resume: Resume, label?: string): void {
-    // Clone to avoid mutations
-    const entry: HistoryEntry = {
-      resume: JSON.parse(JSON.stringify(resume)),
-      timestamp: Date.now(),
-      label,
-    };
-
-    this.undoStack.push(entry);
-    this.redoStack = []; // Clear redo stack on new action
-
-    // Limit stack size to avoid memory issues
-    if (this.undoStack.length > this.maxStackSize) {
-      this.undoStack.shift();
-    }
+  /** Record a state before a change. Clears redo history, as any editor does. */
+  record(previous: Resume): void {
+    this.undoStack.push(clone(previous));
+    this.redoStack = [];
+    if (this.undoStack.length > MAX_STACK_SIZE) this.undoStack.shift();
   }
 
-  /**
-   * Undo last action (Cmd/Ctrl+Z)
-   */
-  undo(): Resume | null {
-    if (this.undoStack.length === 0) return null;
-
-    const current = this.undoStack.pop();
-    if (!current) return null;
-
-    // Push current state to redo stack
-    // (This would need the current resume passed in from the caller)
-    return current.resume;
+  /** Undo: returns the previous state, and keeps `current` available for redo. */
+  undo(current: Resume): Resume | null {
+    const previous = this.undoStack.pop();
+    if (!previous) return null;
+    this.redoStack.push(clone(current));
+    if (this.redoStack.length > MAX_STACK_SIZE) this.redoStack.shift();
+    return previous;
   }
 
-  /**
-   * Redo last undone action (Cmd/Ctrl+Shift+Z)
-   */
-  redo(): Resume | null {
-    if (this.redoStack.length === 0) return null;
-
-    const entry = this.redoStack.pop();
-    return entry ? entry.resume : null;
+  /** Redo: returns the next state, and keeps `current` available for undo. */
+  redo(current: Resume): Resume | null {
+    const next = this.redoStack.pop();
+    if (!next) return null;
+    this.undoStack.push(clone(current));
+    if (this.undoStack.length > MAX_STACK_SIZE) this.undoStack.shift();
+    return next;
   }
 
-  /**
-   * Push to redo stack (called when user performs undo)
-   */
-  pushToRedoStack(resume: Resume, label?: string): void {
-    const entry: HistoryEntry = {
-      resume: JSON.parse(JSON.stringify(resume)),
-      timestamp: Date.now(),
-      label,
-    };
-
-    this.redoStack.push(entry);
-
-    if (this.redoStack.length > this.maxStackSize) {
-      this.redoStack.shift();
-    }
-  }
-
-  /**
-   * Check if undo is available
-   */
   canUndo(): boolean {
     return this.undoStack.length > 0;
   }
 
-  /**
-   * Check if redo is available
-   */
   canRedo(): boolean {
     return this.redoStack.length > 0;
   }
 
-  /**
-   * Clear all history
-   */
   clear(): void {
     this.undoStack = [];
     this.redoStack = [];
   }
 
-  /**
-   * Get current stack sizes (for debugging)
-   */
   getStackInfo(): { undoSize: number; redoSize: number } {
-    return {
-      undoSize: this.undoStack.length,
-      redoSize: this.redoStack.length,
-    };
+    return { undoSize: this.undoStack.length, redoSize: this.redoStack.length };
   }
 }
 
-// Singleton instance
 export const undoRedoManager = new UndoRedoManager();
 
 /**
- * Setup keyboard shortcuts for undo/redo
- * Call once on app initialization
+ * Setup keyboard shortcuts for undo/redo.
+ * Returns a cleanup function.
  */
-export function setupUndoRedoKeyBindings(
-  onUndo: () => void,
-  onRedo: () => void
-): () => void {
+export function setupUndoRedoKeyBindings(onUndo: () => void, onRedo: () => void): () => void {
   const handleKeyDown = (e: KeyboardEvent) => {
     const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
     const isCmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
+    if (!isCmdOrCtrl || e.key.toLowerCase() !== 'z') return;
 
-    if (isCmdOrCtrl && e.key === 'z' && !e.shiftKey) {
-      e.preventDefault();
-      onUndo();
-    } else if (isCmdOrCtrl && (e.key === 'Z' || (e.shiftKey && e.key === 'z'))) {
-      e.preventDefault();
-      onRedo();
-    }
+    e.preventDefault();
+    if (e.shiftKey) onRedo();
+    else onUndo();
   };
 
   document.addEventListener('keydown', handleKeyDown);
-
-  // Return cleanup function
-  return () => {
-    document.removeEventListener('keydown', handleKeyDown);
-  };
+  return () => document.removeEventListener('keydown', handleKeyDown);
 }

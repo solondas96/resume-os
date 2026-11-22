@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import {
   ZoomIn,
   ZoomOut,
@@ -27,7 +27,7 @@ export const StatusBar: React.FC = () => {
     fitToOnePage,
     activeSidePanel,
     setActiveSidePanel,
-  } = useResumeStore();
+  } = useResumeStoreV2();
 
   const activeContent = workspaceMode === 'cover-letter' ? coverLetterMarkdown : markdown;
   const wordCount = activeContent.trim().split(/\s+/).filter(Boolean).length;

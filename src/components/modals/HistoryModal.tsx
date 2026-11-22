@@ -1,9 +1,9 @@
 import React from 'react';
-import { useResumeStore } from '../../store/useResumeStore';
-import { X, Clock, RotateCcw } from 'lucide-react';
+import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
+import { X, Clock, RotateCcw, Trash2 } from 'lucide-react';
 
 export const HistoryModal: React.FC = () => {
-  const { activeModal, setActiveModal, history, restoreRevision } = useResumeStore();
+  const { activeModal, setActiveModal, revisions, restoreRevision, deleteRevision } = useResumeStoreV2();
 
   if (activeModal !== 'history') return null;
 
@@ -26,12 +26,12 @@ export const HistoryModal: React.FC = () => {
 
         {/* Content list */}
         <div className="p-4 overflow-y-auto flex-1 space-y-2">
-          {history.length === 0 ? (
+          {revisions.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground text-xs">
               No previous revisions saved yet. Edits and exports automatically create snapshots here.
             </div>
           ) : (
-            history.map((rev) => (
+            revisions.map((rev) => (
               <div
                 key={rev.id}
                 className="bg-background border border-border rounded-xl p-3 flex items-center justify-between hover:bg-muted/40 transition"
@@ -55,18 +55,27 @@ export const HistoryModal: React.FC = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    if (confirm('Restore this revision into the editor? Current unsaved work will be overwritten.')) {
-                      restoreRevision(rev);
-                      setActiveModal(null);
-                    }
-                  }}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
-                >
-                  <RotateCcw className="w-3 h-3 text-brand" />
-                  <span>Restore</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => {
+                      if (confirm('Restore this revision? Your current version is saved as a snapshot first.')) {
+                        restoreRevision(rev);
+                        setActiveModal(null);
+                      }
+                    }}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
+                  >
+                    <RotateCcw className="w-3 h-3 text-brand" />
+                    <span>Restore</span>
+                  </button>
+                  <button
+                    onClick={() => deleteRevision(rev.id)}
+                    title="Delete snapshot"
+                    className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/10 transition"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ))
           )}
