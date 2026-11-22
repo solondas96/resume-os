@@ -1,34 +1,7 @@
 import MarkdownIt from 'markdown-it';
 import MdContainer from 'markdown-it-container';
+import DOMPurify from 'dompurify';
 import { getIconSvg } from './iconMap';
-
-// Initialize DOMPurify - in browser use window.DOMPurify, in tests use direct import
-let DOMPurify: any = null;
-
-// Check if we're in browser environment
-if (typeof window !== 'undefined' && (window as any).DOMPurify) {
-  DOMPurify = (window as any).DOMPurify;
-} else {
-  // For Node.js tests, we'll initialize it lazily when first needed
-  DOMPurify = null;
-}
-
-// Lazy initialization for Node.js
-function getDOMPurify(): any {
-  if (DOMPurify) return DOMPurify;
-
-  try {
-    // Try to import DOMPurify with JSDOM support
-    const purify = require('dompurify');
-    const { JSDOM } = require('jsdom');
-    const jsdom = new JSDOM('');
-    DOMPurify = purify(jsdom.window);
-    return DOMPurify;
-  } catch (e) {
-    // Fallback: return a no-op sanitizer
-    return { sanitize: (html: string) => html };
-  }
-}
 
 // Core markdown-it instance
 export const md = new MarkdownIt({
@@ -224,8 +197,5 @@ export function parseResumeMarkdown(content: string): string {
   html = html.replace(/::{3,}/g, '');
 
   // 11. Sanitize the HTML to prevent XSS attacks
-  const purifier = getDOMPurify();
-  const sanitized = purifier.sanitize(html, PURIFY_CONFIG as any) as string;
-
-  return sanitized;
+  return DOMPurify.sanitize(html, PURIFY_CONFIG as any) as unknown as string;
 }

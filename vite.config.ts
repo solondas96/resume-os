@@ -11,4 +11,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  test: {
+    // DOMPurify needs a DOM window at import time; tests run under jsdom
+    environment: 'jsdom',
+  },
 });
