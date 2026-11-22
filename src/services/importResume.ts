@@ -5,6 +5,8 @@
 
 import { Resume } from '../model/resume';
 import { markdownToResume } from '../model/serialize';
+// Bundled worker: served from our own origin, never from a CDN
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 export interface ImportResult {
   success: boolean;
@@ -81,8 +83,7 @@ export async function extractPdfText(file: File): Promise<string> {
     // Dynamically import pdfjs to avoid bundling it unnecessarily
     const pdf = await import('pdfjs-dist');
 
-    // Set worker path
-    pdf.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdf.version}/pdf.worker.min.js`;
+    pdf.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
     const pdfDoc = await pdf.getDocument({ data: arrayBuffer }).promise;
     let text = '';
