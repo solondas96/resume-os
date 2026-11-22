@@ -80,5 +80,3 @@ export interface RolePreset {
   accentColor: string;
   markdown: string;
 }
-
-declare module 'html2pdf.js';

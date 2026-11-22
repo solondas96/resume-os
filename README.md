@@ -48,12 +48,12 @@ Dock your target job description in a dedicated side-by-side inspector panel. Tr
 Seamlessly switch between your Resume and a matching Cover Letter companion. Shares your candidate header details, accent colors, and typography to export a unified, professional 2-document packet.
 
 ### 6. 🎨 6 Curated Professional Templates
-- **Modern Minimalist**: Silicon Valley sans-serif typography with tag badges.
-- **Classic Ivy**: Traditional Harvard/Wall Street serif typography with centered headers.
-- **Executive Two-Tone**: Two-tone shaded section badges for senior leaders.
-- **Mono Compact**: High-density engineering layout for 1-page resumes.
-- **Swiss Editorial**: International typographic style with bold grotesque headers and hairline rules.
-- **Academic CV**: Traditional Newsreader serifs, formal honorifics, and publication numbering.
+- **Modern Minimalist**: Clean Silicon Valley aesthetic with crisp sans-serif typography and pill skill tags.
+- **Classic Ivy**: Traditional Harvard & Wall Street style with elegant serif headings and formal rules.
+- **Executive Two-Tone**: Distinguished executive layout featuring a shaded sidebar for skills & leadership.
+- **Mono Compact**: High-density technical aesthetic for dense 1-page engineering resumes.
+- **Swiss Editorial**: International typographic style with bold grotesque headers and hairline dividers.
+- **Academic CV**: Scholarly curriculum vitae layout with traditional serifs and publication numbering.
 
 ### 7. 🔗 1-Click Shareable Web Resume Link (Recruiter View)
 Encode your resume into a private, client-side URL hash link. Send `/#view=...` directly to hiring managers or recruiters to present a clean, responsive web view with an instant "Download PDF" button.
@@ -74,12 +74,14 @@ ResumeLabs includes a tested, modular resume parser (`src/services/parsing.ts`) 
 ## ✨ Key Features
 
 - **🎯 Live In-Browser ATS Matcher**: Paste any job description to instantly compute keyword overlap, match percentage, and inject missing keywords with 1 click.
-- **⚡ 1-Click Direct Vector PDF Export**: Zero-backend vector PDF download via `html2pdf.js` with progress feedback.
-- **🏛️ 4 Curated English Templates**:
-  - **Modern Minimalist**: Crisp Silicon Valley sans-serif typography with tag badges.
-  - **Classic Ivy**: Traditional Harvard/Wall Street serif typography with centered headers.
-  - **Executive Two-Tone**: Two-tone shaded section badges for senior leaders.
-  - **Mono Compact**: High-density engineering layout for 1-page resumes.
+- **⚡ Text-Based PDF Export**: Browser print dialog generates selectable, ATS-parseable PDFs with no rasterization.
+- **🏛️ 6 Curated Professional Templates**:
+  - **Modern Minimalist**: Clean Silicon Valley aesthetic with crisp sans-serif and pill skill tags.
+  - **Classic Ivy**: Traditional Harvard/Wall Street style with elegant serif headings.
+  - **Executive Two-Tone**: Distinguished executive layout with shaded sidebar for skills.
+  - **Mono Compact**: High-density technical aesthetic for dense 1-page resumes.
+  - **Swiss Editorial**: International typographic style with bold grotesque headers.
+  - **Academic CV**: Scholarly curriculum vitae layout with traditional serifs.
 - **📂 Starter Role Presets (10 Curated Industry Blueprints)**: Pre-configured, high-impact resumes with STAR/Google XYZ metrics, tech skill tags, and custom themes: Staff Software Engineer, Senior Product Designer, Lead Technical PM, New Graduate, Staff AI/ML Research Engineer, Principal Data Architect, Director of Engineering, Senior Staff SRE, Postdoctoral Fellow (Academic CV), and Lead Product Marketing Manager.
 - **📝 Dual Editor Modes**: Switch seamlessly between CodeMirror 6 markdown editor (with slash `/` shortcuts) and drag-to-reorder section cards.
 - **📏 Fine-Grained Layout Controls**: Dynamic font sizes (`small`, `medium`, `large`), page margins (`narrow`, `normal`, `relaxed`), and line-height controls.

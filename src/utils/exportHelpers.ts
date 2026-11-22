@@ -1,5 +1,3 @@
-import html2pdf from 'html2pdf.js';
-
 /**
  * Trigger browser file download helper
  */
@@ -16,8 +14,9 @@ export function downloadFile(content: string, filename: string, mimeType: string
 }
 
 /**
- * Direct client-side PDF export using html2pdf.js
- * Renders the A4 canvas into high-DPI vector/canvas PDF without opening the system print dialog.
+ * Text-based PDF export using native browser print dialog.
+ * User prints to PDF via File > Save as PDF / "Print to File".
+ * This ensures selectable text, proper ATS parsing, and no rasterization.
  */
 export async function exportDirectPdf(
   element: HTMLElement | null,
@@ -28,80 +27,174 @@ export async function exportDirectPdf(
     return false;
   }
 
-  // Ensure clean filename
-  const cleanFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
-
-  // Clone the sheet element so we can sanitize it without mutating the live UI
-  const clone = element.cloneNode(true) as HTMLElement;
-
-  // 1. Remove editor visual overlays (.page-break-indicator, .no-print)
-  clone.querySelectorAll('.page-break-indicator, .no-print').forEach((el) => el.remove());
-
-  // 2. Normalize styles on the clone to ensure exact 1:1 A4 canvas dimensions
-  clone.style.boxShadow = 'none';
-  clone.style.margin = '0 auto';
-  clone.style.transform = 'none';
-  clone.style.width = '794px';
-  clone.style.minWidth = '794px';
-  clone.style.maxWidth = '794px';
-  clone.style.boxSizing = 'border-box';
-  clone.style.backgroundColor = '#ffffff';
-
-  // Copy CSS variables from original element
-  const computed = window.getComputedStyle(element);
-  const primaryColor = computed.getPropertyValue('--primary-color') || '#c96442';
-  const primaryLight = computed.getPropertyValue('--primary-light') || '#f5e9e2';
-  clone.style.setProperty('--primary-color', primaryColor);
-  clone.style.setProperty('--primary-light', primaryLight);
-
-  // 3. Mount clone into a clean temporary container offscreen
-  const container = document.createElement('div');
-  container.id = 'pdf-export-temp-container';
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '0';
-  container.style.width = '794px';
-  container.style.background = '#ffffff';
-  container.style.zIndex = '-9999';
-  container.appendChild(clone);
-  document.body.appendChild(container);
-
-  // 4. Configure html2pdf with zero margins (since .a4-sheet already has its own user-chosen padding)
-  const opt = {
-    margin: [0, 0, 0, 0] as [number, number, number, number],
-    filename: cleanFilename,
-    image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      letterRendering: false,
-      logging: false,
-      scrollY: 0,
-      scrollX: 0,
-      windowWidth: 794,
-    },
-    jsPDF: {
-      unit: 'mm' as const,
-      format: 'a4' as const,
-      orientation: 'portrait' as const,
-    },
-    pagebreak: {
-      mode: ['css', 'legacy'],
-      avoid: ['.resume-section', 'h1', 'h2', 'h3'],
-      before: '.manual-page-break',
-    },
-  };
+  // Store current page title
+  const originalTitle = document.title;
 
   try {
-    await html2pdf().set(opt).from(clone).save();
-    return true;
-  } catch (err) {
-    console.error('Direct PDF export error:', err);
-    return false;
-  } finally {
-    if (container.parentNode) {
-      document.body.removeChild(container);
+    // Set the page title to the filename (shows in PDF metadata)
+    document.title = filename.replace('.pdf', '');
+
+    // Clone the sheet element so we can sanitize it without mutating the live UI
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    // 1. Remove editor visual overlays (.page-break-indicator, .no-print)
+    clone.querySelectorAll('.page-break-indicator, .no-print').forEach((el) => el.remove());
+
+    // 2. Normalize styles on the clone to ensure exact 1:1 A4 canvas dimensions
+    clone.style.boxShadow = 'none';
+    clone.style.margin = '0';
+    clone.style.padding = '0';
+    clone.style.transform = 'none';
+    clone.style.width = '210mm';
+    clone.style.minWidth = '210mm';
+    clone.style.maxWidth = '210mm';
+    clone.style.boxSizing = 'border-box';
+    clone.style.backgroundColor = '#ffffff';
+
+    // Copy CSS variables from original element
+    const computed = window.getComputedStyle(element);
+    const primaryColor = computed.getPropertyValue('--primary-color') || '#c96442';
+    const primaryLight = computed.getPropertyValue('--primary-light') || '#f5e9e2';
+    clone.style.setProperty('--primary-color', primaryColor);
+    clone.style.setProperty('--primary-light', primaryLight);
+
+    // 3. Create a hidden iframe for printing
+    const printFrame = document.createElement('iframe');
+    printFrame.style.display = 'none';
+    document.body.appendChild(printFrame);
+
+    const doc = printFrame.contentDocument || printFrame.contentWindow?.document;
+    if (!doc) {
+      throw new Error('Could not access iframe document');
     }
+
+    // 4. Build complete HTML document with print-friendly styles
+    const printHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${filename.replace('.pdf', '')}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      color: #000;
+    }
+
+    .a4-sheet {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0;
+      page-break-after: always;
+      background: #ffffff;
+    }
+
+    .a4-sheet:last-child {
+      page-break-after: avoid;
+    }
+
+    .manual-page-break {
+      page-break-after: always;
+      display: none;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    /* Preserve structure and text */
+    section, div, p, ul, ol, li, h1, h2, h3, h4, h5, h6 {
+      page-break-inside: avoid;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* SVG icons in print */
+    svg {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      vertical-align: -0.125em;
+    }
+
+    @media print {
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 210mm;
+        height: 297mm;
+      }
+
+      .a4-sheet {
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border: none;
+      }
+
+      .no-print, .page-break-indicator {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  ${clone.outerHTML}
+</body>
+</html>
+    `;
+
+    doc.open();
+    doc.write(printHtml);
+    doc.close();
+
+    // 5. Wait for content to render, then print
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        try {
+          if (printFrame.contentWindow) {
+            printFrame.contentWindow.print();
+            setTimeout(() => {
+              document.body.removeChild(printFrame);
+              resolve(true);
+            }, 100);
+          } else {
+            resolve(false);
+          }
+        } catch (err) {
+          console.error('Print dialog error:', err);
+          if (document.body.contains(printFrame)) {
+            document.body.removeChild(printFrame);
+          }
+          resolve(false);
+        }
+      }, 300);
+    });
+  } finally {
+    document.title = originalTitle;
   }
 }
 
