@@ -40,28 +40,35 @@ export function markdownToResume(markdown: string, title: string = 'Untitled'): 
       currentLine++;
     }
 
-    // Parse contact info from first line (usually email · phone · location)
-    if (headerLines[0]) {
-      const contactLine = headerLines[0].trim();
-      const parts = contactLine.split(/\s*·\s*/);
+    // Contact info can sit on one line (email · phone · location) or on several.
+    // Every header line is scanned; lines that are pure contact are not headlines.
+    const contactLineIndexes = new Set<number>();
+    headerLines.forEach((raw, index) => {
+      const parts = raw.trim().split(/\s*·\s*/).map((p) => p.trim()).filter(Boolean);
+      let lineIsContact = false;
 
       for (const part of parts) {
-        const trimmed = part.trim();
-        const emailMatch = trimmed.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+        const emailMatch = part.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+        const digits = (part.match(/\d/g) || []).length;
         if (emailMatch) {
-          resume.basics.email = emailMatch[1];
-        } else if (trimmed.match(/^\+?\d/) && trimmed.match(/\d$/)) {
-          // Looks like phone
-          resume.basics.phone = trimmed;
-        } else if (!emailMatch && !resume.basics.location && trimmed.length > 2) {
-          // Location or other contact info
-          resume.basics.location = trimmed;
+          resume.basics.email = resume.basics.email || emailMatch[1];
+          lineIsContact = true;
+        } else if (/^\+?[\d()\s.-]+$/.test(part) && digits >= 7) {
+          // Phone: digits with optional separators, at least 7 digits
+          resume.basics.phone = resume.basics.phone || part;
+          lineIsContact = true;
+        } else if (index === 0 && !resume.basics.location && part.length > 2) {
+          // First line's other parts are location
+          resume.basics.location = part;
+          lineIsContact = true;
         }
       }
-    }
+      if (lineIsContact) contactLineIndexes.add(index);
+    });
 
     // Parse headline/summary from remaining lines
-    for (let i = 1; i < headerLines.length; i++) {
+    for (let i = 0; i < headerLines.length; i++) {
+      if (contactLineIndexes.has(i)) continue;
       const line = headerLines[i].trim();
       if (line && !line.startsWith(':::') && !line.startsWith('[icon:') && !line.startsWith('<')) {
         if (!resume.basics.headline && line.length > 10) {

@@ -36,11 +36,12 @@ function scoreImpact(resume: Resume): CategoryScore {
   ]);
 
   const weakPhrases = ['worked on', 'helped with', 'responsible for', 'involved in'];
-  const metricPattern = /\b(\d+%|[$€¥]\d+[MK]?|\d+x|\d+k|[\d.]+s|SLA|uptime|efficiency)\b/i;
+  // A quantified bullet: a percentage, money, a multiplier, or a number that is not a year
+  const metricPattern = /(\d+(?:\.\d+)?\s?%|[$€£¥]\s?\d|\b\d+(?:\.\d+)?\s?(?:x|k|m|ms|s|h|hrs?|hours?|days?|weeks?|months?|years?|users?|customers?|requests?|engineers?|people|teams?|%)\b|(?<!\d)(?!(?:19|20)\d{2}\b)\d{2,}\b|\bSLA\b|uptime)/i;
 
   // Scan all bullets
   resume.sections.forEach((section) => {
-    if (section.items && 'bullets' in section.items[0]) {
+    if (!!section.items?.length && 'bullets' in section.items[0]) {
       section.items.forEach((item: any) => {
         item.bullets?.forEach((bullet: any) => {
           bulletCount++;
@@ -119,7 +120,7 @@ function scoreClarity(resume: Resume): CategoryScore {
   let bulletCount = 0;
 
   resume.sections.forEach((section) => {
-    if (section.items && 'bullets' in section.items[0]) {
+    if (!!section.items?.length && 'bullets' in section.items[0]) {
       section.items.forEach((item: any) => {
         item.bullets?.forEach((bullet: any) => {
           bulletCount++;
@@ -224,7 +225,7 @@ function scoreConsistency(resume: Resume): CategoryScore {
   let bulletCount = 0;
 
   resume.sections.forEach((section) => {
-    if (section.items && 'bullets' in section.items[0]) {
+    if (!!section.items?.length && 'bullets' in section.items[0]) {
       section.items.forEach((item: any) => {
         item.bullets?.forEach((bullet: any) => {
           bulletCount++;
@@ -289,7 +290,7 @@ function scoreLength(resume: Resume): CategoryScore {
   let bulletCount = 0;
 
   resume.sections.forEach((section) => {
-    if (section.items && 'bullets' in section.items[0]) {
+    if (!!section.items?.length && 'bullets' in section.items[0]) {
       section.items.forEach((item: any) => {
         bulletCount += item.bullets?.length || 0;
       });

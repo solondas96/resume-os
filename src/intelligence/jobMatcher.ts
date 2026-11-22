@@ -94,7 +94,7 @@ function extractSkillsFromText(text: string): string[] {
 function findEvidence(requirement: ParsedRequirement, resume: Resume): ParsedRequirement {
   // Simple keyword matching
   for (const section of resume.sections) {
-    if (section.items && 'bullets' in section.items[0]) {
+    if (!!section.items?.length && 'bullets' in section.items[0]) {
       for (const item of section.items as any) {
         for (const bullet of item.bullets || []) {
           const bulletLower = bullet.text.toLowerCase();
@@ -165,10 +165,20 @@ function findEvidence(requirement: ParsedRequirement, resume: Resume): ParsedReq
     }
   });
 
-  // Weight must-haves more heavily
-  const mustHaveScore = mustHaveTotal > 0 ? (mustHaveMatches / mustHaveTotal) * 100 : 50;
-  const niceToHaveScore = matchedCount / requirements.length * 100;
-  const score = Math.round(mustHaveScore * 0.7 + niceToHaveScore * 0.3);
+  // No requirements found (e.g. a posting with no bullet points): nothing to match
+  if (requirements.length === 0) {
+    return { score: 0, requirements: [], matchedCount: 0, missingCount: 0, skills: { found: [], missing: [] } };
+  }
+
+  // Must-haves are 70% of the score, nice-to-haves 30%.
+  // With no nice-to-haves listed, must-haves carry the whole score.
+  const niceTotal = requirements.length - mustHaveTotal;
+  const niceMatches = matchedRequirements.filter((r) => r.type === 'nice-to-have' && r.strength !== 'missing').length;
+  const mustHaveScore = mustHaveTotal > 0 ? (mustHaveMatches / mustHaveTotal) * 100 : 0;
+  const niceToHaveScore = niceTotal > 0 ? (niceMatches / niceTotal) * 100 : null;
+  const score = Math.round(
+    niceToHaveScore === null ? mustHaveScore : mustHaveScore * 0.7 + niceToHaveScore * 0.3
+  );
 
   // Extract all skills
   const foundSkills: Set<string> = new Set();

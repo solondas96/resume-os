@@ -36,3 +36,18 @@ describe('markdownToResume: ### entries inside a ## section', () => {
     expect(resume.sections.map((s) => s.kind)).toEqual(['experience', 'skills']);
   });
 });
+
+describe('markdownToResume: contact details', () => {
+  it('finds email and phone on separate header lines', () => {
+    const r = markdownToResume('# Jane Doe\njane@example.com\n+1 (415) 555-0182\n\n## Skills\n- TS\n', 'Jane');
+    expect(r.basics.email).toBe('jane@example.com');
+    expect(r.basics.phone).toBe('+1 (415) 555-0182');
+  });
+
+  it('still reads the one-line "email · phone · location" form', () => {
+    const r = markdownToResume('# Jane Doe\njane@example.com · +1 415 555 0182 · Lisbon\n', 'Jane');
+    expect(r.basics.email).toBe('jane@example.com');
+    expect(r.basics.phone).toBe('+1 415 555 0182');
+    expect(r.basics.location).toBe('Lisbon');
+  });
+});
