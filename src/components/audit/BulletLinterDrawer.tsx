@@ -1,3 +1,4 @@
+import { SenioritySection, AtsPreviewSection, BulletBuilderSection } from '../inspector/InspectorTools';
 import { HealthBreakdown } from '../health/HealthPanel';
 import React, { useMemo } from 'react';
 import {
@@ -54,6 +55,9 @@ export const BulletLinterDrawer: React.FC = () => {
       </div>
 
       <HealthBreakdown />
+      <SenioritySection />
+      <AtsPreviewSection />
+      <BulletBuilderSection />
 
       {/* Score Overview Card */}
       <div className="p-5 border-b border-border bg-muted/10">

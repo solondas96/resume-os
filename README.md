@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-MIT-3a3a37?style=for-the-badge)](LICENSE)
 
 > **Precision Markdown resume builder with a calm, Claude-inspired warm minimalist aesthetic.**  
-> 100% Client-Side • Zero Backend Telemetry • In-Browser Privacy • Pixel-Perfect Vector PDF Export • Instant GitHub Pages Hosting.
+> 100% Client-Side • Zero Backend Telemetry • In-Browser Privacy • Text-Based PDF Export • Instant GitHub Pages Hosting.
 
 ---
 
@@ -60,16 +60,15 @@ Encode your resume into a private, client-side URL hash link. Send `/#view=...` 
 
 ---
 
-## 🛠️ Intelligent Resume Parser Service
+## 🧠 Intelligence Engine (no AI)
 
-ResumeLabs includes a tested, modular resume parser (`src/services/parsing.ts`) verified by a Vitest unit test suite:
-- **Bullet & Line Break Preservation**: Normalizes lines without collapsing bullet points into run-on strings.
-- **Broad Skills Taxonomy**: Automatically identifies 50+ data, cloud, engineering, and product skills (`PySpark`, `Databricks`, `Snowflake`, `Kafka`, `Delta Lake`, `Airflow`, `dbt`, `RAG`, `LLM`, `Figma`, etc.).
-- **Smart Experience Extraction**: Parses explicit phrases (`"7+ years of experience"`, `"10+ years of total experience"`) and extracts the maximum tenure.
-- **Canonical Heading Aliases**: Normalizes `"Work Experience"` and `"Professional Experience"` to `"Experience"`, and merges duplicate sections.
-- **Fail-Safe & Tested**: Gracefully handles blank or partial inputs without throwing errors.
+All guidance is deterministic: rules, curated lexicons and a skills dictionary with synonyms, in `src/intelligence/`. There are no models and no network calls.
+- **Health score**: Impact, Clarity, ATS readiness, Consistency and Length, each explained.
+- **Job match**: requirements from a posting, normalised through the skills dictionary, with evidence bullets and a gap list.
+- **ATS preview**: the plain text an applicant tracking system would read, in reading order, with problems flagged.
+- **Bullet builder**: composes an XYZ-style bullet and asks for a missing metric.
+- **Seniority check**: scope, ownership and leadership signals against a target level.
 
----
 
 ## ✨ Key Features
 

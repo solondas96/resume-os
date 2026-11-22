@@ -83,3 +83,12 @@ describe('job matcher: overall score', () => {
     expect(result.score).toBe(Math.round(100 * 0.7 + 0 * 0.3));
   });
 });
+
+describe('job matcher: synonyms', () => {
+  it('positive: "k8s" in a posting matches "Kubernetes" in the resume', () => {
+    const jd = `Required:\n- Experience running k8s clusters in production\n`;
+    const r = resume(`## Experience\n### Acme — Engineer\n- Operated Kubernetes clusters serving 2M users\n`);
+    const req = matchJobDescription(jd, r).requirements[0];
+    expect(req.strength).not.toBe('missing');
+  });
+});

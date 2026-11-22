@@ -18,6 +18,14 @@ export interface HealthScoreResult {
   topIssues: string[]; // Top 5 issues to fix
 }
 
+// A quantified bullet: a percentage, money, a multiplier, or a number that is not a year
+const METRIC_PATTERN = /(\d+(?:\.\d+)?\s?%|[$€£¥]\s?\d|\b\d+(?:\.\d+)?\s?(?:x|k|m|ms|s|h|hrs?|hours?|days?|weeks?|months?|years?|users?|customers?|requests?|engineers?|people|teams?|%)\b|(?<!\d)(?!(?:19|20)\d{2}\b)\d{2,}\b|\bSLA\b|uptime)/i;
+
+/** True when the text contains a measurable quantity (used by health and job match) */
+export function hasMetric(text: string): boolean {
+  return METRIC_PATTERN.test(text);
+}
+
 /**
  * Calculate impact score (metrics, action verbs, weak phrases)
  */
@@ -36,8 +44,7 @@ function scoreImpact(resume: Resume): CategoryScore {
   ]);
 
   const weakPhrases = ['worked on', 'helped with', 'responsible for', 'involved in'];
-  // A quantified bullet: a percentage, money, a multiplier, or a number that is not a year
-  const metricPattern = /(\d+(?:\.\d+)?\s?%|[$€£¥]\s?\d|\b\d+(?:\.\d+)?\s?(?:x|k|m|ms|s|h|hrs?|hours?|days?|weeks?|months?|years?|users?|customers?|requests?|engineers?|people|teams?|%)\b|(?<!\d)(?!(?:19|20)\d{2}\b)\d{2,}\b|\bSLA\b|uptime)/i;
+  const metricPattern = METRIC_PATTERN;
 
   // Scan all bullets
   resume.sections.forEach((section) => {

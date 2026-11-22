@@ -4,6 +4,8 @@
  */
 
 import { Resume } from '../model/resume';
+import { extractSkills, stemWord } from './skills';
+import { hasMetric } from './healthScore';
 
 export interface ParsedRequirement {
   text: string;
@@ -63,76 +65,65 @@ function extractRequirements(jobDescription: string): ParsedRequirement[] {
 }
 
 /**
- * Extract skills/keywords from text
+ * Extract skills from text using the dictionary (canonical names and synonyms).
+ * Falls back to stemmed significant words so unknown terms still match.
  */
+const STOPWORDS = new Set([
+  'the', 'and', 'with', 'for', 'experience', 'years', 'year', 'strong', 'good', 'ability', 'knowledge',
+  'work', 'working', 'role', 'team', 'skills', 'skill', 'in', 'of', 'a', 'an', 'to', 'or', 'on', 'at',
+  'using', 'proficiency', 'expertise', 'familiarity', 'understanding', 'must', 'nice', 'have', 'required',
+  'preferred', 'bonus', 'plus', 'etc', 'including', 'such', 'as', 'be', 'is', 'are', 'you', 'we', 'our',
+]);
+
 function extractSkillsFromText(text: string): string[] {
-  const skills: string[] = [];
-
-  // Common skill patterns
-  const patterns = [
-    /(\d+)\+?\s*years?\s+(?:of\s+)?(?:experience\s+)?(?:in\s+)?(\w+)/gi,
-    /(?:experience|proficiency|expertise)\s+(?:with|in)\s+([^,\.]+)/gi,
-    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g, // Capitalized phrases
-  ];
-
-  patterns.forEach((pattern) => {
-    let match;
-    while ((match = pattern.exec(text)) !== null) {
-      const skill = match[1] || match[2];
-      if (skill && skill.length > 2 && skill.length < 50) {
-        skills.push(skill.trim());
-      }
-    }
-  });
-
-  return [...new Set(skills)]; // Deduplicate
+  const dictionary = extractSkills(text);
+  if (dictionary.length > 0) return dictionary;
+  return [...new Set(
+    text
+      .split(/[^A-Za-z0-9+#.]+/)
+      .filter((w) => w.length > 3 && !STOPWORDS.has(w.toLowerCase()))
+      .map((w) => stemWord(w))
+      .filter((w) => w.length > 3)
+  )];
 }
 
 /**
- * Find evidence of a requirement in resume
+ * Find evidence of a requirement in the resume.
+ * strong: an experience bullet that covers the requirement and has a metric
+ * moderate: an experience bullet that covers it, without a metric
+ * weak: only the skills list covers it
+ * missing: nothing covers it
  */
 function findEvidence(requirement: ParsedRequirement, resume: Resume): ParsedRequirement {
-  // Simple keyword matching
+  if (requirement.skills.length === 0) return requirement;
+  const wanted = new Set(requirement.skills);
+  let best: { strength: 'strong' | 'moderate'; bulletText: string; sectionId: string } | null = null;
+
   for (const section of resume.sections) {
-    if (!!section.items?.length && 'bullets' in section.items[0]) {
-      for (const item of section.items as any) {
-        for (const bullet of item.bullets || []) {
-          const bulletLower = bullet.text.toLowerCase();
-
-          // Check if any requirement keywords appear in bullet
-          let matchCount = 0;
-          for (const skill of requirement.skills) {
-            if (bulletLower.includes(skill.toLowerCase())) {
-              matchCount++;
-            }
-          }
-
-          if (matchCount >= 2) {
-            requirement.evidence = {
-              sectionId: section.id,
-              bulletText: bullet.text,
-            };
-            requirement.strength = 'strong';
-            return requirement;
-          } else if (matchCount === 1) {
-            requirement.strength = 'moderate';
-          }
+    for (const item of (section.items ?? []) as { bullets?: { text: string }[] }[]) {
+      for (const bullet of item.bullets ?? []) {
+        const overlap = extractSkillsFromText(bullet.text).filter((s) => wanted.has(s)).length;
+        if (overlap === 0) continue;
+        const strength = hasMetric(bullet.text) ? 'strong' : 'moderate';
+        if (!best || (strength === 'strong' && best.strength === 'moderate')) {
+          best = { strength, bulletText: bullet.text, sectionId: section.id };
         }
       }
     }
   }
 
-  // Check skills section
+  if (best) {
+    requirement.strength = best.strength;
+    requirement.evidence = { sectionId: best.sectionId, bulletText: best.bulletText };
+    return requirement;
+  }
+
   for (const section of resume.sections) {
-    if (section.kind === 'skills' && section.groups) {
-      for (const group of section.groups) {
-        for (const skill of group.skills) {
-          if (skill.toLowerCase().includes(requirement.skills[0]?.toLowerCase() || '')) {
-            requirement.strength = 'weak';
-            break;
-          }
-        }
-      }
+    if (section.kind !== 'skills') continue;
+    const listed = extractSkillsFromText((section.groups ?? []).flatMap((g) => g.skills).join(', '));
+    if (listed.some((s) => wanted.has(s))) {
+      requirement.strength = 'weak';
+      return requirement;
     }
   }
 
