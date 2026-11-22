@@ -162,3 +162,22 @@ export function itemCount(section: Section): number {
   if (section.kind === 'custom' || section.kind === 'certifications') return section.lines.length;
   return sectionItems(section).length;
 }
+
+/**
+ * The resume as it should appear in outputs (preview, share, export):
+ * hidden sections and hidden bullets are removed. The form still shows them.
+ */
+export function forOutput(resume: Resume): Resume {
+  return {
+    ...resume,
+    sections: resume.sections
+      .filter((s) => !s.hidden)
+      .map((s) => {
+        if (s.kind !== 'experience' && s.kind !== 'education' && s.kind !== 'projects') return s;
+        return {
+          ...s,
+          items: (s.items as any[]).map((item) => ({ ...item, bullets: item.bullets.filter((b: Bullet) => !b.hidden) })),
+        } as Section;
+      }),
+  };
+}

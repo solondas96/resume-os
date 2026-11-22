@@ -88,3 +88,21 @@ describe('skills text', () => {
     expect(edit.skillsFromText('Go, Kafka;  , Postgres,')).toEqual(['Go', 'Kafka', 'Postgres']);
   });
 });
+
+describe('forOutput', () => {
+  it('removes hidden sections and hidden bullets, and keeps everything else', () => {
+    const r = markdownToResume('# A\n\n## Experience\n### Acme — Engineer\n- Keep me\n- Hide me\n\n## Skills\n- Go\n', 'A');
+    const sec = r.sections[0].id;
+    const item = sectionItems(r.sections[0])[0];
+    const withHidden = edit.setBulletHidden(r, sec, item.id, item.bullets[1].id, true);
+    const out = edit.forOutput(edit.setSectionHidden(withHidden, r.sections[1].id, true));
+    expect(out.sections.map((s) => s.title)).toEqual(['Experience']);
+    expect(sectionItems(out.sections[0])[0].bullets.map((b) => b.text)).toEqual(['Keep me']);
+  });
+
+  it('leaves the model itself unchanged (the form still shows hidden content)', () => {
+    const r = markdownToResume('# A\n\n## Skills\n- Go\n', 'A');
+    edit.forOutput(edit.setSectionHidden(r, r.sections[0].id, true));
+    expect(r.sections[0].hidden).toBeUndefined();
+  });
+});
