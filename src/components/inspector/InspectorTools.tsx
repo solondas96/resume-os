@@ -3,7 +3,7 @@
  * and the bullet builder. All computed from the resume model on the fly.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { buildAtsPreview } from '../../intelligence/ats';
 import { assessSeniority, levelLabel, SeniorityLevel } from '../../intelligence/seniority';
@@ -84,9 +84,14 @@ export const SenioritySection: React.FC = () => {
 };
 
 export const BulletBuilderSection: React.FC = () => {
+  const bulletSeed = useResumeStoreV2((s) => s.bulletSeed);
   const [intent, setIntent] = useState<Intent>('improve');
   const [verb, setVerb] = useState('');
-  const [did, setDid] = useState('');
+  const [did, setDid] = useState(bulletSeed);
+  // "Improve" on a bullet pre-fills the builder with that bullet's text
+  useEffect(() => {
+    if (bulletSeed) setDid(bulletSeed);
+  }, [bulletSeed]);
   const [change, setChange] = useState('');
   const [how, setHow] = useState('');
   const [copied, setCopied] = useState(false);

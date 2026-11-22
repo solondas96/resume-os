@@ -14,6 +14,15 @@ import {
 import { analyzeBullets } from '../../utils/bulletLinter';
 import { HealthBadge } from '../health/HealthPanel';
 
+/** "Saved · just now", "Saved · 3m ago", or "Saved" before the first save */
+export function savedLabel(at: number | null, now: number = Date.now()): string {
+  if (at === null) return 'Saved';
+  const s = Math.max(0, Math.round((now - at) / 1000));
+  if (s < 30) return 'Saved · just now';
+  if (s < 3600) return `Saved · ${Math.round(s / 60)}m ago`;
+  return `Saved · ${Math.round(s / 3600)}h ago`;
+}
+
 export const StatusBar: React.FC = () => {
   const {
     markdown,
@@ -21,6 +30,7 @@ export const StatusBar: React.FC = () => {
     coverLetterMarkdown,
     pageCount,
     isSaving,
+    lastSavedAt,
     zoom,
     setZoom,
     autoFitZoom,
@@ -61,7 +71,7 @@ export const StatusBar: React.FC = () => {
           ) : (
             <>
               <CheckCircle2 className="w-3 h-3 text-muted-foreground" />
-              <span>Saved</span>
+              <span>{savedLabel(lastSavedAt)}</span>
             </>
           )}
         </div>

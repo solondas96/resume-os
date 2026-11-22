@@ -87,6 +87,7 @@ export interface ResumeStoreV2 extends DerivedFields {
   activeResumeId: string;
   currentResume: Resume | null;
   isSaving: boolean;
+  lastSavedAt: number | null;
   loadResumes: () => Promise<void>;
   switchResume: (id: string) => void;
   createResume: (title?: string, templateMarkdown?: string, targetRole?: string) => string;
@@ -96,6 +97,8 @@ export interface ResumeStoreV2 extends DerivedFields {
   setDocumentTitle: (title: string) => void;
 
   // Editing
+  /** Apply a change made in the form editor (undoable; the text view is re-derived) */
+  updateModel: (mutate: (resume: Resume) => Resume) => void;
   setMarkdown: (markdown: string) => void;
   setTheme: (theme: TemplateId) => void;
   setAccentColor: (accent: string) => void;
@@ -164,6 +167,10 @@ export interface ResumeStoreV2 extends DerivedFields {
   updateApplication: (id: string, updates: Partial<JobApplication>) => void;
   deleteApplication: (id: string) => void;
 
+  // Bullet builder seed: "Improve" on a bullet opens the inspector with its text
+  bulletSeed: string;
+  openBulletBuilder: (text: string) => void;
+
   // Import (file or pasted text, reviewed before it becomes a resume)
   pendingImportFile: File | null;
   openImport: (file?: File | null) => void;
@@ -200,7 +207,8 @@ let lastRecordAt = 0;
 async function persistNow(resume: Resume, set: (p: Partial<ResumeStoreV2>) => void) {
   set({ isSaving: true });
   try {
-    await saveResume(resume);
+    const ok = await saveResume(resume);
+    if (ok) set({ lastSavedAt: Date.now() });
   } finally {
     set({ isSaving: false });
   }
@@ -298,6 +306,9 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     activeResumeId: '',
     currentResume: null,
     isSaving: false,
+    lastSavedAt: null,
+    bulletSeed: '',
+    openBulletBuilder: (text) => set({ activeSidePanel: 'linter', bulletSeed: text }),
     documentTitle: '',
     markdown: '',
     theme: 'modern',
@@ -393,6 +404,12 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     },
 
     // ---- editing ----------------------------------------------------------
+    updateModel: (mutate) => {
+      const cur = requireResume();
+      if (!cur) return;
+      commit(mutate(cur));
+    },
+
     setMarkdown: (markdown) => {
       const cur = requireResume();
       if (!cur) {
@@ -555,7 +572,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     autoFitZoom: false,
     setAutoFitZoom: (autoFitZoom) => set({ autoFitZoom }),
 
-    editorViewMode: 'markdown',
+    editorViewMode: 'form',
     setEditorViewMode: (editorViewMode) => set({ editorViewMode }),
     commandPaletteOpen: false,
     setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),

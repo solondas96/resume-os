@@ -275,11 +275,11 @@ export const CommandPalette: React.FC = () => {
     {
       id: 'toggle-view-mode',
       category: 'Appearance',
-      title: `Switch to ${editorViewMode === 'markdown' ? 'Section Cards View' : 'Raw Markdown View'}`,
+      title: `Switch to ${editorViewMode === 'markdown' ? 'Form Editor' : 'Advanced Markdown View'}`,
       description: 'Toggle between code editor and structured card editor',
       icon: <Columns className="w-4 h-4 text-blue-400" />,
-      action: () => setEditorViewMode(editorViewMode === 'markdown' ? 'cards' : 'markdown'),
-      keywords: ['cards', 'view', 'sections', 'toggle', 'editor'],
+      action: () => setEditorViewMode(editorViewMode === 'markdown' ? 'form' : 'markdown'),
+      keywords: ['form', 'cards', 'view', 'sections', 'toggle', 'editor', 'markdown'],
     },
 
     // Layout & Density

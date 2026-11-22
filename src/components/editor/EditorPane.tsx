@@ -3,7 +3,7 @@ import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { markdown as markdownLang } from '@codemirror/lang-markdown';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
-import { SectionCardView } from './SectionCardView';
+import { FormEditor } from '../form/FormEditor';
 import {
   Bold,
   Italic,
@@ -317,24 +317,27 @@ export const EditorPane: React.FC = () => {
         {/* Left: View Mode Segmented Switch */}
         <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
           <button
+            onClick={() => setEditorViewMode('form')}
+            aria-pressed={editorViewMode === 'form'}
+            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${
+              editorViewMode === 'form'
+                ? 'bg-primary text-primary-foreground shadow-card'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Form
+          </button>
+          <button
             onClick={() => setEditorViewMode('markdown')}
+            aria-pressed={editorViewMode === 'markdown'}
+            title="Advanced: edit the Markdown text"
             className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${
               editorViewMode === 'markdown'
                 ? 'bg-primary text-primary-foreground shadow-card'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Markdown
-          </button>
-          <button
-            onClick={() => setEditorViewMode('cards')}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${
-              editorViewMode === 'cards'
-                ? 'bg-primary text-primary-foreground shadow-card'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Section Cards
+            Advanced: Markdown
           </button>
         </div>
 
@@ -398,9 +401,11 @@ export const EditorPane: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content: Section Cards OR CodeMirror */}
-      {editorViewMode === 'cards' ? (
-        <SectionCardView />
+      {/* Main content: the form editor, or the Markdown text */}
+      {editorViewMode === 'form' ? (
+        <div className="flex-1 overflow-hidden">
+          <FormEditor />
+        </div>
       ) : (
         <div className="flex-1 overflow-hidden relative bg-card">
           <CodeMirror

@@ -1,6 +1,6 @@
 export type TemplateId = 'modern' | 'classic' | 'executive' | 'minimal' | 'swiss' | 'academic';
 export type UiTheme = 'dark' | 'light';
-export type EditorViewMode = 'markdown' | 'cards';
+export type EditorViewMode = 'form' | 'markdown';
 export type WorkspaceMode = 'resume' | 'cover-letter';
 export type ActiveSidePanel = 'none' | 'match' | 'linter';
 

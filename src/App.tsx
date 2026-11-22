@@ -35,6 +35,15 @@ export const App: React.FC = () => {
   const redo = useResumeStoreV2((s) => s.redo);
 
   const [ready, setReady] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 768px)').matches : true
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const onChange = () => setIsDesktop(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   // Startup: open the database, run the v1 -> v2 migration, load resumes
   useEffect(() => {
@@ -163,8 +172,10 @@ export const App: React.FC = () => {
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Desktop Side-by-Side Split View (md and up) */}
-        <div className="hidden md:flex w-full h-full overflow-hidden">
+        {/* Desktop Side-by-Side Split View (md and up). Only one layout is mounted at a time,
+            so the editor is never duplicated in the DOM. */}
+        {isDesktop && (
+        <div className="flex w-full h-full overflow-hidden">
           {/* Left Editor */}
           <div
             style={{ width: `${editorWidth}px` }}
@@ -190,8 +201,11 @@ export const App: React.FC = () => {
           </div>
         </div>
 
+        )}
+
         {/* Mobile Single Tab View (< md) */}
-        <div className="md:hidden flex-1 w-full h-full overflow-hidden">
+        {!isDesktop && (
+        <div className="flex-1 w-full h-full overflow-hidden">
           {mobileTab === 'editor' ? (
             <div className="w-full h-full overflow-hidden bg-card">
               <EditorPane />
@@ -202,6 +216,7 @@ export const App: React.FC = () => {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Bottom Unified Status Bar */}

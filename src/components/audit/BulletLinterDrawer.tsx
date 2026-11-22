@@ -34,7 +34,9 @@ export const BulletLinterDrawer: React.FC = () => {
       : 'text-rose-600 dark:text-rose-400';
 
   return (
-    <div className="fixed inset-y-0 right-0 z-40 w-full sm:w-[420px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
+    <div className="fixed z-40 bg-card shadow-2xl flex flex-col animate-in duration-200 motion-reduce:animate-none
+      inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t border-border slide-in-from-bottom
+      sm:inset-y-0 sm:left-auto sm:right-0 sm:bottom-auto sm:max-h-none sm:w-[420px] sm:rounded-none sm:border-t-0 sm:border-l sm:slide-in-from-right">
       {/* Drawer Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/20">
         <div className="flex items-center gap-2">
