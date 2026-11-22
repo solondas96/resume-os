@@ -6,13 +6,14 @@ import { HistoryModal } from './components/modals/HistoryModal';
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { ImportModal } from './components/modals/ImportModal';
 import { PresetsModal } from './components/modals/PresetsModal';
-import { AtsMatcherModal } from './components/ats/AtsMatcherModal';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { CommandPalette } from './components/palette/CommandPalette';
 import { ResumeLibraryModal } from './components/library/ResumeLibraryModal';
 import { ShareModal } from './components/share/ShareModal';
 import { BulletLinterDrawer } from './components/audit/BulletLinterDrawer';
-import { JobTailorPanel } from './components/tailor/JobTailorPanel';
+import { JobMatchPanel } from './components/match/JobMatchPanel';
+import { TrackerModal } from './components/tracker/TrackerModal';
+import { CoverLetterModal } from './components/cover/CoverLetterModal';
 import { RecruiterView } from './components/preview/RecruiterView';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
@@ -208,7 +209,7 @@ export const App: React.FC = () => {
 
       {/* Slide-over Side Panels */}
       <BulletLinterDrawer />
-      <JobTailorPanel />
+      <JobMatchPanel />
 
       {/* Modals & Command Palette */}
       <ResumeLibraryModal />
@@ -217,7 +218,8 @@ export const App: React.FC = () => {
       <ShortcutsModal />
       <ImportModal />
       <PresetsModal />
-      <AtsMatcherModal />
+      <TrackerModal />
+      <CoverLetterModal />
       <CommandPalette />
     </div>
   );

@@ -12,6 +12,7 @@ import {
   Target
 } from 'lucide-react';
 import { analyzeBullets } from '../../utils/bulletLinter';
+import { HealthBadge } from '../health/HealthPanel';
 
 export const StatusBar: React.FC = () => {
   const {
@@ -84,18 +85,25 @@ export const StatusBar: React.FC = () => {
           </>
         )}
 
-        {/* Job Tailor Pill */}
+        {/* Health badge: opens the inspector breakdown */}
+        <div className="h-3 w-[1px] bg-border mx-1 hidden sm:block" />
+        <HealthBadge
+          active={activeSidePanel === 'linter'}
+          onClick={() => setActiveSidePanel(activeSidePanel === 'linter' ? 'none' : 'linter')}
+        />
+
+        {/* Job Match Pill */}
         <button
-          onClick={() => setActiveSidePanel(activeSidePanel === 'tailor' ? 'none' : 'tailor')}
-          title="Open Job Match Tailor"
+          onClick={() => setActiveSidePanel(activeSidePanel === 'match' ? 'none' : 'match')}
+          title="Open Job Match"
           className={`hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
-            activeSidePanel === 'tailor'
+            activeSidePanel === 'match'
               ? 'bg-accent text-accent-foreground border border-brand/30'
               : 'hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}
         >
           <Target className="w-3 h-3 text-brand" />
-          <span>Tailor</span>
+          <span>Job Match</span>
         </button>
       </div>
 

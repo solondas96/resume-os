@@ -2,7 +2,7 @@ export type TemplateId = 'modern' | 'classic' | 'executive' | 'minimal' | 'swiss
 export type UiTheme = 'dark' | 'light';
 export type EditorViewMode = 'markdown' | 'cards';
 export type WorkspaceMode = 'resume' | 'cover-letter';
-export type ActiveSidePanel = 'none' | 'tailor' | 'linter';
+export type ActiveSidePanel = 'none' | 'match' | 'linter';
 
 export type FontSizeOption = 'small' | 'medium' | 'large';
 export type MarginOption = 'narrow' | 'normal' | 'relaxed';

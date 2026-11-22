@@ -187,18 +187,34 @@ export const Header: React.FC = () => {
           <span className="hidden lg:inline">Presets</span>
         </button>
 
-        {/* Job Tailor Panel Toggle */}
+        {/* Job Match Panel Toggle */}
         <button
-          onClick={() => setActiveSidePanel(activeSidePanel === 'tailor' ? 'none' : 'tailor')}
-          title="Job Description Keyword Tailor"
+          onClick={() => setActiveSidePanel(activeSidePanel === 'match' ? 'none' : 'match')}
+          title="Job Match: score this resume against a job posting"
           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition active:scale-[0.98] ${
-            activeSidePanel === 'tailor'
+            activeSidePanel === 'match'
               ? 'bg-accent text-accent-foreground border-brand/40 shadow-xs'
               : 'bg-muted hover:bg-muted/80 border-border text-foreground'
           }`}
         >
           <Target className="w-3.5 h-3.5 text-brand" />
-          <span className="hidden sm:inline">Tailor</span>
+          <span className="hidden sm:inline">Job Match</span>
+        </button>
+
+        {/* Application tracker and cover letter generator */}
+        <button
+          onClick={() => setActiveModal('tracker')}
+          title="Application tracker"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-muted hover:bg-muted/80 text-xs font-medium text-foreground transition active:scale-[0.98]"
+        >
+          <span className="hidden sm:inline">Tracker</span>
+        </button>
+        <button
+          onClick={() => setActiveModal('cover-letter')}
+          title="Generate a cover letter"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-muted hover:bg-muted/80 text-xs font-medium text-foreground transition active:scale-[0.98]"
+        >
+          <span className="hidden sm:inline">Cover Letter</span>
         </button>
 
         {/* Bullet Linter Panel Toggle */}

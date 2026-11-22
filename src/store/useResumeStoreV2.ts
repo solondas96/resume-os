@@ -42,7 +42,7 @@ import { undoRedoManager } from '../services/undoRedo';
 import { SAMPLE_RESUME } from '../data/sampleResume';
 import { SAMPLE_COVER_LETTER } from '../data/sampleCoverLetter';
 
-export type ModalName = 'history' | 'shortcuts' | 'import' | 'ats' | 'presets' | null;
+export type ModalName = 'history' | 'shortcuts' | 'import' | 'presets' | 'tracker' | 'cover-letter' | null;
 
 export const EMPTY_STATS: ApplicationStats = {
   total: 0,
@@ -160,7 +160,7 @@ export interface ResumeStoreV2 extends DerivedFields {
   // Job tracker
   applications: JobApplication[];
   stats: ApplicationStats;
-  addApplication: (company: string, role: string) => void;
+  addApplication: (company: string, role: string) => string;
   updateApplication: (id: string, updates: Partial<JobApplication>) => void;
   deleteApplication: (id: string) => void;
 
@@ -584,6 +584,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
       const updated = [app, ...get().applications];
       set({ applications: updated, stats: calculateStats(updated) });
       void saveSetting(SETTING_KEYS.applications, updated);
+      return app.id;
     },
 
     updateApplication: (id, updates) => {

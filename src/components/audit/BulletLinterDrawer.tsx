@@ -1,3 +1,4 @@
+import { HealthBreakdown } from '../health/HealthPanel';
 import React, { useMemo } from 'react';
 import {
   X,
@@ -40,8 +41,8 @@ export const BulletLinterDrawer: React.FC = () => {
             <Sparkles className="w-4 h-4 text-brand" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground tracking-tight">Bullet Point Linter</h2>
-            <p className="text-xs text-muted-foreground">Google XYZ & STAR Impact Scorer</p>
+            <h2 className="text-sm font-semibold text-foreground tracking-tight">Inspector</h2>
+            <p className="text-xs text-muted-foreground">Health, bullet verbs and XYZ impact</p>
           </div>
         </div>
         <button
@@ -51,6 +52,8 @@ export const BulletLinterDrawer: React.FC = () => {
           <X className="w-4 h-4" />
         </button>
       </div>
+
+      <HealthBreakdown />
 
       {/* Score Overview Card */}
       <div className="p-5 border-b border-border bg-muted/10">

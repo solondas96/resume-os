@@ -10,6 +10,8 @@ import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 export interface ImportResult {
   success: boolean;
+  /** The extracted text, so the caller can keep it as the editor source */
+  text?: string;
   resume?: Resume;
   detectedSections: { title: string; content: string; confidence: 'high' | 'medium' | 'low' }[];
   warnings: string[];
@@ -173,6 +175,7 @@ export async function importResume(file: File): Promise<ImportResult> {
       result.warnings.push('No structured sections detected. You may need to manually reorganize content.');
     }
 
+    result.text = text;
     result.resume = resume;
     result.success = true;
 
