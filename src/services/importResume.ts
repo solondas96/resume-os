@@ -5,11 +5,18 @@
 
 import { Resume } from '../model/resume';
 import { markdownToResume } from '../model/serialize';
+import { extractTextLines } from '../import/pdfText';
+import { structureFromLines, StructureResult } from '../import/structure';
+import { TextLine } from '../import/layout';
 // Bundled worker: served from our own origin, never from a CDN
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 
 export interface ImportResult {
   success: boolean;
+  /** Structure detection output (sections with confidence, unsorted lines), for the review */
+  structure?: StructureResult;
+  /** The original text in reading order, shown beside the detected structure */
+  pageText?: string;
   /** The extracted text, so the caller can keep it as the editor source */
   text?: string;
   resume?: Resume;
@@ -18,62 +25,6 @@ export interface ImportResult {
   errors: string[];
 }
 
-/**
- * Detect sections using heuristic aliases
- */
-function detectSections(text: string): { title: string; content: string; confidence: 'high' | 'medium' | 'low' }[] {
-  const sectionAliases: Record<string, string[]> = {
-    experience: ['work experience', 'professional experience', 'employment', 'work history'],
-    education: ['education', 'academic', 'degree', 'university', 'college'],
-    skills: ['skills', 'technical skills', 'core competencies', 'expertise'],
-    projects: ['projects', 'portfolio', 'work samples'],
-    certifications: ['certifications', 'licenses', 'credentials'],
-  };
-
-  const sections: { title: string; content: string; confidence: 'high' | 'medium' | 'low' }[] = [];
-  const lines = text.split('\n');
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    const lowerLine = line.toLowerCase();
-
-    // Check for section headers
-    for (const [sectionType, aliases] of Object.entries(sectionAliases)) {
-      for (const alias of aliases) {
-        if (lowerLine.includes(alias) && lowerLine.length < 100) {
-          // Collect content until next section
-          let content = '';
-          let j = i + 1;
-          while (j < lines.length) {
-            const nextLine = lines[j];
-            const nextLower = nextLine.toLowerCase();
-
-            // Stop if we hit another section
-            const isNewSection = Object.values(sectionAliases)
-              .flat()
-              .some((a) => nextLower.includes(a) && nextLine.trim().length < 100);
-
-            if (isNewSection && j > i + 1) break;
-
-            content += nextLine + '\n';
-            j++;
-          }
-
-          sections.push({
-            title: sectionType.charAt(0).toUpperCase() + sectionType.slice(1),
-            content: content.trim(),
-            confidence: 'high',
-          });
-
-          i = j - 1;
-          break;
-        }
-      }
-    }
-  }
-
-  return sections;
-}
 
 /**
  * Group PDF text items into lines by their vertical position (top to bottom),
@@ -140,33 +91,6 @@ export function normalizeHeadings(text: string): string {
     .join('\n');
 }
 
-/**
- * Extract text from PDF using pdfjs
- */
-export async function extractPdfText(file: File): Promise<string> {
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-
-    // Dynamically import pdfjs to avoid bundling it unnecessarily
-    const pdf = await import('pdfjs-dist');
-
-    pdf.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
-
-    const pdfDoc = await pdf.getDocument({ data: arrayBuffer }).promise;
-    let text = '';
-
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const content = await page.getTextContent();
-      text += itemsToLines(content.items as any[]) + '\n';
-    }
-
-    return text;
-  } catch (e) {
-    console.error('PDF extraction error:', e);
-    throw new Error(`Failed to extract PDF: ${e}`);
-  }
-}
 
 /**
  * Extract text from DOCX using mammoth
@@ -194,7 +118,8 @@ export async function extractPlainText(file: File): Promise<string> {
 }
 
 /**
- * Main import function: handles all file types
+ * Main import function: handles all file types.
+ * PDF and DOCX go through structure detection; plain text and Markdown keep their headings.
  */
 export async function importResume(file: File): Promise<ImportResult> {
   const result: ImportResult = {
@@ -205,46 +130,64 @@ export async function importResume(file: File): Promise<ImportResult> {
   };
 
   try {
-    let text = '';
+    const title = file.name.replace(/\.[^.]+$/, '') || 'Imported resume';
+    let markdown = '';
+    let pageText = '';
 
-    // Extract text based on file type
-    if (file.type === 'application/pdf') {
-      text = await extractPdfText(file);
+    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+      const lines = await extractTextLines(await file.arrayBuffer(), pdfWorkerUrl);
+      if (lines.length === 0) {
+        result.errors.push('File appears to be empty or unreadable (no selectable text; a scanned PDF needs OCR)');
+        return result;
+      }
+      const structure = structureFromLines(lines);
+      markdown = structure.markdown;
+      pageText = lines.map((l) => l.text).join('\n');
+      result.structure = structure;
+      result.pageText = pageText;
     } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
-      text = await extractDocxText(file);
-    } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-      text = await extractPlainText(file);
+      const text = await extractDocxText(file);
+      if (!text.trim()) {
+        result.errors.push('File appears to be empty or unreadable');
+        return result;
+      }
+      const lines: TextLine[] = text
+        .split('\n')
+        .filter((l) => l.trim())
+        .map((l, i) => ({ text: l.trim(), x0: 0, x1: 0, y: -i, size: 10, bold: false, page: 1 }));
+      const structure = structureFromLines(lines);
+      markdown = structure.markdown;
+      pageText = text;
+      result.structure = structure;
+      result.pageText = pageText;
+    } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+      const text = await extractPlainText(file);
+      if (!text.trim()) {
+        result.errors.push('File appears to be empty or unreadable');
+        return result;
+      }
+      markdown = normalizeHeadings(text);
+      pageText = text;
+      result.pageText = pageText;
     } else {
-      result.errors.push(`Unsupported file type: ${file.type}`);
+      result.errors.push(`Unsupported file type: ${file.type || file.name}`);
       return result;
     }
 
-    if (!text || text.trim().length === 0) {
-      result.errors.push('File appears to be empty or unreadable');
-      return result;
-    }
-
-    // Detect sections
-    result.detectedSections = detectSections(text);
-
-    // Convert to Resume model (plain headings become Markdown headings first)
-    const fileNameWithoutExt = file.name.replace(/\.[^.]+$/, '');
-    const normalized = normalizeHeadings(text);
-    const resume = markdownToResume(normalized, fileNameWithoutExt);
-
-    // Validate
-    if (!resume.basics.name || resume.basics.name.trim().length === 0) {
-      result.warnings.push('Could not detect candidate name. You can add it manually.');
-    }
-
-    if (resume.sections.length === 0) {
-      result.warnings.push('No structured sections detected. You may need to manually reorganize content.');
-    }
-
-    result.text = normalized;
+    const resume = markdownToResume(markdown, title);
+    result.text = markdown;
     result.resume = resume;
-    result.success = true;
+    result.detectedSections = (result.structure?.sections ?? resume.sections).map((s) => ({
+      title: s.title,
+      content: '',
+      confidence: 'confidence' in s ? (s as { confidence: 'high' | 'medium' | 'low' }).confidence : 'high',
+    }));
 
+    if (!resume.basics.name) result.warnings.push('Could not detect candidate name. You can add it manually.');
+    if (resume.sections.length === 0) result.warnings.push('No structured sections detected. You may need to reorganize content.');
+    result.warnings.push(...(result.structure?.notes ?? []));
+
+    result.success = true;
     return result;
   } catch (e) {
     result.errors.push(`Import failed: ${e}`);

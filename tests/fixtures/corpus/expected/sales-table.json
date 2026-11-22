@@ -1,0 +1,46 @@
+{
+  "id": "sales-table",
+  "name": "Marcus Lindqvist",
+  "email": "marcus.l@example.com",
+  "phone": "+1 (647) 555-0166",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Summit Software",
+      "role": "Sales Manager",
+      "start": "Mar 2017",
+      "end": "Present",
+      "bullets": [
+        "Grew enterprise pipeline by 3x, closing $4.2M in new annual revenue",
+        "Built and coached a team of 7 account executives"
+      ]
+    },
+    {
+      "company": "Brightline Cloud",
+      "role": "Account Executive",
+      "start": "Jun 2013",
+      "end": "Feb 2017",
+      "bullets": [
+        "Exceeded quota in 11 of 14 quarters"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "McGill University",
+      "degree": "BCom Marketing",
+      "start": "2009",
+      "end": "2013"
+    }
+  ],
+  "skills": [
+    "Salesforce",
+    "Forecasting",
+    "Negotiation"
+  ]
+}

@@ -60,6 +60,12 @@ Encode your resume into a private, client-side URL hash link. Send `/#view=...` 
 
 ---
 
+## 📄 PDF import
+
+PDFs are read with pdf.js using each text item's position: lines are grouped by baseline inside each detected column, the reading order is the left column then the right, and headings are found by alias, size, or emphasis. Entry headers are split into company, role and dates. Anything that cannot be placed is kept and listed for the user to move. The review shows the original text next to what was found.
+
+Accuracy is measured on a 16-resume corpus in varied layouts (single column, two columns, sidebar, tables) and professions: `tests/fixtures/corpus/report.txt`, currently 99% mean field accuracy. The corpus is synthetic, generated from `tests/fixtures/corpus/spec.mjs`, so it measures the rules on known layouts, not on every real resume.
+
 ## 🧠 Intelligence Engine (no AI)
 
 All guidance is deterministic: rules, curated lexicons and a skills dictionary with synonyms, in `src/intelligence/`. There are no models and no network calls.

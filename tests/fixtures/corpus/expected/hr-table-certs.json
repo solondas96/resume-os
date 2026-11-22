@@ -1,0 +1,47 @@
+{
+  "id": "hr-table-certs",
+  "name": "Fatima Al-Sayed",
+  "email": "fatima.alsayed@example.com",
+  "phone": "+971 50 555 0190",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills",
+    "Certifications"
+  ],
+  "experience": [
+    {
+      "company": "Gulf Logistics Group",
+      "role": "HR Generalist",
+      "start": "Apr 2018",
+      "end": "Present",
+      "bullets": [
+        "Cut time-to-hire from 52 to 31 days for roles under 60 headcount",
+        "Launched a structured onboarding programme adopted company-wide"
+      ]
+    },
+    {
+      "company": "Emirates Retail",
+      "role": "HR Assistant",
+      "start": "Jan 2015",
+      "end": "Mar 2018",
+      "bullets": [
+        "Processed payroll and benefits for 400 employees each month"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "American University of Sharjah",
+      "degree": "BSc Human Resources",
+      "start": "2011",
+      "end": "2015"
+    }
+  ],
+  "skills": [
+    "Recruitment",
+    "Employee relations",
+    "Onboarding"
+  ]
+}

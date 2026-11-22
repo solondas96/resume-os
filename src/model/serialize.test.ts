@@ -199,3 +199,18 @@ describe('hidden sections', () => {
     expect(resumeToMarkdown(r)).toContain('## Skills');
   });
 });
+
+describe('numeric dates', () => {
+  it('reads MM/YYYY as month and year', () => {
+    expect(parseDateRange('03/2020 - now')).toEqual({ start: { year: 2020, month: 3 }, end: 'present' });
+  });
+  it('negative: a bad month is not a date', () => {
+    expect(parseDateRange('13/2020')).toBeNull();
+  });
+});
+
+describe('"to date" ranges', () => {
+  it('"2020 to date" is a start that runs to the present', () => {
+    expect(parseDateRange('2020 to date')).toEqual({ start: { year: 2020 }, end: 'present' });
+  });
+});

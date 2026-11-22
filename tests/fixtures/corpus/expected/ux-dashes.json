@@ -1,0 +1,48 @@
+{
+  "id": "ux-dashes",
+  "name": "Lena Virtanen",
+  "email": "lena.v@example.com",
+  "phone": "+358 40 555 0188",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Kestrel Labs",
+      "role": "Lead Product Designer",
+      "start": "03/2020",
+      "end": "now",
+      "bullets": [
+        "Built a token system adopted by 12 product teams",
+        "Ran 30+ usability sessions that shaped the onboarding redesign"
+      ]
+    },
+    {
+      "company": "Nordic Commerce",
+      "role": "Product Designer",
+      "start": "2017",
+      "end": "2020",
+      "bullets": [
+        "Redesigned checkout, improving completion by 14%"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Aalto University",
+      "degree": "MA Interaction Design",
+      "start": "2014",
+      "end": "2016"
+    }
+  ],
+  "skills": [
+    "Figma",
+    "Prototyping",
+    "WCAG 2.1",
+    "Interviews",
+    "Usability testing"
+  ]
+}

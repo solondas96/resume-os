@@ -1,0 +1,45 @@
+{
+  "id": "lawyer-sidebar",
+  "name": "Eleanor Hartley",
+  "email": "eleanor.hartley@example.com",
+  "phone": "+1 (212) 555-0188",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Whitmore & Dale LLP",
+      "role": "Senior Associate",
+      "start": "Jan 2015",
+      "end": "Dec 2019",
+      "bullets": [
+        "Led due diligence on 9 acquisitions totalling $1.1B in deal value"
+      ]
+    },
+    {
+      "company": "Halvorsen Industries",
+      "role": "Corporate Counsel",
+      "start": "Jan 2020",
+      "end": "Present",
+      "bullets": [
+        "Negotiated 60+ vendor contracts, cutting legal review time by a third"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Columbia Law School",
+      "degree": "JD",
+      "start": "2008",
+      "end": "2011"
+    }
+  ],
+  "skills": [
+    "M&A",
+    "Contract negotiation",
+    "New York Bar"
+  ]
+}

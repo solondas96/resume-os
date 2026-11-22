@@ -1,0 +1,36 @@
+{
+  "id": "teacher-education-first",
+  "name": "Omar Haddad",
+  "email": "omar.haddad@example.com",
+  "phone": "+1 (416) 555-0170",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Maple Grove Public School",
+      "role": "Grade 3 Teacher",
+      "start": "Sep 2016",
+      "end": "Present",
+      "bullets": [
+        "Raised reading levels for 70% of the class across one school year",
+        "Led the school literacy committee"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Toronto",
+      "degree": "BEd Primary",
+      "start": "Fall 2012",
+      "end": "Spring 2016"
+    }
+  ],
+  "skills": [
+    "Guided reading",
+    "Phonics"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "analyst-numbered",
+  "name": "Aiko Tanaka",
+  "email": "aiko.tanaka@example.com",
+  "phone": "+81 90 5550 0144",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Meridian Retail",
+      "role": "Data Analyst",
+      "start": "Apr 2019",
+      "end": "Present",
+      "bullets": [
+        "Built the weekly pricing dashboard used by 40 store managers",
+        "Cut stockouts by 18% with a demand forecast model in Python"
+      ]
+    },
+    {
+      "company": "Harbor Logistics",
+      "role": "Junior Analyst",
+      "start": "2017",
+      "end": "2019",
+      "bullets": [
+        "Automated route reporting, saving 6 hours of manual work each week"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Tokyo",
+      "degree": "BSc Statistics",
+      "start": "2013",
+      "end": "2017"
+    }
+  ],
+  "skills": [
+    "SQL",
+    "Python",
+    "Tableau"
+  ]
+}

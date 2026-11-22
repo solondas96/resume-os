@@ -1,0 +1,48 @@
+{
+  "id": "nurse-single-caps",
+  "name": "Priya Natarajan",
+  "email": "priya.n@example.com",
+  "phone": "+1 (312) 555-0199",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "St. Mary Medical Center",
+      "role": "Charge Nurse, ICU",
+      "start": "Jan 2019",
+      "end": "Present",
+      "bullets": [
+        "Supervised a team of 12 nurses across two overnight shifts",
+        "Reduced medication error reports by 35% through a new double-check protocol"
+      ]
+    },
+    {
+      "company": "Lakeside Hospital",
+      "role": "Staff Nurse, Emergency",
+      "start": "Mar 2015",
+      "end": "Dec 2018",
+      "bullets": [
+        "Triaged up to 40 patients per shift during peak periods"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Illinois State University",
+      "degree": "BSN Nursing",
+      "start": "2011",
+      "end": "2015"
+    }
+  ],
+  "skills": [
+    "ACLS",
+    "PALS",
+    "Ventilator management",
+    "Epic",
+    "Cerner"
+  ]
+}

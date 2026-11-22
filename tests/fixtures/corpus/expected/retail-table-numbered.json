@@ -1,0 +1,46 @@
+{
+  "id": "retail-table-numbered",
+  "name": "Jordan Ellis",
+  "email": "jordan.ellis@example.com",
+  "phone": "+1 (404) 555-0155",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Peachtree Outfitters",
+      "role": "Store Manager",
+      "start": "Feb 2017",
+      "end": "Present",
+      "bullets": [
+        "Reduced shrink from 2.4% to 1.1% of sales in one year",
+        "Kept staff turnover under 12% across 4 years"
+      ]
+    },
+    {
+      "company": "Southside Apparel",
+      "role": "Assistant Manager",
+      "start": "Jul 2013",
+      "end": "Jan 2017",
+      "bullets": [
+        "Opened two new locations on time and on budget"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Georgia State University",
+      "degree": "BBA Management",
+      "start": "2009",
+      "end": "2013"
+    }
+  ],
+  "skills": [
+    "Inventory control",
+    "Scheduling",
+    "Loss prevention"
+  ]
+}

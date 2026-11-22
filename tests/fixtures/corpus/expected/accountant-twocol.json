@@ -1,0 +1,47 @@
+{
+  "id": "accountant-twocol",
+  "name": "Daniel Okafor",
+  "email": "daniel.okafor@example.com",
+  "phone": "+1 (206) 555-0177",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Northwind Partners",
+      "role": "Senior Accountant",
+      "start": "Feb 2018",
+      "end": "Present",
+      "bullets": [
+        "Closed monthly books for 6 entities in under 4 business days",
+        "Automated intercompany reconciliations, removing 20 hours of manual work per month"
+      ]
+    },
+    {
+      "company": "Pacific Audit Group",
+      "role": "Staff Accountant",
+      "start": "Aug 2014",
+      "end": "Jan 2018",
+      "bullets": [
+        "Supported external audits for 14 clients with zero material findings"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Washington",
+      "degree": "BA Accounting",
+      "start": "2010",
+      "end": "2014"
+    }
+  ],
+  "skills": [
+    "NetSuite",
+    "Excel",
+    "Power BI",
+    "CPA"
+  ]
+}

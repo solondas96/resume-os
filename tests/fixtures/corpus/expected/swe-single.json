@@ -1,0 +1,49 @@
+{
+  "id": "swe-single",
+  "name": "Maya Chen",
+  "email": "maya.chen@example.com",
+  "phone": "+1 (415) 555-0134",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Acme Corp",
+      "role": "Senior Software Engineer",
+      "start": "Jan 2019",
+      "end": "Present",
+      "bullets": [
+        "Led migration of 40 services to Kubernetes, cutting deploy time by 60%",
+        "Mentored 5 engineers across 3 teams"
+      ]
+    },
+    {
+      "company": "Globex Systems",
+      "role": "Software Engineer",
+      "start": "Jun 2016",
+      "end": "Dec 2018",
+      "bullets": [
+        "Built a billing pipeline processing 2M events per day with exactly-once delivery guarantees across three regions"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "State University",
+      "degree": "BSc Computer Science",
+      "start": "2012",
+      "end": "2016"
+    }
+  ],
+  "skills": [
+    "TypeScript",
+    "Go",
+    "SQL",
+    "Kubernetes",
+    "AWS",
+    "Terraform"
+  ]
+}

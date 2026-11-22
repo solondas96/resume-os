@@ -1,0 +1,48 @@
+{
+  "id": "pm-projects",
+  "name": "Nadia Kowalski",
+  "email": "nadia.k@example.com",
+  "phone": "+48 22 555 0121",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills",
+    "Projects"
+  ],
+  "experience": [
+    {
+      "company": "Vertex Cloud",
+      "role": "Product Manager",
+      "start": "Jan 2019",
+      "end": "Present",
+      "bullets": [
+        "Shipped the audit-log feature used by 80% of enterprise accounts",
+        "Set the quarterly roadmap with 4 engineering leads"
+      ]
+    },
+    {
+      "company": "Ostrava Digital",
+      "role": "Associate Product Manager",
+      "start": "Jul 2016",
+      "end": "Dec 2018",
+      "bullets": [
+        "Ran discovery interviews with 45 customers"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Warsaw School of Economics",
+      "degree": "MSc Management",
+      "start": "2014",
+      "end": "2016"
+    }
+  ],
+  "skills": [
+    "Roadmapping",
+    "A/B testing",
+    "SQL",
+    "Amplitude"
+  ]
+}

@@ -34,9 +34,9 @@ test.describe('import', () => {
     await waitForApp(page);
     await page.locator('input[type=file]').first().setInputFiles(PDF);
 
-    await expect(page.getByText('Review what will be created')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText('Maya Chen', { exact: false }).first()).toBeVisible();
-    await expect(page.getByText(/Sections:.*Experience/)).toBeVisible();
+    await expect(page.getByRole('list', { name: 'Sections' })).toContainText('Experience');
 
     await page.getByRole('button', { name: 'Create resume' }).click();
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
@@ -47,7 +47,7 @@ test.describe('import', () => {
     await page.goto('/');
     await waitForApp(page);
     await page.locator('input[type=file]').first().setInputFiles(DOCX);
-    await expect(page.getByText('Review what will be created')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
     await page.getByRole('button', { name: 'Create resume' }).click();
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
     await expect(page.locator('.a4-sheet')).toContainText('Experience');
@@ -59,7 +59,7 @@ test.describe('editor, health and match', () => {
     await page.goto('/');
     await waitForApp(page);
     await page.locator('input[type=file]').first().setInputFiles(DOCX);
-    await expect(page.getByText('Review what will be created')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
     await page.getByRole('button', { name: 'Create resume' }).click();
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
   });
@@ -169,5 +169,19 @@ test.describe('migration', () => {
     await expect(page.locator('.a4-sheet')).toContainText('Legacy Person', { timeout: 20_000 });
     expect(await count()).toBe(1);
     expect(await page.evaluate(() => localStorage.getItem('resumeos_v1_migrated'))).toBe('true');
+  });
+});
+
+test.describe('corpus import', () => {
+  test('a multi-column corpus PDF imports with its entries in the preview', async ({ page }) => {
+    const CORPUS_PDF = path.join(FIXTURES, '..', 'corpus', 'pdf', 'sales-table.pdf');
+    await page.goto('/');
+    await waitForApp(page);
+    await page.locator('input[type=file]').first().setInputFiles(CORPUS_PDF);
+    await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('list', { name: 'Sections' })).toContainText('Experience');
+    await page.getByRole('button', { name: 'Create resume' }).click();
+    await expect(page.locator('.a4-sheet')).toContainText('Summit Software');
+    await expect(page.locator('.a4-sheet')).toContainText('Sales Manager');
   });
 });

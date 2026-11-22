@@ -1,0 +1,47 @@
+{
+  "id": "teacher-sidebar",
+  "name": "Grace Whitfield",
+  "email": "grace.whitfield@example.com",
+  "phone": "+1 (503) 555-0122",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Ridgeview High School",
+      "role": "Mathematics Teacher",
+      "start": "2016",
+      "end": "Present",
+      "bullets": [
+        "Raised average end-of-year scores from 62% to 81% over three years",
+        "Ran an after-school tutoring program serving 60 students each semester"
+      ]
+    },
+    {
+      "company": "Oakdale Middle School",
+      "role": "Teacher",
+      "start": "2012",
+      "end": "2016",
+      "bullets": [
+        "Designed a unit-based curriculum adopted by the whole maths department"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Portland State University",
+      "degree": "MEd Secondary Education",
+      "start": "2010",
+      "end": "2012"
+    }
+  ],
+  "skills": [
+    "Differentiated instruction",
+    "Assessment design",
+    "Google Classroom",
+    "Desmos"
+  ]
+}

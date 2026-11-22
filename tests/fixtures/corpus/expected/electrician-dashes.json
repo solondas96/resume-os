@@ -1,0 +1,46 @@
+{
+  "id": "electrician-dashes",
+  "name": "Samuel Brooks",
+  "email": "samuel.brooks@example.com",
+  "phone": "+1 (480) 555-0111",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Desert Power Systems",
+      "role": "Project Foreman",
+      "start": "2020",
+      "end": "Present",
+      "bullets": [
+        "Ran three concurrent commercial builds worth $6M in total",
+        "Passed every city inspection on the first attempt across 22 projects"
+      ]
+    },
+    {
+      "company": "Ironwood Electric",
+      "role": "Journeyman Electrician",
+      "start": "2014",
+      "end": "2020",
+      "bullets": [
+        "Installed switchgear and lighting for a 300,000 sq ft warehouse"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Maricopa Community College",
+      "degree": "AAS Electrical Technology",
+      "start": "2011",
+      "end": "2013"
+    }
+  ],
+  "skills": [
+    "NEC code",
+    "PLC wiring",
+    "Blueprint reading"
+  ]
+}

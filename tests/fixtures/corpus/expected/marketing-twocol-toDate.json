@@ -1,0 +1,46 @@
+{
+  "id": "marketing-twocol-toDate",
+  "name": "Chloe Martin",
+  "email": "chloe.martin@example.com",
+  "phone": "+44 20 5550 1234",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Bramble Media",
+      "role": "Marketing Manager",
+      "start": "Mar 2017",
+      "end": "2020 to date",
+      "bullets": [
+        "Grew email revenue by 45% through a new lifecycle programme",
+        "Owned a paid acquisition budget of £800K a year"
+      ]
+    },
+    {
+      "company": "Quill Agency",
+      "role": "Account Executive",
+      "start": "Mar 2015",
+      "end": "Feb 2017",
+      "bullets": [
+        "Managed 8 client accounts across retail and travel"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Leeds",
+      "degree": "BA Marketing",
+      "start": "2011",
+      "end": "2014"
+    }
+  ],
+  "skills": [
+    "HubSpot",
+    "Google Ads",
+    "SEO"
+  ]
+}

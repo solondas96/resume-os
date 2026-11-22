@@ -80,9 +80,13 @@ function kindForHeading(title: string): Section['kind'] {
 
 // ---- dates ----------------------------------------------------------------
 
-function parseDate(text: string): YearMonth | 'present' | null {
+export function parseDate(text: string): YearMonth | 'present' | null {
   const t = text.trim();
   if (/^(present|now|current|to date)$/i.test(t)) return 'present';
+  const numeric = t.match(/^(\d{1,2})\/((?:19|20)\d{2})$/);
+  if (numeric && parseInt(numeric[1], 10) >= 1 && parseInt(numeric[1], 10) <= 12) {
+    return { year: parseInt(numeric[2], 10), month: parseInt(numeric[1], 10) };
+  }
   const season = t.match(/^(spring|summer|fall|autumn|winter)\s+((?:19|20)\d{2})$/i);
   if (season) {
     const name = season[1].toLowerCase() === 'autumn' ? 'Fall' : season[1][0].toUpperCase() + season[1].slice(1).toLowerCase();
@@ -97,6 +101,12 @@ function parseDate(text: string): YearMonth | 'present' | null {
 
 /** "2019 – Present", "May 2024", "2016 - 2019" -> start / end; null if not a date */
 export function parseDateRange(text: string): { start?: YearMonth; end?: YearMonth | 'present' } | null {
+  // "2020 to date" is a start date that runs to the present
+  const ongoing = text.match(/^(.+?)\s+to\s+date$/i);
+  if (ongoing) {
+    const start = parseDate(ongoing[1]);
+    return start && start !== 'present' ? { start, end: 'present' } : null;
+  }
   const parts = text.split(/\s*(?:–|—| - | to )\s*/).map((p) => p.trim()).filter(Boolean);
   if (parts.length === 0 || parts.length > 2) return null;
   const start = parseDate(parts[0]);
@@ -112,7 +122,8 @@ function formatDate(d: YearMonth): string {
   return d.month ? `${MONTHS[d.month - 1]} ${d.year}` : `${d.year}`;
 }
 
-function formatRange(start?: YearMonth, end?: YearMonth | 'present'): string {
+/** Canonical text for a date range, e.g. "May 2019 – Present" (parses back to the same range) */
+export function formatRange(start?: YearMonth, end?: YearMonth | 'present'): string {
   if (!start && !end) return '';
   const s = start ? formatDate(start) : '';
   const e = end === 'present' ? 'Present' : end ? formatDate(end) : '';

@@ -1,7 +1,8 @@
 /**
- * Import with review. A PDF, DOCX, text or Markdown file (or pasted text) is
- * parsed first and shown back to the user: detected sections, warnings and
- * what would be created. Nothing is saved until the user confirms.
+ * Import with review. A file (or pasted text) is parsed first and shown back to the user:
+ * the original text beside the detected structure, a confidence for each section,
+ * and the lines the parser could not place, each with a way to move it into a section.
+ * Nothing is saved until the user confirms.
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -10,8 +11,15 @@ import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { importResume, ImportResult } from '../../services/importResume';
 import { markdownToResume } from '../../model/serialize';
 import { allBullets, sectionItems } from '../../model/resume';
+import { moveLineToSection, UnsortedLine } from '../../import/structure';
 
 const ACCEPT = '.pdf,.docx,.txt,.md';
+
+const CONFIDENCE_STYLE: Record<string, string> = {
+  high: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
+  medium: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
+  low: 'bg-destructive/10 text-destructive',
+};
 
 export const ImportModal: React.FC = () => {
   const activeModal = useResumeStoreV2((s) => s.activeModal);
@@ -27,6 +35,10 @@ export const ImportModal: React.FC = () => {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [title, setTitle] = useState('Imported resume');
+  // The review's own copy of the text: unsorted lines are moved here, and the preview follows it
+  const [reviewText, setReviewText] = useState('');
+  const [unsorted, setUnsorted] = useState<UnsortedLine[]>([]);
+  const [targets, setTargets] = useState<Record<string, string>>({});
 
   const isOpen = activeModal === 'import';
 
@@ -47,18 +59,34 @@ export const ImportModal: React.FC = () => {
     };
   }, [isOpen, pendingImportFile]);
 
+  // Reset the review's copy whenever a new result arrives
+  useEffect(() => {
+    if (!result) return;
+    setReviewText(result.text ?? '');
+    setUnsorted(result.structure?.unsorted ?? []);
+    setTargets({});
+  }, [result]);
+
+  const reviewResume = useMemo(() => (reviewText.trim() ? markdownToResume(reviewText, title) : null), [reviewText, title]);
+
   const summary = useMemo(() => {
-    const resume = result?.resume;
-    if (!resume) return null;
-    const bullets = allBullets(resume).length;
+    if (!reviewResume) return null;
     return {
-      name: resume.basics.name || '(not detected)',
-      sections: resume.sections.map((s) => {
-        const count = s.kind === 'skills' ? s.groups.length : s.kind === 'summary' ? s.paragraphs.length : s.kind === 'custom' || s.kind === 'certifications' ? s.lines.length : sectionItems(s).length;
-        return `${s.title} (${count})`;
+      name: reviewResume.basics.name || '(not detected)',
+      bullets: allBullets(reviewResume).length,
+      sections: reviewResume.sections.map((s) => {
+        const count =
+          s.kind === 'skills' ? s.groups.length : s.kind === 'summary' ? s.paragraphs.length : s.kind === 'custom' || s.kind === 'certifications' ? s.lines.length : sectionItems(s).length;
+        return { title: s.title, count };
       }),
-      bullets,
     };
+  }, [reviewResume]);
+
+  // Confidence for each detected section, from the structure stage (sections it did not name are custom)
+  const confidenceByTitle = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of result?.structure?.sections ?? []) map.set(s.title.toLowerCase(), s.confidence);
+    return map;
   }, [result]);
 
   if (!isOpen) return null;
@@ -82,29 +110,36 @@ export const ImportModal: React.FC = () => {
       detectedSections: [],
       warnings: resume.sections.length === 0 ? ['No structured sections detected. You may need to reorganize content.'] : [],
       errors: [],
+      pageText: pasteText,
     });
     setTitle('Pasted resume');
   };
 
-  const text = result?.text ?? '';
-  const canCreate = !!result?.success && text.trim().length > 0;
+  const canCreate = !!result?.success && reviewText.trim().length > 0;
 
   const createNew = () => {
     if (!canCreate) return;
-    createResume(title.trim() || 'Imported resume', text);
+    createResume(title.trim() || 'Imported resume', reviewText);
     close();
   };
 
   const replaceCurrent = () => {
     if (!canCreate || !currentResume) return;
     saveRevision('Snapshot before import');
-    setMarkdown(text);
+    setMarkdown(reviewText);
     close();
   };
 
+  const moveUnsorted = (line: UnsortedLine) => {
+    const target = targets[line.id];
+    if (!target) return;
+    setReviewText((t) => moveLineToSection(t, line.text, target));
+    setUnsorted((list) => list.filter((u) => u.id !== line.id));
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-none">
-      <div className="bg-card border border-border rounded-2xl max-w-lg w-full shadow-lifted flex flex-col max-h-[88vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 select-none">
+      <div className="bg-card border border-border rounded-2xl max-w-4xl w-full shadow-lifted flex flex-col max-h-[90vh] overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
             <Upload className="w-4 h-4 text-brand" />
@@ -170,19 +205,69 @@ export const ImportModal: React.FC = () => {
 
               {result.success && summary && (
                 <>
-                  <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Review what will be created</span>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <section aria-label="Original text" className="space-y-2 min-w-0">
+                      <h3 className="text-xs font-medium text-foreground">What the file says</h3>
+                      <pre className="max-h-[42vh] overflow-auto bg-background border border-border rounded-lg p-3 whitespace-pre-wrap font-mono text-[11px] leading-relaxed">{result.pageText}</pre>
+                    </section>
+
+                    <section aria-label="Detected structure" className="space-y-3 min-w-0">
+                      <h3 className="text-xs font-medium text-foreground">What we found</h3>
+                      <div className="bg-background border border-border rounded-lg p-3 text-xs space-y-1.5">
+                        <div><span className="text-muted-foreground">Name:</span> <span className="text-foreground">{summary.name}</span></div>
+                        <div><span className="text-muted-foreground">Bullets:</span> <span className="font-mono">{summary.bullets}</span></div>
+                      </div>
+                      <ul className="space-y-1.5" aria-label="Sections">
+                        {summary.sections.map((s, index) => {
+                          const conf = confidenceByTitle.get(s.title.toLowerCase()) ?? 'high';
+                          return (
+                            <li key={`${index}-${s.title}`} className="flex items-center justify-between gap-2 text-xs bg-background border border-border rounded-lg px-3 py-2">
+                              <span className="text-foreground">{s.title} <span className="text-muted-foreground font-mono">({s.count})</span></span>
+                              <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${CONFIDENCE_STYLE[conf]}`}>
+                                {conf === 'high' ? 'confident' : conf === 'medium' ? 'check this' : 'guess'}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
                   </div>
 
-                  <div className="bg-background border border-border rounded-xl p-3 text-xs space-y-2">
-                    <div><span className="text-muted-foreground">Name:</span> <span className="text-foreground">{summary.name}</span></div>
-                    <div><span className="text-muted-foreground">Bullets found:</span> <span className="font-mono">{summary.bullets}</span></div>
-                    <div>
-                      <span className="text-muted-foreground">Sections:</span>{' '}
-                      {summary.sections.length > 0 ? summary.sections.join(', ') : <span className="text-muted-foreground">none detected</span>}
-                    </div>
-                  </div>
+                  {unsorted.length > 0 && (
+                    <section aria-label="Unsorted lines" className="space-y-2 border border-amber-500/40 rounded-lg p-3">
+                      <h3 className="text-xs font-medium text-foreground">
+                        Unsorted lines ({unsorted.length}) — these are kept, but we are not sure where they belong
+                      </h3>
+                      <ul className="space-y-2">
+                        {unsorted.map((u) => (
+                          <li key={u.id} className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="flex-1 min-w-[12rem] text-foreground">{u.text}</span>
+                            <span className="text-muted-foreground">{u.reason}</span>
+                            <label className="sr-only" htmlFor={`move-${u.id}`}>Move to section</label>
+                            <select
+                              id={`move-${u.id}`}
+                              value={targets[u.id] ?? ''}
+                              onChange={(e) => setTargets((t) => ({ ...t, [u.id]: e.target.value }))}
+                              className="bg-background border border-border rounded-md px-2 py-1 text-xs"
+                            >
+                              <option value="">Choose a section</option>
+                              {summary.sections.map((s, index) => (
+                                <option key={`${index}-${s.title}`} value={s.title}>{s.title}</option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              disabled={!targets[u.id]}
+                              onClick={() => moveUnsorted(u)}
+                              className="px-2.5 py-1 bg-muted hover:bg-muted/80 disabled:opacity-40 text-foreground rounded-md"
+                            >
+                              Move
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
 
                   {result.warnings.map((w, i) => (
                     <div key={`w${i}`} className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
@@ -190,6 +275,11 @@ export const ImportModal: React.FC = () => {
                       <span>{w}</span>
                     </div>
                   ))}
+
+                  <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Nothing is created until you confirm.</span>
+                  </div>
 
                   <label className="block text-xs">
                     <span className="block font-medium text-foreground mb-1">Resume title</span>
@@ -199,11 +289,6 @@ export const ImportModal: React.FC = () => {
                       className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-hidden focus:ring-2 focus:ring-brand/30"
                     />
                   </label>
-
-                  <details className="text-xs">
-                    <summary className="cursor-pointer text-muted-foreground">Show extracted text</summary>
-                    <pre className="mt-2 max-h-48 overflow-auto bg-background border border-border rounded-lg p-2 whitespace-pre-wrap font-mono text-[11px]">{text}</pre>
-                  </details>
                 </>
               )}
             </>

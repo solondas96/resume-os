@@ -1,0 +1,46 @@
+{
+  "id": "chef-caps-season",
+  "name": "Antoine Moreau",
+  "email": "antoine.moreau@example.com",
+  "phone": "+33 6 55 50 12 34",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Maison Verte",
+      "role": "Executive Chef",
+      "start": "Summer 2018",
+      "end": "Present",
+      "bullets": [
+        "Reduced food cost from 34% to 28% of revenue without changing the menu price",
+        "Trained and led a brigade of 18 cooks"
+      ]
+    },
+    {
+      "company": "Le Pavillon",
+      "role": "Sous Chef",
+      "start": "2014",
+      "end": "2018",
+      "bullets": [
+        "Opened the second dining room, reaching full covers in six weeks"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Le Cordon Bleu",
+      "degree": "Diploma in Culinary Arts",
+      "start": "Fall 2010",
+      "end": "Spring 2012"
+    }
+  ],
+  "skills": [
+    "Menu engineering",
+    "Food safety",
+    "Inventory"
+  ]
+}

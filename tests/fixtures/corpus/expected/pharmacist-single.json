@@ -1,0 +1,44 @@
+{
+  "id": "pharmacist-single",
+  "name": "Rahul Mehta",
+  "email": "rahul.mehta@example.com",
+  "phone": "+1 (617) 555-0133",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Charles River Cancer Center",
+      "role": "Clinical Pharmacist",
+      "start": "Sep 2016",
+      "end": "Present",
+      "bullets": [
+        "Built a chemotherapy dose-check protocol that caught 40+ errors in its first year"
+      ]
+    },
+    {
+      "company": "Riverside Pharmacy",
+      "role": "Staff Pharmacist",
+      "start": "Jun 2014",
+      "end": "Aug 2016",
+      "bullets": [
+        "Counselled over 200 patients a month on new prescriptions"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Northeastern University",
+      "degree": "PharmD",
+      "start": "2010",
+      "end": "2014"
+    }
+  ],
+  "skills": [
+    "Oncology dosing",
+    "Medication reconciliation"
+  ]
+}
