@@ -5,6 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: 'tests/e2e',
   testMatch: /pwa\.spec\.ts/,
+  outputDir: 'test-results/pwa',
   timeout: 90_000,
   reporter: 'list',
   use: { baseURL: 'http://localhost:4174/' },

@@ -4,6 +4,8 @@ import { defineConfig, devices } from '@playwright/test';
 // Run `npm run build` first. CI runs this after the build.
 export default defineConfig({
   testDir: 'tests/perf',
+  // Own folder: Playwright clears its output folder at the start of a run, which would delete the e2e outputs
+  outputDir: 'test-results/perf',
   timeout: 120_000,
   reporter: 'list',
   use: { baseURL: 'http://localhost:4175/' },
