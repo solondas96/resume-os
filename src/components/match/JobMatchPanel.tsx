@@ -8,6 +8,7 @@ import React, { useMemo, useState } from 'react';
 import { X, Target, Copy, Plus } from 'lucide-react';
 import { matchJobDescription } from '../../intelligence/jobMatcher';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
+import { TailorSection } from './TailorSection';
 
 const STRENGTH_STYLE: Record<string, string> = {
   strong: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
@@ -22,9 +23,8 @@ export const JobMatchPanel: React.FC = () => {
   const currentResume = useResumeStoreV2((s) => s.currentResume);
   const jd = useResumeStoreV2((s) => s.targetJobDescription);
   const setJd = useResumeStoreV2((s) => s.setTargetJobDescription);
-  const duplicateResume = useResumeStoreV2((s) => s.duplicateResume);
-  const renameResume = useResumeStoreV2((s) => s.renameResume);
   const addApplication = useResumeStoreV2((s) => s.addApplication);
+  const tailorFor = useResumeStoreV2((s) => s.tailorFor);
   const updateApplication = useResumeStoreV2((s) => s.updateApplication);
 
   const [company, setCompany] = useState('');
@@ -39,9 +39,8 @@ export const JobMatchPanel: React.FC = () => {
   if (activeSidePanel !== 'match') return null;
 
   const handleTailor = () => {
-    if (!currentResume) return;
-    const copyId = duplicateResume(currentResume.id);
-    renameResume(copyId, `${currentResume.meta.title} (tailored${company ? ` for ${company}` : ''})`);
+    if (!currentResume || !jd.trim()) return;
+    tailorFor(jd);
   };
 
   const handleTrack = () => {
@@ -128,8 +127,13 @@ export const JobMatchPanel: React.FC = () => {
             className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground disabled:opacity-40 text-xs font-medium rounded-lg hover:opacity-90 transition"
           >
             <Copy className="w-3.5 h-3.5" />
-            Create tailored copy of this resume
+            Tailor for this job (creates a linked copy)
           </button>
+
+          <div className="space-y-3">
+            <div className="text-xs font-medium text-foreground">Tailoring</div>
+            <TailorSection />
+          </div>
 
           <div className="space-y-2">
             <div className="text-xs font-medium text-foreground">Track this application</div>

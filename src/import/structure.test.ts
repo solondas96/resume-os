@@ -17,6 +17,10 @@ describe('splitDate', () => {
     expect(r.rest).toBe('BSc Computer Science');
     expect(r.dates).toBe('2012 – 2016');
   });
+  it('positive: a date in parentheses at the end of the line is found (common in DOCX exports)', () => {
+    expect(splitDate('Senior Software Engineer — Acme Corp (2019 – Present)')).toEqual({ rest: 'Senior Software Engineer — Acme Corp', dates: '2019 – Present' });
+    expect(splitDate('Software Engineer — Globex (2016 – 2019)').dates).toBe('2016 – 2019');
+  });
   it('negative: plain text with no date is left alone', () => {
     expect(splitDate('Led the migration')).toEqual({ rest: 'Led the migration' });
   });

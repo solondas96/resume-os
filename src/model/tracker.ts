@@ -29,7 +29,7 @@ export interface ApplicationStats {
  */
 export function createApplication(company: string, role: string): JobApplication {
   return {
-    id: `app-${Date.now()}`,
+    id: `app-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
     company,
     role,
     status: 'saved',

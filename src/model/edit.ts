@@ -181,3 +181,32 @@ export function forOutput(resume: Resume): Resume {
       }),
   };
 }
+
+/** Set the order of an entry's bullets (ids must be the same set; unknown ids are ignored) */
+export function setBulletOrder(resume: Resume, sectionId: string, itemId: string, orderedIds: string[]): Resume {
+  return mapItem(resume, sectionId, itemId, (item) => {
+    const byId = new Map(item.bullets.map((b) => [b.id, b]));
+    const ordered = orderedIds.map((id) => byId.get(id)).filter((b): b is Bullet => !!b);
+    const rest = item.bullets.filter((b) => !orderedIds.includes(b.id));
+    return { ...item, bullets: [...ordered, ...rest] };
+  });
+}
+
+/** Set the skills of one group, in order */
+export function setGroupSkills(resume: Resume, sectionId: string, groupId: string, skills: string[]): Resume {
+  return mapSection(resume, sectionId, (s) => {
+    if (s.kind !== 'skills') return s;
+    return { ...s, groups: s.groups.map((g) => (g.id === groupId ? { ...g, skills: [...skills] } : g)) };
+  });
+}
+
+/** Set the order of a section's skill groups */
+export function setGroupOrder(resume: Resume, sectionId: string, orderedGroupIds: string[]): Resume {
+  return mapSection(resume, sectionId, (s) => {
+    if (s.kind !== 'skills') return s;
+    const byId = new Map(s.groups.map((g) => [g.id, g]));
+    const ordered = orderedGroupIds.map((id) => byId.get(id)).filter((g): g is SkillGroup => !!g);
+    const rest = s.groups.filter((g) => !orderedGroupIds.includes(g.id));
+    return { ...s, groups: [...ordered, ...rest] };
+  });
+}

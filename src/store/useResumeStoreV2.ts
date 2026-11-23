@@ -11,7 +11,7 @@
  */
 
 import { create } from 'zustand';
-import { Resume, createResume, cloneResume } from '../model/resume';
+import { Resume, createResume, cloneResume, newResumeId } from '../model/resume';
 import { markdownToResume, resumeToMarkdown } from '../model/serialize';
 import { runMigrationOnStartup } from '../model/migrate';
 import { JobApplication, ApplicationStats, createApplication, calculateStats } from '../model/tracker';
@@ -39,6 +39,7 @@ import {
   deleteRevision as deleteRevisionRecord,
 } from '../services/persistence';
 import { undoRedoManager } from '../services/undoRedo';
+import { jobIdOf } from '../intelligence/tailor';
 import { SAMPLE_RESUME } from '../data/sampleResume';
 import { SAMPLE_COVER_LETTER } from '../data/sampleCoverLetter';
 
@@ -170,6 +171,9 @@ export interface ResumeStoreV2 extends DerivedFields {
   // Bullet builder seed: "Improve" on a bullet opens the inspector with its text
   bulletSeed: string;
   openBulletBuilder: (text: string) => void;
+
+  // Tailoring: a linked copy for one job description
+  tailorFor: (jobDescription: string) => string;
 
   // Import (file or pasted text, reviewed before it becomes a resume)
   pendingImportFile: File | null;
@@ -309,6 +313,18 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     lastSavedAt: null,
     bulletSeed: '',
     openBulletBuilder: (text) => set({ activeSidePanel: 'linter', bulletSeed: text }),
+    tailorFor: (jobDescription) => {
+      const cur = requireResume();
+      if (!cur) return '';
+      const jobId = jobIdOf(jobDescription);
+      // Already a copy for this job: keep it
+      if (cur.meta.targetJobId === jobId) return cur.id;
+      const copyId = get().duplicateResume(cur.id);
+      get().renameResume(copyId, `${cur.meta.title} (tailored)`);
+      get().updateModel((r) => ({ ...r, meta: { ...r.meta, targetJobId: jobId } }));
+      get().setTargetJobDescription(jobDescription);
+      return copyId;
+    },
     documentTitle: '',
     markdown: '',
     theme: 'modern',
@@ -668,7 +684,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     keepSharedResume: () => {
       const cur = requireResume();
       if (!cur) return;
-      const kept: Resume = { ...cur, id: `resume-${Date.now()}`, meta: { ...cur.meta, createdAt: Date.now() } };
+      const kept: Resume = { ...cur, id: newResumeId(), meta: { ...cur.meta, createdAt: Date.now() } };
       set({ resumes: [kept, ...get().resumes], recruiterViewMode: false });
       commit(kept, { record: false });
     },

@@ -65,8 +65,9 @@ const URL_RE = /((?:https?:\/\/)?(?:www\.)?(?:linkedin\.com|github\.com|[a-z0-9-
 // Month names only: a bare word before a year is not a month ("Science 2012" is not a date)
 const MONTH = String.raw`(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?`;
 const TOKEN = String.raw`(?:(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2}|(?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|\d{1,2}\/(?:19|20)\d{2}|present|now|current|to date|today)`;
-const RANGE_AT_END = new RegExp(String.raw`(?:^|\s|\|)(${TOKEN}\s*(?:–|—|-|\bto\b)\s*${TOKEN})\s*$`, 'i');
-const SINGLE_AT_END = new RegExp(String.raw`(?:^|\s|\|)((?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2})\s*$`, 'i');
+// Dates may be in parentheses: "Engineer (2019 – Present)"
+const RANGE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?(${TOKEN}\s*(?:–|—|-|\bto\b)\s*${TOKEN})\)?\s*$`, 'i');
+const SINGLE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?((?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2})\)?\s*$`, 'i');
 const COMPANY_WORD = /\b(inc|llc|llp|pllc|plc|ltd|lp|corp|corporation|co|company|group|labs?|university|college|school|institute|hospital|medical|clinic|center|centre|partners|associates|studio|agency|bank|systems|technologies|solutions|software|health|foundation|academy|department|district|industries|media|cloud|electric|power|logistics|retail|digital|outfitters|apparel|holdings|ventures|works|network|networks|pharmacy|cancer|gulf|emirates)\b/i;
 const SCHOOL_WORD = /\b(university|college|school|institute|academy)\b/i;
 
@@ -296,11 +297,13 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
       if (!(current as { hasEntry: boolean }).hasEntry) {
         unsorted.push({ id: unsortedId(), text, page: line.page, reason: 'before the first entry in this section' });
         out.push(text);
-      } else if (text.length < 60 && !/[.!?]$/.test(text)) {
-        // Short line under an entry header: location or similar
+      } else if (!(current as { bodyLines?: number }).bodyLines && text.length < 60 && !/[.!?]$/.test(text) && text.split(/\s+/).length <= 6) {
+        // The first line straight under a header is usually the location
         out.push(`*${text}*`);
+        (current as { bodyLines?: number }).bodyLines = 1;
       } else {
         out.push(text);
+        (current as { bodyLines?: number }).bodyLines = ((current as { bodyLines?: number }).bodyLines ?? 0) + 1;
       }
       prev = line;
       prevWasBullet = false;

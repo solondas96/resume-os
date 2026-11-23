@@ -123,6 +123,12 @@ export function allBullets(resume: Resume): { sectionId: string; bullet: Bullet 
   );
 }
 
+/** Unique resume id. Time plus randomness, so two resumes made in the same millisecond never collide */
+export function newResumeId(): string {
+  const random = Math.random().toString(36).slice(2, 10);
+  return `resume-${Date.now().toString(36)}-${random}`;
+}
+
 /**
  * Create a new resume with defaults
  */
@@ -135,7 +141,7 @@ export function createResume(
   } = {}
 ): Resume {
   return {
-    id: `resume-${Date.now()}`,
+    id: newResumeId(),
     schemaVersion: 2,
     meta: {
       title,
@@ -168,7 +174,7 @@ export function createResume(
 export function cloneResume(resume: Resume, newTitle?: string): Resume {
   return {
     ...resume,
-    id: `resume-${Date.now()}`,
+    id: newResumeId(),
     meta: {
       ...resume.meta,
       title: newTitle || `${resume.meta.title} (Copy)`,

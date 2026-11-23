@@ -7,7 +7,7 @@ import { Resume } from '../model/resume';
 import { markdownToResume } from '../model/serialize';
 import { extractTextLines } from '../import/pdfText';
 import { structureFromLines, StructureResult } from '../import/structure';
-import { TextLine } from '../import/layout';
+import { htmlToLines } from '../import/docxHtml';
 // Bundled worker: served from our own origin, never from a CDN
 import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 
@@ -93,16 +93,13 @@ export function normalizeHeadings(text: string): string {
 
 
 /**
- * Extract text from DOCX using mammoth
+ * Extract DOCX as HTML using mammoth (lists and headings are kept)
  */
-export async function extractDocxText(file: File): Promise<string> {
+export async function extractDocxHtml(file: File): Promise<string> {
   try {
     const arrayBuffer = await file.arrayBuffer();
-
-    // Dynamically import mammoth
     const mammoth = await import('mammoth');
-
-    const result = await mammoth.extractRawText({ arrayBuffer });
+    const result = await mammoth.convertToHtml({ arrayBuffer });
     return result.value;
   } catch (e) {
     console.error('DOCX extraction error:', e);
@@ -146,18 +143,16 @@ export async function importResume(file: File): Promise<ImportResult> {
       result.structure = structure;
       result.pageText = pageText;
     } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
-      const text = await extractDocxText(file);
-      if (!text.trim()) {
+      // HTML keeps list items and heading levels, which the raw text export loses
+      const html = await extractDocxHtml(file);
+      const lines = htmlToLines(html);
+      if (lines.length === 0) {
         result.errors.push('File appears to be empty or unreadable');
         return result;
       }
-      const lines: TextLine[] = text
-        .split('\n')
-        .filter((l) => l.trim())
-        .map((l, i) => ({ text: l.trim(), x0: 0, x1: 0, y: -i, size: 10, bold: false, page: 1 }));
       const structure = structureFromLines(lines);
       markdown = structure.markdown;
-      pageText = text;
+      pageText = lines.map((l) => l.text).join('\n');
       result.structure = structure;
       result.pageText = pageText;
     } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
