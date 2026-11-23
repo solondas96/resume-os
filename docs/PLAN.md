@@ -157,4 +157,4 @@ Release `v2.0.0`. The numbers come from the commands in the README (`npm run tes
 - The first-screen budget was raised from 2 s to 2.5 s. The floor for this design is two network round trips (the HTML, then the script) plus React. Inlining the script was tried and reverted: the lazy chunks import shared code from the entry, so it ran twice.
 - The visual check covers page 1 only. Whether a Letter resume fits one page is checked for the role presets, not for every resume.
 - The Pages deploy step failed on `2a04de6` and `824cbc7` with "No artifacts named github-pages". The cause is not confirmed: the logs need a GitHub sign-in to read. The extra uploads were moved after the deploy, and later runs deployed (45229135338 is the last). Separately, the screenshot and visual-check artifacts were missing because the timing and PWA runs cleared `test-results/`; that is confirmed and fixed.
-- The project has no LICENSE file yet. The data licences are in `ATTRIBUTIONS.md`.
+- The code is MIT-licensed (`LICENSE`). The data licences are in `ATTRIBUTIONS.md`.

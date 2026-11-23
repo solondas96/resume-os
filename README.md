@@ -2,7 +2,7 @@
 
 **Build a clear resume, check how it reads to a computer, and download it as a PDF. Everything happens in your browser.**
 
-[**Open ResumeLabs**](https://solondas96.github.io/resume-os/) · [Changelog](CHANGELOG.md) · [Design](docs/DESIGN.md) · [Words we use](docs/COPY.md)
+[**Open ResumeLabs**](https://solondas96.github.io/resume-os/) · [Changelog](CHANGELOG.md) · [Design](docs/DESIGN.md) · [Words we use](docs/COPY.md) · [MIT licence](LICENSE)
 
 ![The editor and the preview, side by side](docs/media/desktop-light.png)
 
@@ -87,6 +87,10 @@ The full record of each round is in [docs/PLAN.md](docs/PLAN.md), section 10.
 - **US Letter is about 6% shorter than A4.** A resume that fits one A4 page is tightened to fit one Letter page. A resume that is longer than one page keeps its spacing, and may run to one more page on Letter.
 - **The ESCO skills list is not included.** It needs a download that is sent by email. O\*NET covers the work activities and tools.
 - **The first-screen budget is 2.5 s,** not the 2 s first planned. Two network round trips and React set the floor on the simulated slow connection.
+
+## Licence
+
+The code is released under the [MIT licence](LICENSE).
 
 ## Data and licences
 
