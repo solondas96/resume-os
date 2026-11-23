@@ -39,7 +39,7 @@ import {
   deleteRevision as deleteRevisionRecord,
   deleteDatabase,
 } from '../services/persistence';
-import { planRestore, clearAppLocalStorage, backupReminderDue } from '../services/dataSafety';
+import { planRestore, clearAppLocalStorage, backupReminderDue, clearAppCaches, requestPersistentStorage } from '../services/dataSafety';
 import { undoRedoManager } from '../services/undoRedo';
 import { jobIdOf } from '../intelligence/tailor';
 import { loadSkillsDataset } from '../intelligence/skillsData';
@@ -191,6 +191,10 @@ export interface ResumeStoreV2 extends DerivedFields {
   markBackup: () => void;
   restoreBackup: (incoming: Resume[], applications: JobApplication[]) => Promise<number>;
   deleteAllData: () => Promise<void>;
+  // Persistent storage: asked once, on the first resume. storageKept is null until the browser answers.
+  storageRequested: boolean;
+  storageKept: boolean | null;
+  ensurePersistentStorage: () => void;
 
   // Onboarding tour: shown once after the first resume exists, and replayable from Help
   tourOpen: boolean;
@@ -283,6 +287,7 @@ const SETTING_KEYS = {
   applications: 'applications',
   pageSize: 'pageSize',
   lastBackupAt: 'lastBackupAt',
+  storageRequested: 'storageRequested',
   tourDone: 'tourDone',
 } as const;
 
@@ -353,6 +358,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     restoreBackup: async (incoming, applications) => {
       const plan = planRestore(get().resumes, incoming);
       for (const item of plan) await saveResume(item.resume);
+      if (plan.length > 0) get().ensurePersistentStorage();
       // Applications are merged by id: nothing already here is replaced
       const known = new Set(get().applications.map((a) => a.id));
       const added = applications.filter((a) => !known.has(a.id));
@@ -368,6 +374,15 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
       undoRedoManager.clear();
       await deleteDatabase();
       clearAppLocalStorage();
+      await clearAppCaches();
+    },
+    storageRequested: false,
+    storageKept: null,
+    ensurePersistentStorage: () => {
+      if (get().storageRequested) return;
+      set({ storageRequested: true });
+      void saveSetting(SETTING_KEYS.storageRequested, true);
+      void requestPersistentStorage().then((kept) => set({ storageKept: kept }));
     },
     pageSize: 'A4',
     setPageSize: (pageSize) => {
@@ -437,6 +452,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
       };
       lastRecordAt = 0;
       set({ resumes: [resume, ...get().resumes] });
+      get().ensurePersistentStorage();
       commit(resume, { markdown: templateMarkdown ?? resumeToMarkdown(resume), record: false });
       void get().loadRevisionHistory();
       return resume.id;
@@ -799,6 +815,8 @@ async function runInitialize(
   const apps: JobApplication[] = Array.isArray(applications) ? applications : [];
   const savedPageSize = await loadSetting(SETTING_KEYS.pageSize);
   const savedBackupAt = await loadSetting(SETTING_KEYS.lastBackupAt);
+  const savedStorageRequested = await loadSetting(SETTING_KEYS.storageRequested);
+  set({ storageRequested: savedStorageRequested === true });
   const savedTourDone = await loadSetting(SETTING_KEYS.tourDone);
   set({
     tourDone: savedTourDone === true,

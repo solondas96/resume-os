@@ -137,3 +137,27 @@ export function downloadBackupFile(input: { resumes: Resume[]; applications: unk
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   return filename;
 }
+
+/** Cache names that belong to this app: the offline cache from the PWA plugin, and any of ours */
+export const APP_CACHE_PREFIXES = ['resumelabs', 'workbox'];
+
+/**
+ * Remove this app's offline cache and unregister its service worker, so the next load starts like a
+ * first visit. Returns how many caches were removed.
+ */
+export async function clearAppCaches(): Promise<number> {
+  let removed = 0;
+  if (typeof caches !== 'undefined') {
+    for (const name of await caches.keys()) {
+      if (APP_CACHE_PREFIXES.some((p) => name.toLowerCase().includes(p))) {
+        if (await caches.delete(name)) removed++;
+      }
+    }
+  }
+  if (typeof navigator !== 'undefined' && navigator.serviceWorker?.getRegistrations) {
+    for (const registration of await navigator.serviceWorker.getRegistrations()) {
+      await registration.unregister();
+    }
+  }
+  return removed;
+}

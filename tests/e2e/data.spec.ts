@@ -33,6 +33,12 @@ test('create, back up, delete everything, then restore from the backup file', as
   expect(backup.app).toBe('ResumeLabs');
   expect(JSON.stringify(backup.resumes)).toContain('Maya Chen');
 
+  // Sentinel caches with the app's prefixes: deleting everything must remove them
+  await page.evaluate(async () => {
+    await caches.open('resumelabs-marker');
+    await caches.open('workbox-marker');
+  });
+
   // 2. Delete everything: the typed word is required
   const deleteButton = page.getByRole('button', { name: 'Delete all my data' });
   await expect(deleteButton).toBeDisabled();
@@ -40,6 +46,10 @@ test('create, back up, delete everything, then restore from the backup file', as
   await deleteButton.click();
   await expect(page.getByRole('heading', { name: 'Welcome to ResumeLabs' })).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('.a4-sheet')).toHaveCount(0);
+  // The page was reloaded: the old app caches are gone (the app recreates its own offline cache on load)
+  const cacheNames = await page.evaluate(() => caches.keys());
+  expect(cacheNames).not.toContain('resumelabs-marker');
+  expect(cacheNames).not.toContain('workbox-marker');
 
   // 3. Restore from the file: a preview first, then the resume is back
   await page.getByLabel('Choose a backup file to restore').setInputFiles(backupPath);

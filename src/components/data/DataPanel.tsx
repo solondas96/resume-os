@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import {
   downloadBackupFile,
-  requestPersistentStorage,
   storageStatus,
   StorageStatus,
   BACKUP_REMINDER_DAYS,
@@ -26,7 +25,7 @@ export const DataPanel: React.FC = () => {
   const deleteAllData = useResumeStoreV2((s) => s.deleteAllData);
 
   const [storage, setStorage] = useState<StorageStatus | null>(null);
-  const [kept, setKept] = useState<boolean | null>(null);
+  const kept = useResumeStoreV2((s) => s.storageKept);
   const [restoreText, setRestoreText] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [typed, setTyped] = useState('');
@@ -34,7 +33,6 @@ export const DataPanel: React.FC = () => {
 
   useEffect(() => {
     void storageStatus().then(setStorage);
-    void requestPersistentStorage().then(setKept);
   }, []);
 
   const download = () => {
@@ -64,6 +62,9 @@ export const DataPanel: React.FC = () => {
           <p className="text-xs text-muted-foreground">
             Using {mb(storage.usedBytes)} MB of about {mb(storage.quotaBytes)} MB available to this site.
           </p>
+        )}
+        {kept === null && (
+          <p className="text-xs text-muted-foreground">The browser is asked to keep this data when your first resume is created.</p>
         )}
         {kept !== null && (
           <p className="text-xs text-muted-foreground">
