@@ -509,6 +509,9 @@ const SectionCard: React.FC<{ section: Section; findings: Map<string, Finding[]>
 
       {!collapsed && (
         <div className="p-3 space-y-3">
+          {(section.kind === 'experience' || section.kind === 'education' || section.kind === 'projects') && section.items.length === 0 && (
+            <p className="text-xs text-muted-foreground">Nothing here yet. Add the first one below.</p>
+          )}
           {(section.kind === 'experience' || section.kind === 'education' || section.kind === 'projects') && (
             <>
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleEnd}>
@@ -616,6 +619,10 @@ export const FormEditor: React.FC = () => {
   return (
     <div className="h-full overflow-y-auto p-4 space-y-4 bg-background" data-testid="form-editor">
       <BasicsCard resume={currentResume} />
+
+      {currentResume.sections.length === 0 && (
+        <p className="text-sm text-muted-foreground px-1">No sections yet. Add one below, such as Experience or Education.</p>
+      )}
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleEnd}>
         <SortableContext items={sectionIds} strategy={verticalListSortingStrategy}>

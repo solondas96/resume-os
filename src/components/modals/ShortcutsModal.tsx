@@ -4,7 +4,7 @@ import { X, HelpCircle, Copy, Check } from 'lucide-react';
 import { ICON_SVGS } from '../../parser/iconMap';
 
 export const ShortcutsModal: React.FC = () => {
-  const { activeModal, setActiveModal } = useResumeStoreV2();
+  const { activeModal, setActiveModal, openTour } = useResumeStoreV2();
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
   if (activeModal !== 'shortcuts') return null;
@@ -24,12 +24,23 @@ export const ShortcutsModal: React.FC = () => {
             <HelpCircle className="w-4 h-4 text-brand-text" />
             <span>Markdown & Icon Shortcuts</span>
           </div>
+          <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setActiveModal(null);
+              openTour();
+            }}
+            className="px-2.5 py-1 rounded-md bg-muted hover:bg-muted/80 text-foreground text-xs font-medium"
+          >
+            Take the tour again
+          </button>
           <button
             onClick={() => setActiveModal(null)}
             className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted transition"
           >
             <X className="w-4 h-4" />
           </button>
+          </div>
         </div>
 
         {/* Content */}

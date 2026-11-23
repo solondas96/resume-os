@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { test, expect, seedLocalStorage, waitForApp } from './helpers';
+import { test, expect, seedLocalStorage, waitForApp, skipTour } from './helpers';
 import { encodeResumeForShare } from '../../src/utils/shareResume';
 
 const FIXTURES = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes');
@@ -39,6 +39,7 @@ test.describe('import', () => {
     await expect(page.getByRole('list', { name: 'Sections' })).toContainText('Experience');
 
     await page.getByRole('button', { name: 'Create resume' }).click();
+    await skipTour(page);
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
     await expect(page.locator('.a4-sheet')).toContainText('Experience');
   });
@@ -49,6 +50,7 @@ test.describe('import', () => {
     await page.locator('input[type=file]').first().setInputFiles(DOCX);
     await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
     await page.getByRole('button', { name: 'Create resume' }).click();
+    await skipTour(page);
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
     await expect(page.locator('.a4-sheet')).toContainText('Experience');
   });
@@ -61,6 +63,7 @@ test.describe('editor, health and match', () => {
     await page.locator('input[type=file]').first().setInputFiles(DOCX);
     await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
     await page.getByRole('button', { name: 'Create resume' }).click();
+    await skipTour(page);
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
   });
 
@@ -99,6 +102,7 @@ test.describe('export', () => {
     await waitForApp(page);
     await page.locator('input[type=file]').first().setInputFiles(DOCX);
     await page.getByRole('button', { name: 'Create resume' }).click();
+    await skipTour(page);
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
     // Also with a side panel open: panels must not print over the resume
@@ -186,6 +190,7 @@ test.describe('corpus import', () => {
     await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByRole('list', { name: 'Sections' })).toContainText('Experience');
     await page.getByRole('button', { name: 'Create resume' }).click();
+    await skipTour(page);
     await expect(page.locator('.a4-sheet')).toContainText('Summit Software');
     await expect(page.locator('.a4-sheet')).toContainText('Sales Manager');
   });

@@ -88,6 +88,10 @@ export const JobMatchPanel: React.FC = () => {
           />
         </div>
 
+        {result && result.requirements.length === 0 && (
+          <p className="text-xs text-muted-foreground">No requirements found. Put them under "Required" in the posting, as bullets.</p>
+        )}
+
         {!result && (
           <p className="text-xs text-muted-foreground">Paste a job description to see your match score.</p>
         )}

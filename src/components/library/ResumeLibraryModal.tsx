@@ -161,6 +161,9 @@ export const ResumeLibraryModal: React.FC = () => {
 
         {/* Resumes List */}
         <div className="p-6 overflow-y-auto space-y-3 flex-1">
+          {resumes.length === 0 && (
+            <p className="text-xs text-muted-foreground">No resumes yet. Name one above and press Create to start.</p>
+          )}
           {resumes.map((resume) => {
             const isActive = resume.id === activeResumeId;
             const isEditing = editingId === resume.id;

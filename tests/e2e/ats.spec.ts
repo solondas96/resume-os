@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { test, expect, waitForApp } from './helpers';
+import { test, expect, waitForApp, skipTour } from './helpers';
 
 const DOCX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes', 'maya-chen.docx');
 
@@ -12,6 +12,7 @@ test('ATS: the print-layout readout renders, and an exported PDF is read back an
   await page.locator('input[type=file]').first().setInputFiles(DOCX);
   await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
   await page.getByRole('button', { name: 'Create resume' }).click();
+  await skipTour(page);
   await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
   // Open the inspector and read the print-layout estimate
@@ -40,6 +41,7 @@ test('Download PDF makes a real, text-based PDF file', async ({ page }) => {
   await page.locator('input[type=file]').first().setInputFiles(DOCX);
   await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
   await page.getByRole('button', { name: 'Create resume' }).click();
+  await skipTour(page);
   await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
   const download = page.waitForEvent('download');

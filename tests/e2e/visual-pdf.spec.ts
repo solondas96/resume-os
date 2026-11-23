@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { createCanvas, loadImage, Canvas } from '@napi-rs/canvas';
-import { test, expect, waitForApp } from './helpers';
+import { test, expect, waitForApp, skipTour } from './helpers';
 
 const DOCX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes', 'maya-chen.docx');
 const OUT = path.join(process.cwd(), 'test-results', 'visual');
@@ -67,6 +67,7 @@ for (const size of ['A4', 'Letter'] as const) {
     await page.locator('input[type=file]').first().setInputFiles(DOCX);
     await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
     await page.getByRole('button', { name: 'Create resume' }).click();
+    await skipTour(page);
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
     if (size === 'Letter') {

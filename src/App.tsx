@@ -9,6 +9,7 @@ import { PresetsModal } from './components/modals/PresetsModal';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { CommandPalette } from './components/palette/CommandPalette';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
+import { OnboardingTour } from './components/onboarding/OnboardingTour';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
 import { useResumeStoreV2 } from './store/useResumeStoreV2';
 import { parseShareHash } from './utils/shareResume';
@@ -252,6 +253,7 @@ export const App: React.FC = () => {
       )}
       <HistoryModal />
       <ShortcutsModal />
+      <OnboardingTour />
       <ImportModal />
       <PresetsModal />
       {activeModal === 'tracker' && (

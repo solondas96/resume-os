@@ -179,6 +179,12 @@ export interface ResumeStoreV2 extends DerivedFields {
   pageSize: PageSize;
   setPageSize: (size: PageSize) => void;
 
+  // Onboarding tour: shown once after the first resume exists, and replayable from Help
+  tourOpen: boolean;
+  tourDone: boolean;
+  openTour: () => void;
+  closeTour: () => void;
+
   // Tailoring: a linked copy for one job description
   tailorFor: (jobDescription: string) => string;
 
@@ -263,6 +269,7 @@ const SETTING_KEYS = {
   targetJob: 'targetJobDescription',
   applications: 'applications',
   pageSize: 'pageSize',
+  tourDone: 'tourDone',
 } as const;
 
 // ---- store ---------------------------------------------------------------
@@ -325,6 +332,13 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     setPageSize: (pageSize) => {
       set({ pageSize });
       void saveSetting(SETTING_KEYS.pageSize, pageSize);
+    },
+    tourOpen: false,
+    tourDone: false,
+    openTour: () => set({ tourOpen: true }),
+    closeTour: () => {
+      set({ tourOpen: false, tourDone: true });
+      void saveSetting(SETTING_KEYS.tourDone, true);
     },
     tailorFor: (jobDescription) => {
       const cur = requireResume();
@@ -731,7 +745,9 @@ async function runInitialize(
 
   const apps: JobApplication[] = Array.isArray(applications) ? applications : [];
   const savedPageSize = await loadSetting(SETTING_KEYS.pageSize);
+  const savedTourDone = await loadSetting(SETTING_KEYS.tourDone);
   set({
+    tourDone: savedTourDone === true,
     pageSize: savedPageSize === 'Letter' || savedPageSize === 'A4' ? savedPageSize : pageSizeForLocale(typeof navigator !== 'undefined' ? navigator.language : undefined),
     uiTheme: uiTheme === 'light' ? 'light' : 'dark',
     workspaceMode: workspaceMode === 'cover-letter' ? 'cover-letter' : 'resume',

@@ -6,7 +6,8 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { X, Upload, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { X, Upload, FileText, AlertTriangle, CheckCircle2, GripVertical } from 'lucide-react';
+import { DndContext, DragEndEvent, PointerSensor, KeyboardSensor, useSensor, useSensors, useDraggable, useDroppable } from '@dnd-kit/core';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { importResume, ImportResult } from '../../services/importResume';
 import { markdownToResume } from '../../model/serialize';
@@ -14,6 +15,37 @@ import { allBullets, sectionItems } from '../../model/resume';
 import { moveLineToSection, UnsortedLine } from '../../import/structure';
 
 const ACCEPT = '.pdf,.docx,.txt,.md';
+
+/** An unsorted line that can be dragged onto a section (the select and Move button stay as the keyboard path) */
+const DraggableUnsorted: React.FC<{ id: string; children: React.ReactNode }> = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, isDragging } = useDraggable({ id: `unsorted-${id}` });
+  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  return (
+    <li ref={setNodeRef} style={style} className={`flex flex-wrap items-center gap-2 text-xs ${isDragging ? 'opacity-70' : ''}`}>
+      <button
+        type="button"
+        ref={setActivatorNodeRef}
+        {...listeners}
+        {...attributes}
+        aria-label="Drag this line onto a section, or use the menu"
+        className="p-1 rounded text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="w-3.5 h-3.5" />
+      </button>
+      {children}
+    </li>
+  );
+};
+
+/** A section in the review that accepts a dropped line */
+const DroppableSection: React.FC<{ index: number; children: React.ReactNode }> = ({ index, children }) => {
+  const { setNodeRef, isOver } = useDroppable({ id: `section-${index}` });
+  return (
+    <div ref={setNodeRef} className={`rounded-lg ${isOver ? 'ring-2 ring-brand/50' : ''}`}>
+      {children}
+    </div>
+  );
+};
 
 const CONFIDENCE_STYLE: Record<string, string> = {
   high: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
@@ -39,6 +71,8 @@ export const ImportModal: React.FC = () => {
   const [reviewText, setReviewText] = useState('');
   const [unsorted, setUnsorted] = useState<UnsortedLine[]>([]);
   const [targets, setTargets] = useState<Record<string, string>>({});
+  // Drag sensors: declared with the other hooks, before any early return
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }), useSensor(KeyboardSensor));
 
   const isOpen = activeModal === 'import';
 
@@ -130,11 +164,20 @@ export const ImportModal: React.FC = () => {
     close();
   };
 
-  const moveUnsorted = (line: UnsortedLine) => {
-    const target = targets[line.id];
-    if (!target) return;
-    setReviewText((t) => moveLineToSection(t, line.text, target));
+  const moveUnsorted = (line: UnsortedLine, chosen: string | undefined = targets[line.id]) => {
+    if (!chosen) return;
+    setReviewText((t) => moveLineToSection(t, line.text, chosen));
     setUnsorted((list) => list.filter((u) => u.id !== line.id));
+  };
+
+  // Drag-out: a line dropped on a section moves there, exactly as Move does
+  const onDragEnd = (e: DragEndEvent) => {
+    const over = e.over?.id ? String(e.over.id) : '';
+    const active = String(e.active.id);
+    if (!over.startsWith('section-') || !active.startsWith('unsorted-') || !summary) return;
+    const section = summary.sections[Number(over.slice('section-'.length))];
+    const line = unsorted.find((u) => `unsorted-${u.id}` === active);
+    if (section && line) moveUnsorted(line, section.title);
   };
 
   return (
@@ -204,6 +247,7 @@ export const ImportModal: React.FC = () => {
               ))}
 
               {result.success && summary && (
+                <DndContext sensors={sensors} onDragEnd={onDragEnd}>
                 <>
                   <div className="grid md:grid-cols-2 gap-4">
                     <section aria-label="Original text" className="space-y-2 min-w-0">
@@ -221,12 +265,14 @@ export const ImportModal: React.FC = () => {
                         {summary.sections.map((s, index) => {
                           const conf = confidenceByTitle.get(s.title.toLowerCase()) ?? 'high';
                           return (
-                            <li key={`${index}-${s.title}`} className="flex items-center justify-between gap-2 text-xs bg-background border border-border rounded-lg px-3 py-2">
+                            <DroppableSection key={`${index}-${s.title}`} index={index}>
+                            <li className="flex items-center justify-between gap-2 text-xs bg-background border border-border rounded-lg px-3 py-2">
                               <span className="text-foreground">{s.title} <span className="text-muted-foreground font-mono">({s.count})</span></span>
                               <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${CONFIDENCE_STYLE[conf]}`}>
                                 {conf === 'high' ? 'confident' : conf === 'medium' ? 'check this' : 'guess'}
                               </span>
                             </li>
+                            </DroppableSection>
                           );
                         })}
                       </ul>
@@ -240,7 +286,7 @@ export const ImportModal: React.FC = () => {
                       </h3>
                       <ul className="space-y-2">
                         {unsorted.map((u) => (
-                          <li key={u.id} className="flex flex-wrap items-center gap-2 text-xs">
+                          <DraggableUnsorted key={u.id} id={u.id}>
                             <span className="flex-1 min-w-[12rem] text-foreground">{u.text}</span>
                             <span className="text-muted-foreground">{u.reason}</span>
                             <label className="sr-only" htmlFor={`move-${u.id}`}>Move to section</label>
@@ -263,7 +309,7 @@ export const ImportModal: React.FC = () => {
                             >
                               Move
                             </button>
-                          </li>
+                          </DraggableUnsorted>
                         ))}
                       </ul>
                     </section>
@@ -290,6 +336,7 @@ export const ImportModal: React.FC = () => {
                     />
                   </label>
                 </>
+                </DndContext>
               )}
             </>
           )}

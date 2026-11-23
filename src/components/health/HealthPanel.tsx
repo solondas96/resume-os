@@ -67,6 +67,10 @@ export const HealthBreakdown: React.FC = () => {
         ))}
       </div>
 
+      {health.topIssues.length === 0 && (
+        <p className="text-xs text-muted-foreground">No fixes needed right now. This list updates as you edit.</p>
+      )}
+
       {health.topIssues.length > 0 && (
         <div>
           <div className="text-xs font-medium text-foreground mb-1">Top fixes</div>

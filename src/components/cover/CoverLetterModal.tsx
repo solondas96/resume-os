@@ -75,6 +75,9 @@ export const CoverLetterModal: React.FC = () => {
             />
           </label>
           {!currentResume && <p className="text-xs text-destructive">Create a resume first.</p>}
+          {currentResume && !canGenerate && (
+            <p className="text-xs text-muted-foreground">Enter the company and the role to generate a draft. You write the rest.</p>
+          )}
         </div>
 
         <div className="px-5 py-3 border-t border-border flex justify-end gap-2">
