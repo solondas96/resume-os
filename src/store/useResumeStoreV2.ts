@@ -40,6 +40,7 @@ import {
 } from '../services/persistence';
 import { undoRedoManager } from '../services/undoRedo';
 import { jobIdOf } from '../intelligence/tailor';
+import { loadSkillsDataset } from '../intelligence/skillsData';
 import { SAMPLE_RESUME } from '../data/sampleResume';
 import { SAMPLE_COVER_LETTER } from '../data/sampleCoverLetter';
 
@@ -704,6 +705,9 @@ async function runInitialize(
 ): Promise<void> {
   await initializePersistence();
   await runMigrationOnStartup();
+
+  // The skills dataset loads in the background; matching uses the curated dictionary until then
+  void loadSkillsDataset();
 
   const [uiTheme, workspaceMode, coverLetter, targetJob, applications] = await Promise.all([
     loadSetting(SETTING_KEYS.uiTheme),

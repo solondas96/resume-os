@@ -128,7 +128,10 @@ export const ShortcutsModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-border flex justify-end bg-card">
+        <div className="px-5 py-3 border-t border-border flex items-center justify-between gap-3 bg-card">
+          <p className="text-[11px] text-muted-foreground">
+            About data: skill and job-title names from O*NET 29.1 (CC BY 4.0). Everything is processed in your browser. See ATTRIBUTIONS.md.
+          </p>
           <button
             onClick={() => setActiveModal(null)}
             className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"

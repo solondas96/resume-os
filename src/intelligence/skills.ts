@@ -83,46 +83,90 @@ export function stemWord(raw: string): string {
   return w;
 }
 
-/** Alias (lowercase phrase) -> canonical name, longest phrases matched first */
-const ALIAS_TO_CANONICAL = new Map<string, string>();
-for (const entry of SKILLS) {
-  ALIAS_TO_CANONICAL.set(entry.canonical.toLowerCase(), entry.canonical);
-  for (const alias of entry.aliases) ALIAS_TO_CANONICAL.set(alias.toLowerCase(), entry.canonical);
+/**
+ * Tokens of a text: lowercase words (keeping + # . / inside, so "C++", "node.js", "CI/CD" stay whole),
+ * each stemmed the same way as the dictionary, so lookups agree on both sides.
+ */
+export function tokensOf(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[^a-z0-9+#./-]+/)
+    .map((t) => t.replace(/[./-]+$/, ''))
+    .filter(Boolean)
+    .map(stemWord)
+    .filter(Boolean);
 }
-const PHRASES_LONGEST_FIRST = [...ALIAS_TO_CANONICAL.keys()].sort((a, b) => b.length - a.length);
 
-function escapeRe(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const MAX_PHRASE_TOKENS = 6;
+
+interface Index {
+  /** stemmed phrase (tokens joined by a space) -> canonical name */
+  phrases: Map<string, string>;
+  maxTokens: number;
+}
+
+function buildIndex(entries: { canonical: string; aliases: string[] }[]): Index {
+  const phrases = new Map<string, string>();
+  let maxTokens = 1;
+  const add = (phrase: string, canonical: string) => {
+    const tokens = tokensOf(phrase);
+    if (tokens.length === 0 || tokens.length > MAX_PHRASE_TOKENS) return;
+    const k = tokens.join(' ');
+    if (!phrases.has(k)) phrases.set(k, canonical); // the first source to name a phrase keeps it
+    maxTokens = Math.max(maxTokens, tokens.length);
+  };
+  for (const e of entries) {
+    add(e.canonical, e.canonical);
+    for (const a of e.aliases) add(a, e.canonical);
+  }
+  return { phrases, maxTokens };
+}
+
+const curatedEntries = SKILLS.map((e) => ({ canonical: e.canonical, aliases: e.aliases }));
+let index: Index = buildIndex(curatedEntries);
+
+/**
+ * Install the generated dataset (public/data/skills.json). The curated entries stay first,
+ * so their names and synonyms always win. Safe to call more than once.
+ */
+export function installSkillsDataset(data: { skills: { c: string; a: string[] }[] }): void {
+  index = buildIndex([
+    ...curatedEntries,
+    ...data.skills.map((s) => ({ canonical: s.c, aliases: s.a })),
+  ]);
+}
+
+/** Back to the curated dictionary only (used by tests and when a dataset fails to load) */
+export function resetSkillsDataset(): void {
+  index = buildIndex(curatedEntries);
 }
 
 /** Canonical skill for a single term (name or synonym), or null */
 export function canonicalSkill(term: string): string | null {
-  const key = term.toLowerCase().trim();
-  if (ALIAS_TO_CANONICAL.has(key)) return ALIAS_TO_CANONICAL.get(key)!;
-  // Try the stemmed form against stemmed aliases
-  const stem = stemWord(key);
-  for (const [alias, canonical] of ALIAS_TO_CANONICAL) {
-    if (stemWord(alias) === stem && stem.length > 2) return canonical;
-  }
-  return null;
+  const k = tokensOf(term).join(' ');
+  return k ? index.phrases.get(k) ?? null : null;
 }
 
-/** All canonical skills mentioned in a piece of text (deduplicated, in order of first mention) */
+/**
+ * All canonical skills mentioned in a text, in order of first mention, without duplicates.
+ * Longest phrase first, so "Spring Boot" is one skill and not "Spring" plus "Boot".
+ */
 export function extractSkills(text: string): string[] {
-  const lower = ` ${text.toLowerCase().replace(/\s+/g, ' ')} `;
-  const found: { canonical: string; index: number }[] = [];
-  const masked = { text: lower };
-
-  for (const phrase of PHRASES_LONGEST_FIRST) {
-    const re = new RegExp(`(?<![a-z0-9+#])${escapeRe(phrase)}(?![a-z0-9+#])`, 'g');
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(masked.text)) !== null) {
-      found.push({ canonical: ALIAS_TO_CANONICAL.get(phrase)!, index: m.index });
-      // Mask the matched span so a shorter alias cannot match inside it
-      masked.text = masked.text.slice(0, m.index) + ' '.repeat(phrase.length) + masked.text.slice(m.index + phrase.length);
+  const toks = tokensOf(text);
+  const found: string[] = [];
+  let i = 0;
+  while (i < toks.length) {
+    let matched = 0;
+    const longest = Math.min(index.maxTokens, toks.length - i);
+    for (let len = longest; len >= 1; len--) {
+      const canonical = index.phrases.get(toks.slice(i, i + len).join(' '));
+      if (canonical) {
+        found.push(canonical);
+        matched = len;
+        break;
+      }
     }
+    i += matched > 0 ? matched : 1;
   }
-
-  found.sort((a, b) => a.index - b.index);
-  return [...new Set(found.map((f) => f.canonical))];
+  return [...new Set(found)];
 }
