@@ -65,8 +65,30 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
           </div>
         </div>
 
+        {/* What it does, in three points, and one Start */}
+        <section aria-label="What ResumeLabs does" className="mb-8 space-y-4 text-center">
+          <ul className="grid gap-2 text-sm text-foreground sm:grid-cols-3">
+            <li className="rounded-xl border border-border bg-card p-3">Start from your current resume, a role, or a blank page.</li>
+            <li className="rounded-xl border border-border bg-card p-3">See the page as it will be sent, with a health score and plain fixes.</li>
+            <li className="rounded-xl border border-border bg-card p-3">Download a PDF that applicant tracking software can read.</li>
+          </ul>
+          <p className="text-xs text-muted-foreground">Your resumes stay in this browser. There is no account and nothing is uploaded.</p>
+          <button
+            type="button"
+            onClick={() =>
+              document.getElementById('start-options')?.scrollIntoView({
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                block: 'start',
+              })
+            }
+            className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90"
+          >
+            Start
+          </button>
+        </section>
+
         {/* Three entry paths */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div id="start-options" className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Path 1: Upload Resume */}
           <div
             onDragOver={handleDragOver}
