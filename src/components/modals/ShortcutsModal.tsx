@@ -2,9 +2,10 @@ import React from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { X, HelpCircle, Copy, Check } from 'lucide-react';
 import { ICON_SVGS } from '../../parser/iconMap';
+import { feedbackUrl } from '../../services/feedback';
 
 export const ShortcutsModal: React.FC = () => {
-  const { activeModal, setActiveModal, openTour } = useResumeStoreV2();
+  const { activeModal, setActiveModal, openTour, pageSize, currentResume } = useResumeStoreV2();
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
 
   if (activeModal !== 'shortcuts') return null;
@@ -145,6 +146,21 @@ export const ShortcutsModal: React.FC = () => {
           </p>
           <div className="flex items-center gap-3">
             <span data-testid="app-version" className="text-[11px] text-muted-foreground font-mono">ResumeLabs v{__APP_VERSION__}</span>
+            <button
+              type="button"
+              onClick={() => {
+                const url = feedbackUrl({
+                  version: __APP_VERSION__,
+                  userAgent: navigator.userAgent,
+                  pageSize,
+                  template: currentResume?.design.template ?? 'none',
+                });
+                window.open(url, '_blank', 'noopener,noreferrer');
+              }}
+              className="px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-xs font-medium"
+            >
+              Send feedback
+            </button>
             <button
               onClick={() => setActiveModal(null)}
               className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
