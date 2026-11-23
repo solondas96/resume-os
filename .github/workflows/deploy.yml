@@ -60,9 +60,16 @@ jobs:
         run: npm run perf
 
       - name: Offline (PWA) tests against the production build
-        run: npm run e2e:pwa
         env:
           CI: true
+        run: |
+          set +e
+          npm run e2e:pwa > pwa.log 2>&1
+          status=$?
+          # The log is not public; its key lines are, as an annotation
+          echo "::notice title=offline test lines::$(grep -E 'Error|expected|Offline start|pageerror|error:' pwa.log | head -c 1500 | tr '\n' ' ' | sed 's/::/: /g')"
+          cat pwa.log
+          exit $status
 
       - name: Bundle size budget (initial JavaScript, 300 KB gzipped)
         run: npm run size
