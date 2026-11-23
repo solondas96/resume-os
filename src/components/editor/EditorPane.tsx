@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useRef, useState } from 'react';
 import type { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
-import { FormEditor } from '../form/FormEditor';
+const FormEditor = React.lazy(() => import('../form/FormEditor').then((m) => ({ default: m.FormEditor })));
 
 // Loaded only when the Advanced Markdown view is open
 const MarkdownCodeMirror = React.lazy(() => import('./MarkdownCodeMirror'));
@@ -405,7 +405,7 @@ export const EditorPane: React.FC = () => {
       {/* Main content: the form editor, or the Markdown text */}
       {editorViewMode === 'form' ? (
         <div className="flex-1 overflow-hidden">
-          <FormEditor />
+          <Suspense fallback={null}><FormEditor /></Suspense>
         </div>
       ) : (
         <div className="flex-1 overflow-hidden relative bg-card">

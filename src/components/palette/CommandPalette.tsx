@@ -75,13 +75,10 @@ export const CommandPalette: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Close on Escape or open on Cmd+K / Ctrl+K
+  // Close on Escape. Cmd+K / Ctrl+K opens it, and is handled in App, so the palette can load on demand.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setCommandPaletteOpen(!commandPaletteOpen);
-      } else if (e.key === 'Escape' && commandPaletteOpen) {
+      if (e.key === 'Escape' && commandPaletteOpen) {
         setCommandPaletteOpen(false);
       }
     };

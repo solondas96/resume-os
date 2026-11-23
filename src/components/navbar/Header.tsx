@@ -18,7 +18,10 @@ import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
 import { exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import { downloadResumePdf } from '../../services/pdfDownload';
-import confetti from 'canvas-confetti';
+const celebrate = async (opts: Record<string, unknown>) => {
+  const { default: confetti } = await import('canvas-confetti');
+  confetti(opts);
+};
 
 export const Header: React.FC = () => {
   const {
@@ -52,7 +55,7 @@ export const Header: React.FC = () => {
 
   const handlePrintPdf = () => {
     saveRevision('Pre-export auto-save');
-    confetti({
+    void celebrate({
       particleCount: 50,
       spread: 50,
       origin: { y: 0.1 }
@@ -66,7 +69,7 @@ export const Header: React.FC = () => {
     setIsExportingPdf(true);
     try {
       if (currentResume) await downloadResumePdf(currentResume, pageSize);
-      confetti({
+      void celebrate({
         particleCount: 60,
         spread: 60,
         origin: { y: 0.2 }

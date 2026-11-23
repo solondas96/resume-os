@@ -1,22 +1,22 @@
 import React, { Suspense, useState, useCallback, useRef, useEffect } from 'react';
-import { Header } from './components/navbar/Header';
-import { EditorPane } from './components/editor/EditorPane';
-import { A4Canvas } from './components/preview/A4Canvas';
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
-import { ImportModal } from './components/modals/ImportModal';
-import { PresetsModal } from './components/modals/PresetsModal';
-import { StatusBar } from './components/statusbar/StatusBar';
-import { CommandPalette } from './components/palette/CommandPalette';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
 import { OnboardingTour } from './components/onboarding/OnboardingTour';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
 import { useResumeStoreV2 } from './store/useResumeStoreV2';
-import { parseShareHash } from './utils/shareResume';
 
 // Loaded when opened, so their code is not in the startup bundle
 const TrackerModal = React.lazy(() => import('./components/tracker/TrackerModal').then((m) => ({ default: m.TrackerModal })));
 const CoverLetterModal = React.lazy(() => import('./components/cover/CoverLetterModal').then((m) => ({ default: m.CoverLetterModal })));
 const ShareModal = React.lazy(() => import('./components/share/ShareModal').then((m) => ({ default: m.ShareModal })));
+// The main screen loads after the first screen, so the first screen's download stays small
+const Header = React.lazy(() => import('./components/navbar/Header').then((m) => ({ default: m.Header })));
+const EditorPane = React.lazy(() => import('./components/editor/EditorPane').then((m) => ({ default: m.EditorPane })));
+const A4Canvas = React.lazy(() => import('./components/preview/A4Canvas').then((m) => ({ default: m.A4Canvas })));
+const StatusBar = React.lazy(() => import('./components/statusbar/StatusBar').then((m) => ({ default: m.StatusBar })));
+const CommandPalette = React.lazy(() => import('./components/palette/CommandPalette').then((m) => ({ default: m.CommandPalette })));
+const PresetsModal = React.lazy(() => import('./components/modals/PresetsModal').then((m) => ({ default: m.PresetsModal })));
+const ImportModal = React.lazy(() => import('./components/modals/ImportModal').then((m) => ({ default: m.ImportModal })));
 const Inspector = React.lazy(() => import('./components/inspector/Inspector').then((m) => ({ default: m.Inspector })));
 const RecruiterView = React.lazy(() => import('./components/preview/RecruiterView').then((m) => ({ default: m.RecruiterView })));
 const ResumeLibraryModal = React.lazy(() => import('./components/library/ResumeLibraryModal').then((m) => ({ default: m.ResumeLibraryModal })));
@@ -28,6 +28,20 @@ export const App: React.FC = () => {
   const libraryModalOpen = useResumeStoreV2((s) => s.libraryModalOpen);
   const shareModalOpen = useResumeStoreV2((s) => s.shareModalOpen);
   const activeModal = useResumeStoreV2((s) => s.activeModal);
+  const commandPaletteOpen = useResumeStoreV2((s) => s.commandPaletteOpen);
+  const setCommandPaletteOpen = useResumeStoreV2((s) => s.setCommandPaletteOpen);
+
+  // Cmd+K / Ctrl+K opens search and commands
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(!commandPaletteOpen);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [commandPaletteOpen, setCommandPaletteOpen]);
   const mobileTab = useResumeStoreV2((s) => s.mobileTab);
   const setMobileTab = useResumeStoreV2((s) => s.setMobileTab);
   const recruiterViewMode = useResumeStoreV2((s) => s.recruiterViewMode);
@@ -77,8 +91,12 @@ export const App: React.FC = () => {
   // Shared recruiter link (#view=...): previewed in memory, nothing is saved
   useEffect(() => {
     if (!ready || typeof window === 'undefined') return;
-    const decoded = parseShareHash(window.location.hash);
-    if (decoded) openSharedView(decoded);
+    // Only a link with #view= needs the decoder, so it loads on demand
+    if (!window.location.hash.startsWith('#view=')) return;
+    void import('./utils/shareResume').then(({ parseShareHash }) => {
+      const decoded = parseShareHash(window.location.hash);
+      if (decoded) openSharedView(decoded);
+    });
   }, [ready, openSharedView]);
 
   const [editorWidth, setEditorWidth] = useState<number>(() => {
@@ -115,7 +133,7 @@ export const App: React.FC = () => {
     return (
       <>
         <Suspense fallback={null}><RecruiterView /></Suspense>
-        <ImportModal />
+        {activeModal === 'import' && <Suspense fallback={null}><ImportModal /></Suspense>}
       </>
     );
   }
@@ -137,8 +155,8 @@ export const App: React.FC = () => {
           onStartFromRole={() => setActiveModal('presets')}
           onStartBlank={() => createResume('Untitled Resume')}
         />
-        <ImportModal />
-        <PresetsModal />
+        {activeModal === 'import' && <Suspense fallback={null}><ImportModal /></Suspense>}
+        {activeModal === 'presets' && <Suspense fallback={null}><PresetsModal /></Suspense>}
       </>
     );
   }
@@ -146,7 +164,7 @@ export const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground font-sans transition-colors duration-150">
       {/* Top Navbar */}
-      <Header />
+      <Suspense fallback={null}><Header /></Suspense>
 
       {/* Mobile Tab Switcher (Visible on mobile/tablet screens < md) */}
       <div className="md:hidden flex items-center justify-center p-2 bg-muted/60 border-b border-border no-print transition-colors">
@@ -185,7 +203,7 @@ export const App: React.FC = () => {
             style={{ width: `${editorWidth}px` }}
             className="no-print h-full shrink-0 bg-card border-r border-border"
           >
-            <EditorPane />
+            <Suspense fallback={null}><EditorPane /></Suspense>
           </div>
 
           {/* Resizable Splitter Bar */}
@@ -201,7 +219,7 @@ export const App: React.FC = () => {
 
           {/* Right A4 Canvas Preview */}
           <div className="flex-1 h-full overflow-hidden bg-background transition-colors">
-            <A4Canvas />
+            <Suspense fallback={null}><A4Canvas /></Suspense>
           </div>
         </div>
 
@@ -212,11 +230,11 @@ export const App: React.FC = () => {
         <div className="flex-1 w-full h-full overflow-hidden">
           {mobileTab === 'editor' ? (
             <div className="w-full h-full overflow-hidden bg-card">
-              <EditorPane />
+              <Suspense fallback={null}><EditorPane /></Suspense>
             </div>
           ) : (
             <div className="w-full h-full overflow-hidden bg-background transition-colors">
-              <A4Canvas />
+              <Suspense fallback={null}><A4Canvas /></Suspense>
             </div>
           )}
         </div>
@@ -224,7 +242,7 @@ export const App: React.FC = () => {
       </div>
 
       {/* Bottom Unified Status Bar */}
-      <StatusBar />
+      <Suspense fallback={null}><StatusBar /></Suspense>
 
       {/* The one inspector: Health, Match, Design, History */}
       {inspectorTab && (
@@ -246,8 +264,8 @@ export const App: React.FC = () => {
       )}
       <ShortcutsModal />
       <OnboardingTour />
-      <ImportModal />
-      <PresetsModal />
+      {activeModal === 'import' && <Suspense fallback={null}><ImportModal /></Suspense>}
+      {activeModal === 'presets' && <Suspense fallback={null}><PresetsModal /></Suspense>}
       {activeModal === 'tracker' && (
         <Suspense fallback={null}>
           <TrackerModal />
@@ -258,7 +276,7 @@ export const App: React.FC = () => {
           <CoverLetterModal />
         </Suspense>
       )}
-      <CommandPalette />
+      {commandPaletteOpen && <Suspense fallback={null}><CommandPalette /></Suspense>}
     </div>
   );
 };
