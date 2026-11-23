@@ -25,11 +25,14 @@ import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
 import { DesignPanel } from '../design/DesignPanel';
-import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
+import { exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
+import { downloadResumePdf } from '../../services/pdfDownload';
 import confetti from 'canvas-confetti';
 
 export const Header: React.FC = () => {
   const {
+    currentResume,
+    pageSize,
     theme,
     setActiveModal,
     documentTitle,
@@ -66,20 +69,19 @@ export const Header: React.FC = () => {
     window.print();
   };
 
+  // A real text-based PDF, generated in the browser. Print stays available as a secondary option.
   const handleDirectPdf = async () => {
     saveRevision('Pre-export auto-save');
     setIsExportingPdf(true);
     try {
-      const fileName = `${documentTitle.replace(/\s+/g, '-').toLowerCase() || 'resume'}.pdf`;
-      const targetElement = document.querySelector('.a4-sheet') as HTMLElement;
-      await exportDirectPdf(targetElement, fileName);
+      if (currentResume) await downloadResumePdf(currentResume, pageSize);
       confetti({
         particleCount: 60,
         spread: 60,
         origin: { y: 0.2 }
       });
     } catch (e) {
-      console.error('Direct PDF export failed, fallback to print:', e);
+      console.error('PDF generation failed, offering print instead:', e);
       window.print();
     } finally {
       setIsExportingPdf(false);
@@ -310,6 +312,17 @@ export const Header: React.FC = () => {
           <Upload className="w-4 h-4" />
         </button>
 
+        {/* Main action: a real PDF download */}
+        <button
+          type="button"
+          onClick={handleDirectPdf}
+          disabled={isExportingPdf || !currentResume}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-button text-white text-xs font-medium hover:opacity-90 disabled:opacity-40 transition active:scale-[0.98] min-h-[36px]"
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span>{isExportingPdf ? 'Preparing…' : 'Download PDF'}</span>
+        </button>
+
         {/* Export Dropdown Trigger */}
         <div className="relative">
           <button
@@ -341,7 +354,7 @@ export const Header: React.FC = () => {
                 >
                   <div className="flex items-center gap-2">
                     <Download className="w-3.5 h-3.5 text-brand-text" />
-                    <span className="font-medium">1-Click Direct PDF</span>
+                    <span className="font-medium">Download PDF</span>
                   </div>
                   <span className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded font-mono font-medium">
                     Fast
@@ -356,7 +369,7 @@ export const Header: React.FC = () => {
                   className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-muted text-xs text-foreground flex items-center gap-2 transition"
                 >
                   <Printer className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span>Print Dialog / Vector PDF</span>
+                  <span>Print… (secondary)</span>
                 </button>
               </div>
 

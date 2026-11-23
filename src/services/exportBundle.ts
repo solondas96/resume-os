@@ -13,6 +13,9 @@ import { forOutput } from '../model/edit';
 import { JobApplication } from '../model/tracker';
 import { parseResumeMarkdown } from '../parser/markdown';
 import { markdownToPlainText } from '../utils/exportHelpers';
+import { generatePdf, FontLoader } from '../pdf/generate';
+import { PageSize } from '../pdf/layout';
+import { coverLetterPdf } from './pdfDownload';
 
 export const BACKUP_VERSION = 1;
 
@@ -50,17 +53,18 @@ export function printPage(title: string, bodyHtml: string): string {
 const README = (exportedAt: string) => `ResumeLabs export (${exportedAt})
 
 Files in this bundle:
+  resume.pdf           The resume as a PDF, text-based (selectable, readable by applicant tracking systems)
   resume.md            The resume as Markdown (hidden sections and bullets left out)
   resume.txt           The same resume as plain text, for pasting into application forms
-  resume-print.html    The resume, print-ready. Open it, then Print > Save as PDF.
+  resume-print.html    The resume as a web page, for printing with your own settings
+  cover-letter.pdf     The cover letter as a PDF (only if you wrote one)
   cover-letter.md      The cover letter as Markdown (only if you wrote one)
-  cover-letter-print.html  The cover letter, print-ready (only if you wrote one)
+  cover-letter-print.html  The cover letter as a web page (only if you wrote one)
   backup.json          Everything in ResumeLabs: all resumes (including hidden content),
                        applications and the cover letter. Import it to restore; the file
                        is versioned (version ${BACKUP_VERSION}).
 
-A browser cannot save a PDF without the print dialog, so the PDFs are made by printing the
-HTML files. The text in them is selectable, which is what applicant tracking systems need.
+The PDFs are generated in the browser with the fonts embedded, so their text is selectable.
 Nothing in this bundle was uploaded.
 `;
 
@@ -118,9 +122,19 @@ export function parseBackup(text: string): { ok: true; resumes: Resume[]; applic
   return { ok: true, resumes: b.resumes, applications: b.applications ?? [], coverLetterMarkdown: b.coverLetterMarkdown ?? '' };
 }
 
+/** The bundle with the real PDFs added (resume.pdf and, if there is one, cover-letter.pdf) */
+export async function buildBundleWithPdfs(input: BundleInput, pageSize: PageSize, loadFont?: FontLoader): Promise<Record<string, Uint8Array>> {
+  const files = buildBundleFiles(input);
+  files['resume.pdf'] = await generatePdf(input.resume, { pageSize, loadFont });
+  if (input.coverLetterMarkdown?.trim()) {
+    files['cover-letter.pdf'] = await coverLetterPdf(input.coverLetterMarkdown, pageSize, 'Cover letter', loadFont);
+  }
+  return files;
+}
+
 /** Build, zip and download the bundle */
-export function downloadBundle(input: BundleInput, filename = 'resumelabs-export.zip'): void {
-  const bytes = zipBundle(buildBundleFiles(input));
+export async function downloadBundle(input: BundleInput, pageSize: PageSize, filename = 'resumelabs-export.zip'): Promise<void> {
+  const bytes = zipBundle(await buildBundleWithPdfs(input, pageSize));
   const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/zip' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

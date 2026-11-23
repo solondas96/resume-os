@@ -8,6 +8,7 @@ import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { readoutFromHtml, printHtml } from '../../intelligence/atsReadout';
 import { layoutProblems, pdfProblems, AtsProblem } from '../../intelligence/atsCompare';
 import { importResume } from '../../services/importResume';
+import { readGeneratedPdf } from '../../services/pdfReadout';
 import { assessSeniority, levelLabel, SeniorityLevel } from '../../intelligence/seniority';
 import { composeBullet, Intent, INTENT_VERBS } from '../../intelligence/bulletBuilder';
 
@@ -27,6 +28,26 @@ export const AtsPreviewSection: React.FC = () => {
   );
   const [pdf, setPdf] = useState<null | { text: string; headings: string[]; problems: AtsProblem[]; error?: string }>(null);
   const [checking, setChecking] = useState(false);
+  const pageSize = useResumeStoreV2((s) => s.pageSize);
+  // The real PDF, generated and read back: what a parser sees in the file. Debounced while typing.
+  const [generated, setGenerated] = useState<null | { headings: string[]; problems: AtsProblem[]; text: string; error?: string }>(null);
+  useEffect(() => {
+    if (!currentResume) return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      readGeneratedPdf(currentResume, pageSize)
+        .then((r) => {
+          if (!cancelled) setGenerated({ headings: r.headings, problems: r.problems, text: r.text });
+        })
+        .catch((e) => {
+          if (!cancelled) setGenerated({ headings: [], problems: [], text: '', error: String(e) });
+        });
+    }, 700);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [currentResume, pageSize]);
 
   if (!currentResume || !readout) return null;
 
@@ -53,9 +74,36 @@ export const AtsPreviewSection: React.FC = () => {
 
   return (
     <Section title="What applicant tracking software sees">
-      <p className="text-[11px] text-muted-foreground">
-        Estimated from the print layout: the text a parser reads, in reading order. A PDF you export is checked below.
-      </p>
+      <div className="space-y-2" aria-label="Read from the generated PDF">
+        <p className="text-[11px] text-muted-foreground">Read from this resume's PDF, the same file the download makes.</p>
+        {!generated ? (
+          <p className="text-xs text-muted-foreground">Reading the PDF…</p>
+        ) : generated.error ? (
+          <p className="text-xs text-destructive">The PDF could not be read here ({generated.error}). The layout checks below still apply.</p>
+        ) : (
+          <>
+            <div className="text-[11px] text-muted-foreground">Headings found: {generated.headings.join(', ') || 'none'}</div>
+            {generated.problems.length === 0 ? (
+              <div className="text-xs text-emerald-700 dark:text-emerald-400">The PDF text matches the resume.</div>
+            ) : (
+              <ul className="space-y-2">
+                {generated.problems.map((p, i) => (
+                  <li key={`${p.rule}-${i}`} className="text-xs">
+                    <div className="text-amber-700 dark:text-amber-400">{p.message}</div>
+                    <div className="text-[11px] text-muted-foreground">{p.why}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <details className="text-xs">
+              <summary className="cursor-pointer text-muted-foreground">Text the PDF reader found</summary>
+              <pre aria-label="Text from the generated PDF" className="mt-2 max-h-56 overflow-auto bg-background border border-border rounded-lg p-2 whitespace-pre-wrap font-mono text-[11px]">{generated.text}</pre>
+            </details>
+          </>
+        )}
+      </div>
+      <div className="border-t border-border pt-3 space-y-2">
+        <p className="text-[11px] text-muted-foreground font-medium">Layout checks</p>
       <div className="text-[11px] text-muted-foreground">
         Detected sections: {readout.headings.join(', ') || 'none'}
       </div>
@@ -75,6 +123,8 @@ export const AtsPreviewSection: React.FC = () => {
         <summary className="cursor-pointer text-muted-foreground">Plain text in reading order</summary>
         <pre className="mt-2 max-h-56 overflow-auto bg-background border border-border rounded-lg p-2 whitespace-pre-wrap font-mono text-[11px]">{readout.lines.join('\n')}</pre>
       </details>
+
+      </div>
 
       <div className="border-t border-border pt-3 space-y-2">
         <div className="text-xs font-medium text-foreground">Check a PDF you exported</div>

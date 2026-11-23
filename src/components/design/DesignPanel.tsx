@@ -1,6 +1,7 @@
 import React from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
+import type { PageSize } from '../../pdf/layout';
 import { FontSizeOption, MarginOption, LineHeightOption } from '../../types';
 import {
   X,
@@ -34,6 +35,8 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
     setMarginSize,
     lineHeight,
     setLineHeight,
+    pageSize,
+    setPageSize,
   } = useResumeStoreV2();
 
   if (!isOpen) return null;
@@ -252,6 +255,23 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
                   }`}
                 />
               </button>
+            </div>
+
+            {/* Paper size: A4 or US Letter */}
+            <div className="bg-muted/40 border border-border p-3 rounded-xl flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="font-medium text-foreground text-xs">Paper size</div>
+                <p className="text-[11px] text-muted-foreground">Used for the preview, the PDF and printing</p>
+              </div>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(e.target.value as PageSize)}
+                className="bg-background border border-border rounded-md px-2 py-1 text-xs text-foreground"
+                aria-label="Paper size"
+              >
+                <option value="A4">A4 (210 × 297 mm)</option>
+                <option value="Letter">US Letter (8.5 × 11 in)</option>
+              </select>
             </div>
 
             {/* 1-Page Constraint Toggle */}

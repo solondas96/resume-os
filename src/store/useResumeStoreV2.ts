@@ -41,6 +41,8 @@ import {
 import { undoRedoManager } from '../services/undoRedo';
 import { jobIdOf } from '../intelligence/tailor';
 import { loadSkillsDataset } from '../intelligence/skillsData';
+import { pageSizeForLocale } from '../pdf/generate';
+import type { PageSize } from '../pdf/layout';
 import { SAMPLE_RESUME } from '../data/sampleResume';
 import { SAMPLE_COVER_LETTER } from '../data/sampleCoverLetter';
 
@@ -173,6 +175,10 @@ export interface ResumeStoreV2 extends DerivedFields {
   bulletSeed: string;
   openBulletBuilder: (text: string) => void;
 
+  // Page size for the preview, the page count and the PDF. Defaults from the browser locale.
+  pageSize: PageSize;
+  setPageSize: (size: PageSize) => void;
+
   // Tailoring: a linked copy for one job description
   tailorFor: (jobDescription: string) => string;
 
@@ -256,6 +262,7 @@ const SETTING_KEYS = {
   coverLetter: 'coverLetterMarkdown',
   targetJob: 'targetJobDescription',
   applications: 'applications',
+  pageSize: 'pageSize',
 } as const;
 
 // ---- store ---------------------------------------------------------------
@@ -314,6 +321,11 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     lastSavedAt: null,
     bulletSeed: '',
     openBulletBuilder: (text) => set({ activeSidePanel: 'linter', bulletSeed: text }),
+    pageSize: 'A4',
+    setPageSize: (pageSize) => {
+      set({ pageSize });
+      void saveSetting(SETTING_KEYS.pageSize, pageSize);
+    },
     tailorFor: (jobDescription) => {
       const cur = requireResume();
       if (!cur) return '';
@@ -718,7 +730,9 @@ async function runInitialize(
   ]);
 
   const apps: JobApplication[] = Array.isArray(applications) ? applications : [];
+  const savedPageSize = await loadSetting(SETTING_KEYS.pageSize);
   set({
+    pageSize: savedPageSize === 'Letter' || savedPageSize === 'A4' ? savedPageSize : pageSizeForLocale(typeof navigator !== 'undefined' ? navigator.language : undefined),
     uiTheme: uiTheme === 'light' ? 'light' : 'dark',
     workspaceMode: workspaceMode === 'cover-letter' ? 'cover-letter' : 'resume',
     coverLetterMarkdown: typeof coverLetter === 'string' ? coverLetter : SAMPLE_COVER_LETTER,

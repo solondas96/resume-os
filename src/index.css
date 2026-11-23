@@ -173,6 +173,13 @@ html, body, #root {
   background-color: #1e1e1c;
 }
 
+.a4-sheet.page-letter {
+  --a4-width: 816px;
+  --a4-height: 1056px;
+  --print-width: 8.5in;
+  --print-height: 11in;
+}
+
 .a4-sheet {
   width: var(--a4-width);
   min-height: var(--a4-height);
@@ -782,9 +789,9 @@ html, body, #root {
     border: none !important;
     /* Left-aligned on the paper: auto margins would centre it in the screen width */
     margin: 0 !important;
-    width: 210mm !important;
-    max-width: 210mm !important;
-    min-height: 297mm !important;
+    width: var(--print-width, 210mm) !important;
+    max-width: var(--print-width, 210mm) !important;
+    min-height: var(--print-height, 297mm) !important;
     transform: none !important;
     box-sizing: border-box !important;
     -webkit-print-color-adjust: exact !important;

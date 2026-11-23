@@ -29,7 +29,7 @@ export default defineConfig({
       workbox: {
         // App shell, styles, scripts, icons and the skills data. Fonts are loaded from Google Fonts
         // and are not cached here; the app falls back to system fonts offline.
-        globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,json,woff2,ttf}'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
       },

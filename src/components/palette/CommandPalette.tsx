@@ -43,6 +43,7 @@ export const CommandPalette: React.FC = () => {
   const markdown = useResumeStoreV2((s) => s.markdown); // editor text, for inserting sections
   const {
     currentResume,
+    pageSize,
     resumes,
     coverLetterMarkdown,
     applications,
@@ -153,16 +154,19 @@ export const CommandPalette: React.FC = () => {
     {
       id: 'export-bundle',
       category: 'Export',
-      title: 'Export Bundle (.zip): resume, text, print HTML, cover letter, backup',
-      description: 'One zip with every format, plus a full backup. Nothing is uploaded.',
+      title: 'Export Bundle (.zip): resume and cover letter PDFs, text, backup',
+      description: 'One zip with PDFs, plain text, Markdown and a full backup. Nothing is uploaded.',
       icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
       action: () =>
-        downloadBundle({
-          resume: currentResume!,
-          allResumes: resumes,
-          coverLetterMarkdown,
-          applications,
-        }),
+        downloadBundle(
+          {
+            resume: currentResume!,
+            allResumes: resumes,
+            coverLetterMarkdown,
+            applications,
+          },
+          pageSize
+        ),
       keywords: ['bundle', 'zip', 'backup', 'export', 'all', 'download'],
     },
     {

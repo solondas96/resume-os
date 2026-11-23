@@ -2,9 +2,13 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { parseResumeMarkdown } from '../../parser/markdown';
+import { applyPrintPageSize } from '../../utils/pageSizeCss';
 
-const A4_HEIGHT_PX = 1123; // 297mm at 96 DPI
-const A4_WIDTH_PX = 794;   // 210mm at 96 DPI
+// Sheet sizes at 96 DPI: A4 is 210 × 297 mm, US Letter is 8.5 × 11 in
+const PAGE_PX = {
+  A4: { w: 794, h: 1123 },
+  Letter: { w: 816, h: 1056 },
+} as const;
 
 export const A4Canvas: React.FC = () => {
   const {
@@ -14,6 +18,7 @@ export const A4Canvas: React.FC = () => {
     accentColor,
     compactSpacing,
     onePageMode,
+    pageSize,
     fontSize,
     marginSize,
     lineHeight,
@@ -23,9 +28,12 @@ export const A4Canvas: React.FC = () => {
     setPageCount,
   } = useResumeStoreV2();
 
+  const PAGE = PAGE_PX[pageSize];
+  useEffect(() => applyPrintPageSize(pageSize), [pageSize]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
-  const [sheetHeight, setSheetHeight] = useState(A4_HEIGHT_PX);
+  const [sheetHeight, setSheetHeight] = useState<number>(PAGE.h);
 
   // Parse active markdown into sanitized HTML with icons and containers
   const modelMarkdown = useModelMarkdown();
@@ -44,7 +52,7 @@ export const A4Canvas: React.FC = () => {
     const handleResize = () => {
       if (!containerRef.current || !autoFitZoom) return;
       const availableWidth = containerRef.current.clientWidth - 48; // padding
-      const targetScale = Math.min(1.05, Math.max(0.45, availableWidth / A4_WIDTH_PX));
+      const targetScale = Math.min(1.05, Math.max(0.45, availableWidth / PAGE.w));
       setZoom(Number(targetScale.toFixed(2)));
     };
 
@@ -54,7 +62,7 @@ export const A4Canvas: React.FC = () => {
       ro.observe(containerRef.current);
     }
     return () => ro.disconnect();
-  }, [autoFitZoom, setZoom]);
+  }, [autoFitZoom, setZoom, PAGE.w]);
 
   // Track sheet height to render page-break indicators and update page count in store
   useEffect(() => {
@@ -63,23 +71,23 @@ export const A4Canvas: React.FC = () => {
       if (sheetRef.current) {
         const height = sheetRef.current.offsetHeight;
         setSheetHeight(height);
-        const calculatedPages = Math.max(1, Math.ceil((height - 20) / A4_HEIGHT_PX));
+        const calculatedPages = Math.max(1, Math.ceil((height - 20) / PAGE.h));
         setPageCount(calculatedPages);
       }
     });
     observer.observe(sheetRef.current);
     return () => observer.disconnect();
-  }, [parsedHtml, compactSpacing, theme, fontSize, marginSize, lineHeight, setPageCount]);
+  }, [parsedHtml, compactSpacing, theme, fontSize, marginSize, lineHeight, setPageCount, PAGE.h]);
 
   // Calculate page break positions
-  const numPages = Math.max(1, Math.ceil((sheetHeight - 20) / A4_HEIGHT_PX));
+  const numPages = Math.max(1, Math.ceil((sheetHeight - 20) / PAGE.h));
   const pageBreaks = useMemo(() => {
     const breaks = [];
     for (let i = 1; i < numPages; i++) {
-      breaks.push(i * A4_HEIGHT_PX);
+      breaks.push(i * PAGE.h);
     }
     return breaks;
-  }, [numPages]);
+  }, [numPages, PAGE.h]);
 
   return (
     <div
@@ -102,7 +110,7 @@ export const A4Canvas: React.FC = () => {
       >
         <div
           ref={sheetRef}
-          className={`a4-sheet template-${theme} font-size-${fontSize} margin-${marginSize} line-height-${lineHeight} ${
+          className={`a4-sheet page-${pageSize.toLowerCase()} template-${theme} font-size-${fontSize} margin-${marginSize} line-height-${lineHeight} ${
             compactSpacing ? 'compact-spacing' : ''
           } ${onePageMode ? 'one-page-clamped' : ''}`}
         >
