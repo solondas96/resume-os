@@ -14,7 +14,7 @@ import { markdownToResume } from '../../model/serialize';
 import { allBullets, sectionItems } from '../../model/resume';
 import { moveLineToSection, UnsortedLine } from '../../import/structure';
 
-const ACCEPT = '.pdf,.docx,.txt,.md';
+const ACCEPT = '.pdf,.docx,.txt,.md,.zip';
 
 /** An unsorted line that can be dragged onto a section (the select and Move button stay as the keyboard path) */
 const DraggableUnsorted: React.FC<{ id: string; children: React.ReactNode }> = ({ id, children }) => {
@@ -198,7 +198,7 @@ export const ImportModal: React.FC = () => {
             <>
               <label className="border-2 border-dashed border-border hover:border-brand rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-muted/30 transition group">
                 <FileText className="w-8 h-8 text-muted-foreground group-hover:text-brand-text transition mb-2" />
-                <span className="text-xs text-foreground font-medium">Choose a PDF, DOCX, TXT or Markdown file</span>
+                <span className="text-xs text-foreground font-medium">Choose a PDF, DOCX, TXT, Markdown or LinkedIn ZIP file</span>
                 <span className="text-[11px] text-muted-foreground mt-1">Processed in your browser. Nothing is uploaded.</span>
                 <input
                   type="file"
@@ -210,6 +210,17 @@ export const ImportModal: React.FC = () => {
                   }}
                 />
               </label>
+
+              <details className="text-xs text-muted-foreground bg-background border border-border rounded-lg p-3 space-y-2">
+                <summary className="cursor-pointer text-foreground font-medium">Import from LinkedIn instead</summary>
+                <ol className="list-decimal pl-5 space-y-1">
+                  <li>On LinkedIn, open <strong>Me</strong>, then <strong>Settings &amp; Privacy</strong>, then <strong>Data privacy</strong>.</li>
+                  <li>Choose <strong>Get a copy of your data</strong>. You can select just the parts you need: Profile, Positions, Education, Skills, Certifications, Projects and Languages.</li>
+                  <li>LinkedIn emails you a link when the file is ready. Download the ZIP. Do not unzip it.</li>
+                  <li>Drop the ZIP file in the box above. You will see the same review as for a PDF, before anything is saved.</li>
+                </ol>
+                <p>The ZIP is read in your browser and is not uploaded.</p>
+              </details>
 
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-[1px] bg-border" />

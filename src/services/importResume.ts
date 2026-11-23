@@ -7,6 +7,7 @@ import { Resume } from '../model/resume';
 import { markdownToResume } from '../model/serialize';
 import { extractTextLines } from '../import/pdfText';
 import { structureFromLines, StructureResult } from '../import/structure';
+import { linkedinToMarkdown, isZipFile } from '../import/linkedin';
 import { htmlToLines } from '../import/docxHtml';
 // Bundled worker: served from our own origin, never from a CDN
 import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
@@ -134,6 +135,24 @@ export async function importResume(file: File): Promise<ImportResult> {
     const title = file.name.replace(/\.[^.]+$/, '') || 'Imported resume';
     let markdown = '';
     let pageText = '';
+
+    if (isZipFile(file)) {
+      // LinkedIn's "Get a copy of your data" export: converted to the same Markdown the review reads
+      const linked = linkedinToMarkdown(new Uint8Array(await file.arrayBuffer()));
+      if (!linked.ok) {
+        result.errors.push(linked.error);
+        return result;
+      }
+      markdown = linked.markdown;
+      pageText = `LinkedIn export. Found: ${linked.found.filter((f) => !linked.missing.includes(f)).length} of ${linked.found.length + linked.missing.length} files.`;
+      result.warnings.push(...linked.warnings);
+      result.pageText = pageText;
+      result.text = markdown;
+      result.resume = markdownToResume(markdown, title);
+      result.detectedSections = result.resume.sections.map((s) => ({ title: s.title, content: '', confidence: 'high' as const }));
+      result.success = true;
+      return result;
+    }
 
     if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
       // In the browser, use the bundled worker. In Node (tests), pdf.js uses its own.

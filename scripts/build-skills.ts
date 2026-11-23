@@ -15,6 +15,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SKILLS as CURATED } from '../src/intelligence/skills';
+import { parseDelimited } from '../src/import/csv';
 import { FIELD_SUPPLEMENTS } from '../src/intelligence/fieldSynonyms';
 
 export interface SkillOut {
@@ -41,41 +42,8 @@ export const MAX_BYTES = Number(process.env.SKILLS_MAX_BYTES) || 1_500_000;
 const MAX_ALIASES = 6;
 
 /** Parse a delimited file, honouring quoted fields (ESCO uses commas, O*NET tabs) */
-export function parseDelimited(text: string, delimiter: string): Record<string, string>[] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = '';
-  let quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (quoted) {
-      if (ch === '"' && text[i + 1] === '"') {
-        field += '"';
-        i++;
-      } else if (ch === '"') quoted = false;
-      else field += ch;
-    } else if (ch === '"') quoted = true;
-    else if (ch === delimiter) {
-      row.push(field);
-      field = '';
-    } else if (ch === '\n' || (ch === '\r' && text[i + 1] === '\n')) {
-      if (ch === '\r') i++;
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = '';
-    } else field += ch;
-  }
-  if (field.length || row.length) {
-    row.push(field);
-    rows.push(row);
-  }
-  const [header, ...body] = rows;
-  if (!header) return [];
-  return body
-    .filter((r) => r.some((c) => c.trim().length))
-    .map((r) => Object.fromEntries(header.map((h, i) => [h.trim(), (r[i] ?? '').trim()])));
-}
+// The CSV/TSV reader lives in src/import/csv.ts (shared with the LinkedIn import)
+export { parseDelimited } from '../src/import/csv';
 
 /** Generated files stay under this budget; the build fails over it */
 export const ESCO_DEFAULT_DIR = join(dirname(fileURLToPath(import.meta.url)), 'data', 'esco');
