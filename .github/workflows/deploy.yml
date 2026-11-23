@@ -50,7 +50,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: First-screen timing on Fast 3G with 4x CPU (2 s budget)
+      - name: First-screen timing on Fast 3G with 4x CPU (2.5 s budget)
         run: npm run perf
 
       - name: Offline (PWA) tests against the production build
