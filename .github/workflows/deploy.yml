@@ -50,6 +50,12 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Note what the e2e run left behind
+        if: always()
+        run: |
+          echo "::notice title=after e2e::test-results: $(ls test-results 2>&1 | tr '\n' ' ') | cwd: $PWD"
+          echo "::notice title=e2e list::$(npx playwright test --list 2>&1 | tail -1)"
+
       - name: First-screen timing on Fast 3G with 4x CPU (2.5 s budget)
         run: npm run perf
 

@@ -43,8 +43,9 @@ test('first-time user: upload, create, skip the tour, download a PDF in at most 
   // Clicks counted in the page, plus the file choice (which is not a click)
   const total = clicks + 1;
   const report = { steps, clicks, total, budget: BUDGET, pass: total <= BUDGET };
-  mkdirSync(path.join(process.cwd(), 'test-results'), { recursive: true });
-  writeFileSync(path.join(process.cwd(), 'test-results', 'walkthrough.json'), JSON.stringify(report, null, 2));
+  const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'test-results');
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(path.join(dir, 'walkthrough.json'), JSON.stringify(report, null, 2));
   console.log('WALKTHROUGH', JSON.stringify(report));
   expect(total).toBeLessThanOrEqual(BUDGET);
 });

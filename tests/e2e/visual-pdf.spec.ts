@@ -12,7 +12,8 @@ import { createCanvas, loadImage, Canvas } from '@napi-rs/canvas';
 import { test, expect, waitForApp, skipTour } from './helpers';
 
 const DOCX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes', 'maya-chen.docx');
-const OUT = path.join(process.cwd(), 'test-results', 'visual');
+const RESULTS = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'test-results');
+const OUT = path.join(RESULTS, 'visual');
 const WIDTH = 800;
 // Page proportions at 96 DPI: A4 794 × 1123, Letter 816 × 1056
 const RATIO = { A4: 1123 / 794, Letter: 1056 / 816 } as const;

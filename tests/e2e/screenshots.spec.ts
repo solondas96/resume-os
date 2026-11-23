@@ -9,7 +9,8 @@ import { mkdirSync } from 'node:fs';
 import { test, expect, waitForApp, skipTour } from './helpers';
 
 const DOCX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes', 'maya-chen.docx');
-const OUT = path.join(process.cwd(), 'test-results', 'screenshots');
+const RESULTS = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'test-results');
+const OUT = path.join(RESULTS, 'screenshots');
 const WIDTHS = [360, 768, 1440] as const;
 const THEMES = ['light', 'dark'] as const;
 
