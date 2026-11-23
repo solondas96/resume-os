@@ -25,6 +25,8 @@ for (const width of WIDTHS) {
       await expect(page.getByRole('heading', { name: 'What we found' })).toBeVisible({ timeout: 20_000 });
       await page.getByRole('button', { name: 'Create resume' }).click();
       await skipTour(page);
+      // The backup reminder is dismissed so the screenshot shows the work itself
+      await page.getByRole('button', { name: 'Later' }).click({ timeout: 3_000 }).catch(() => {});
       // On a phone the editor and the preview are separate tabs
       if (width === 360) await page.getByRole('button', { name: 'Preview', exact: true }).click();
       await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');

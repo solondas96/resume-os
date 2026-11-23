@@ -164,7 +164,8 @@ html, body, #root {
   overflow-x: hidden;
   height: 100%;
   display: flex;
-  justify-content: center;
+  /* Start at the top: centring would push a page taller than the window above the scrollable area */
+  justify-content: flex-start;
   padding: 2rem 1rem 4rem 1rem;
   transition: background-color 0.2s ease;
 }

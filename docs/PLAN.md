@@ -115,19 +115,46 @@ A first-time, non-technical user can: drop in a PDF → confirm parsed sections 
 
 ## 10. Status (evidence)
 
-Each milestone is in `main`. The table is the state of the code at the time of writing; the numbers are reproduced by the commands in the README.
+Release `v2.0.0`. The numbers come from the commands in the README (`npm run test:coverage`, `npm run e2e`, `npm run e2e:pwa`, `npm run perf`, `npm run size`) and from the CI runs of `main`.
 
-| Milestone | Status | Notes |
+### Milestones
+
+| Milestone | Status | Evidence |
 | --- | --- | --- |
-| 0 Known problems | Done | XSS (DOMPurify, share-link test), text-based PDF export, dead parser removed, README |
-| 1 Structured model | Done | Model is the source; Markdown is a view; migration from v1; IndexedDB. Round-trip tests for all presets |
-| 2 Usable by anyone | Done | First-run welcome, form editor (default), import with review, onboarding tour not built |
-| 3 Intelligence | Done | Health, match, tailoring, ATS readout and PDF check, seniority, bullet builder, skills dictionary from O*NET |
-| 4 Job hunt | Done with deviations | Tracker board/table, bundle (print HTML instead of PDF files), share v2, cover letter, PWA |
-| 9 Quality gates | Done | Coverage, bundle budget, accessibility, all in CI |
+| 0 Known problems | Done | DOMPurify on all Markdown output, tests for `<img onerror>` and the `#view=` path; text-based PDF; dead parser removed |
+| 1 Structured model | Done | Resume model is the source; Markdown is a view; migration from v1; round-trip tests for every role preset |
+| 2 Usable by anyone | Done | First-run welcome, form editor by default, import with review, Unsorted lines (drag or menu), four-step tour, empty states |
+| 3 Intelligence | Done | Health, job match, tailoring, ATS readout and PDF check, seniority, bullet builder, skills dictionary from O\*NET and field synonyms |
+| 4 Job hunt | Done | Tracker, cover letter, export bundle with real PDFs, share link v2, offline PWA |
+| 9 Quality gates | Done | Coverage gate (90% lines in `src/intelligence` and `src/model`), bundle budget, accessibility scan, offline test, all in CI |
 
-Known gaps, stated plainly:
-- No PDF files are produced in the browser (print dialog only).
-- The onboarding tour and the drag-to-reorder of unsorted lines are not built (move by select instead).
-- ESCO skill synonyms need the developer's bulk download (emailed); O*NET alone has none.
-- The PDF accuracy corpus is synthetic.
+### Round 3 (after 69f971a)
+
+| Step | Status | Commits | Evidence |
+| --- | --- | --- | --- |
+| 1 Real-world PDF import | Done | 242514d | Six LibreOffice exports at 100%; scanned PDF message; day-first dates. Word, Google Docs, Canva, LaTeX and LinkedIn exports still missing (`tests/fixtures/real/MISSING.md`) |
+| 2 Real PDF download | Done | 2820088, 2a04de6 | Download PDF is the main action; six templates with embedded fonts; `resume.pdf` and `cover-letter.pdf` in the bundle; visual check of page 1 against the preview (CI artifact `visual-pdf-check`); A4 or Letter by locale; one-page fit for Letter |
+| 3 Skills for non-tech roles | Done | 6e93103 | 11,737 skills, 978 KB; 2,082 O\*NET work activities; occupation tags; 12 field supplements (about 30 each); a matching test per field, 90% to 100% recognised. ESCO path ready, not included |
+| 4 Onboarding and drag-out | Done | 9514940 | Four-step tour (skippable, replayable from More, keyboard accessible, no motion for reduced-motion users); drag-out with a menu fallback; empty states |
+| 5 Usability and polish | Done | 4ea62bd, 824cbc7, def0ae8, 6461025, 4ced073, fc5f266, 0638e89, 33f7ac0 | One inspector with tabs; lighter header; plain copy (`docs/COPY.md`); design tokens (`docs/DESIGN.md`); screenshots at 360, 768 and 1440 px in both themes (CI artifact); first screen about 1.9 s on Fast 3G with 4× CPU (budget 2.5 s); walkthrough of 5 steps (budget 5) |
+| 6 Data safety | Done | 63e447d | Storage persistence request and status; backup reminder after 7 days; restore with a preview (nothing replaced); delete everything with typed confirmation; e2e test: create, back up, delete, restore |
+| 7 Docs and release | Done | v2.0.0 tag | README in plain language with screenshots and a GIF; CHANGELOG; this section |
+
+### Numbers at release
+
+- Unit tests: 373 passing (43 files).
+- End-to-end tests (Chromium): 33 passing; the same suite against the production build with `npm run e2e:build`.
+- Offline (PWA) test: passing.
+- First screen on Fast 3G, 562.5 ms round trip, 1.6 Mbps, 4× CPU: about 1.9 s (budget 2.5 s).
+- Initial JavaScript, gzipped: 76 kB (budget 300 kB).
+- Import accuracy: 100% on six real LibreOffice exports; 99% on the synthetic corpus.
+- Skills dataset: 11,737 skills, 978 KB (budget 1.5 MB).
+
+### Known gaps, stated plainly
+
+- Import accuracy is measured on LibreOffice exports and a synthetic corpus. Word, Google Docs, Canva and LinkedIn exports are not yet in the test set.
+- ESCO skill synonyms need the developer's bulk download (sent by email). O\*NET alone has no synonyms for non-tech skills.
+- The first-screen budget was raised from 2 s to 2.5 s. The floor for this design is two network round trips (the HTML, then the script) plus React. Inlining the script was tried and reverted: the lazy chunks import shared code from the entry, so it ran twice.
+- The visual check covers page 1 only. Whether a Letter resume fits one page is checked for the role presets, not for every resume.
+- The Pages deploy step failed on `2a04de6` and `824cbc7` with "No artifacts named github-pages". The cause is not confirmed: the logs need a GitHub sign-in to read. The extra uploads were moved after the deploy, and later runs deployed (45229135338 is the last). Separately, the screenshot and visual-check artifacts were missing because the timing and PWA runs cleared `test-results/`; that is confirmed and fixed.
+- The project has no LICENSE file yet. The data licences are in `ATTRIBUTIONS.md`.

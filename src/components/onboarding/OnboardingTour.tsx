@@ -1,8 +1,7 @@
 /**
  * Four-step tour of the editor. Shown once after the first resume exists; replayable from Help.
  * A non-modal card in the corner: it has no backdrop, so the editor stays usable underneath.
- * Dismissible at any step (Skip, Escape while focus is in the card, or Done). It takes focus only
- * when nothing else has it, so it never pulls focus away from a field someone is typing in.
+ * Dismissible at any step (Skip, Escape while focus is in the card, or Done). It never takes focus.
  * Motion is removed for reduced motion.
  */
 
@@ -38,13 +37,10 @@ export const OnboardingTour: React.FC = () => {
     if (currentResume && !tourDone && !tourOpen) openTour();
   }, [currentResume, tourDone, tourOpen, openTour]);
 
-  // Each time it opens, start at the first step. Focus moves to the card only if nothing else has it.
+  // Each time it opens, start at the first step. It does not take focus: a non-modal card that
+  // steals focus would move the keyboard away from the editor. Keyboard users reach it with Tab.
   useEffect(() => {
-    if (tourOpen) {
-      setStep(0);
-      const active = document.activeElement;
-      if (!active || active === document.body) dialogRef.current?.focus();
-    }
+    if (tourOpen) setStep(0);
   }, [tourOpen]);
 
   if (!tourOpen) return null;

@@ -39,7 +39,7 @@ import {
   deleteRevision as deleteRevisionRecord,
   deleteDatabase,
 } from '../services/persistence';
-import { planRestore, clearAppLocalStorage } from '../services/dataSafety';
+import { planRestore, clearAppLocalStorage, backupReminderDue } from '../services/dataSafety';
 import { undoRedoManager } from '../services/undoRedo';
 import { jobIdOf } from '../intelligence/tailor';
 import { loadSkillsDataset } from '../intelligence/skillsData';
@@ -185,6 +185,9 @@ export interface ResumeStoreV2 extends DerivedFields {
 
   // Data safety: when the last backup was downloaded (ISO time), restore, and delete everything
   lastBackupAt: string | null;
+  // Decided once, when the app opens: a reminder while editing would get in the way
+  backupReminderOpen: boolean;
+  setBackupReminderOpen: (open: boolean) => void;
   markBackup: () => void;
   restoreBackup: (incoming: Resume[], applications: JobApplication[]) => Promise<number>;
   deleteAllData: () => Promise<void>;
@@ -340,9 +343,11 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     bulletSeed: '',
     openBulletBuilder: (text) => set({ inspectorTab: 'health', bulletSeed: text }),
     lastBackupAt: null,
+    backupReminderOpen: false,
+    setBackupReminderOpen: (backupReminderOpen) => set({ backupReminderOpen }),
     markBackup: () => {
       const at = new Date().toISOString();
-      set({ lastBackupAt: at });
+      set({ lastBackupAt: at, backupReminderOpen: false });
       void saveSetting(SETTING_KEYS.lastBackupAt, at);
     },
     restoreBackup: async (incoming, applications) => {
@@ -809,4 +814,5 @@ async function runInitialize(
 
   await get().loadResumes();
   await get().loadRevisionHistory();
+  set({ backupReminderOpen: backupReminderDue(typeof savedBackupAt === 'string' ? savedBackupAt : null, get().resumes.length) });
 }

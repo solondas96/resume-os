@@ -1,183 +1,104 @@
-# ResumeLabs 🧪
+# ResumeLabs
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20GitHub%20Pages-c96442?style=for-the-badge&logo=github)](https://solondas96.github.io/resume-os/)
-[![Built With](https://img.shields.io/badge/Stack-React%2018%20•%20Vite%206%20•%20TypeScript%20•%20Tailwind-141413?style=for-the-badge)](https://github.com/solondas96/resume-os)
-[![Tests](https://img.shields.io/badge/Tests-Vitest%20Passing%20(18%2F18)-059669?style=for-the-badge)](https://github.com/solondas96/resume-os)
-[![License](https://img.shields.io/badge/License-MIT-3a3a37?style=for-the-badge)](LICENSE)
+**Build a clear resume, check how it reads to a computer, and download it as a PDF. Everything happens in your browser.**
 
-> **Precision Markdown resume builder with a calm, Claude-inspired warm minimalist aesthetic.**  
-> 100% Client-Side • Zero Backend Telemetry • In-Browser Privacy • Text-Based PDF Export • Instant GitHub Pages Hosting.
+[**Open ResumeLabs**](https://solondas96.github.io/resume-os/) · [Changelog](CHANGELOG.md) · [Design](docs/DESIGN.md) · [Words we use](docs/COPY.md)
 
----
+![The editor and the preview, side by side](docs/media/desktop-light.png)
 
-### 🌐 Live Application
+![A short tour: upload a resume, check it, and download a PDF](docs/media/demo.gif)
 
-👉 **Try it live right now:** **[https://solondas96.github.io/resume-os/](https://solondas96.github.io/resume-os/)**
+## What it does
 
----
+1. **Start from what you have.** Upload your resume (PDF, Word, text or Markdown), start from a role, or start with a blank page. Nothing is uploaded: the file is read in your browser.
+2. **Check the result.** The preview shows the page as it will be sent. The inspector scores the resume, explains each fix in plain words, and compares it with a job posting.
+3. **Download it.** Download PDF makes a file on your device. The text in the file can be selected and read by applicant tracking software. Print is available too.
+4. **Keep a copy.** Download a backup at any time. ResumeLabs reminds you after a week. You can restore a backup, and you see what will be added before anything changes.
 
-## 🎨 Claude-Inspired Warm Minimalist Aesthetic
+## Your privacy
 
-ResumeLabs is engineered to feel calm, focused, and distraction-free:
-- **Warm Neutral Color Tokens**: Restful ivory light theme (`#faf9f5` background, `#141413` charcoal text) paired with a warm charcoal dark theme (`#262624` background, `#f5f4ee` text).
-- **Restrained Terracotta Brand Accent**: Signature `#c96442` brand accent (and dark `#d97757`) with subtle `#f5e9e2` tint surfaces.
-- **Quiet Typography**: Geist & Geist Mono fonts with clean tracking, balanced heading wraps (`[text-wrap:balance]`), and optimal reading line-height.
-- **Two Soft Shadows**: Pure CSS elevation tokens for resting cards and lifted popover drawers without artificial blur or gradient noise.
-- **Single Brand Call to Action**: Clear visual hierarchy with at most one primary brand-focused action per screen.
+- Your resumes are stored only in this browser. Nothing is sent to a server, and there is no account.
+- The app makes no network requests after it has loaded, apart from its own files.
+- You can delete everything with one action. You are asked to type `DELETE` first.
+- The app works offline after the first visit.
 
----
+## Screenshots
 
-## 🚀 Advanced Engineering & Job Hunt Features
+| Desktop, light | Desktop, dark |
+| --- | --- |
+| ![Desktop, light](docs/media/desktop-light.png) | ![Desktop, dark](docs/media/desktop-dark.png) |
 
-### 1. 📁 Multi-Resume Library & Targeted Versions
-Maintain customized resumes for different target companies and roles (*"Stripe — Staff Backend"*, *"Google — Distributed Systems"*, *"Startup — Lead Architect"*). Clone existing resumes in 1 click, rename, delete, and backup or restore your entire library as JSON.
+| Phone, light | Phone, dark |
+| --- | --- |
+| ![Phone, light](docs/media/phone-light.png) | ![Phone, dark](docs/media/phone-dark.png) |
 
-### 2. 📏 Smart "Fit to 1 Page" Assistant & Page-Budget Gauge
-Never struggle with trailing 3-line spills onto page 2. The real-time status bar monitors A4 sheet height and offers a 1-click **Auto-Fit 1 Page** optimization that conservatively tunes line-height, margins, and font scale to lock your content cleanly onto a single page.
+The same screens are rebuilt at 360, 768 and 1440 pixels wide in both themes on every release (see the `screenshots-and-walkthrough` artifact in CI).
 
-### 3. ✍️ Bullet Point Linter & XYZ Impact Scorer
-Evaluates every achievement bullet against Google’s **XYZ Formula** (*"Accomplished [X] as measured by [Y], by doing [Z]"*):
-- Identifies 50+ strong action verbs (`Architected`, `Spearheaded`, `Orchestrated`, `Overhauled`, `Scaled`).
-- Flags passive phrases (`worked on`, `helped with`, `responsible for`) with 1-click strong verb replacements.
-- Checks for quantifiable metrics (`$12B+`, `42%`, `180k req/s`, `99.999% SLA`) and conciseness.
+## Using it
 
-### 4. 🎯 Side-by-Side Job Match Tailor
-Dock your target job description in a dedicated side-by-side inspector panel. Track keyword overlap and missing qualifications live as you edit your resume without leaving the workspace.
+1. Open the [live app](https://solondas96.github.io/resume-os/).
+2. Choose **Upload my resume**, then **Create resume**.
+3. Edit in the form. Each section opens into cards you can change, reorder and hide.
+4. Press **Inspector** to see the health score, the job match, the page design and your saved versions.
+5. Press **Download PDF**.
 
-### 5. ✉️ Matching Cover Letter Companion
-Seamlessly switch between your Resume and a matching Cover Letter companion. Shares your candidate header details, accent colors, and typography to export a unified, professional 2-document packet.
+Press `Cmd+K` (or `Ctrl+K`) to search for any action. Under **More** you will find the resume library, the application tracker, the cover letter, sharing and the shortcuts.
 
-### 6. 🎨 6 Curated Professional Templates
-- **Modern Minimalist**: Clean Silicon Valley aesthetic with crisp sans-serif typography and pill skill tags.
-- **Classic Ivy**: Traditional Harvard & Wall Street style with elegant serif headings and formal rules.
-- **Executive Two-Tone**: Distinguished executive layout featuring a shaded sidebar for skills & leadership.
-- **Mono Compact**: High-density technical aesthetic for dense 1-page engineering resumes.
-- **Swiss Editorial**: International typographic style with bold grotesque headers and hairline dividers.
-- **Academic CV**: Scholarly curriculum vitae layout with traditional serifs and publication numbering.
+## Running it yourself
 
-### 7. 🔗 1-Click Shareable Web Resume Link (Recruiter View)
-Encode your resume into a private, client-side URL hash link. Send `/#view=...` directly to hiring managers or recruiters to present a clean, responsive web view with an instant "Download PDF" button.
+You need Node.js 24 (the version this project is built and tested with).
 
----
-
-## ✅ Quality gates
-
-Every push runs these in CI (`.github/workflows/deploy.yml`). A failing gate blocks the deploy.
-
-| Gate | Command | Threshold | Measured |
-| --- | --- | --- | --- |
-| Types and lint | `npm run lint` | zero errors | 0 errors |
-| Unit and component tests | `npm run test:coverage` | all pass | 298 pass |
-| Coverage, `src/intelligence` | same | ≥ 90% lines | 97.9% lines |
-| Coverage, `src/model` | same | ≥ 90% lines | 94.4% lines |
-| End-to-end (Chromium) | `npm run e2e` | all pass | 19 pass |
-| Offline (PWA), production build | `npm run e2e:pwa` | all pass | 1 pass |
-| Accessibility (axe, WCAG 2.2 AA) | in `tests/e2e/a11y.spec.ts` | no serious or critical issues | 0 on welcome, editor (both themes), Markdown view, inspector, tracker, share and library |
-| Initial JavaScript, gzipped | `npm run size` | ≤ 300 KB | 208.6 KB |
-| PDF import accuracy | `tests/fixtures/corpus.test.ts` | ≥ 95% mean field accuracy | 99% (16 resumes, `tests/fixtures/corpus/report.txt`) |
-
-Notes on the evidence:
-- The coverage numbers are per folder (`vite.config.ts`). Other folders are reported, not gated.
-- The accuracy figure is on a synthetic corpus generated from `tests/fixtures/corpus/spec.mjs`. It measures the rules on known layouts, not on real résumés.
-- The colour tokens for text and buttons (`--brand-text`, `--brand-button`) were chosen to meet 4.5:1 contrast on the card and background in both themes.
-
-## 📄 PDF import
-
-PDFs are read with pdf.js using each text item's position: lines are grouped by baseline inside each detected column, the reading order is the left column then the right, and headings are found by alias, size, or emphasis. Entry headers are split into company, role and dates. Anything that cannot be placed is kept and listed for the user to move. The review shows the original text next to what was found.
-
-Accuracy is measured on a 16-resume corpus in varied layouts (single column, two columns, sidebar, tables) and professions: `tests/fixtures/corpus/report.txt`, currently 99% mean field accuracy. The corpus is synthetic, generated from `tests/fixtures/corpus/spec.mjs`, so it measures the rules on known layouts, not on every real resume.
-
-## 🧠 Intelligence Engine (no AI)
-
-All guidance is deterministic: rules, curated lexicons and a skills dictionary with synonyms, in `src/intelligence/`. There are no models and no network calls.
-- **Health score**: Impact, Clarity, ATS readiness, Consistency and Length, each explained.
-- **Job match**: requirements from a posting, normalised through the skills dictionary, with evidence bullets and a gap list.
-- **ATS preview**: the plain text an applicant tracking system would read, in reading order, with problems flagged.
-- **Bullet builder**: composes an XYZ-style bullet and asks for a missing metric.
-- **Seniority check**: scope, ownership and leadership signals against a target level.
-
-
-## ✨ Key Features
-
-- **🎯 Live In-Browser ATS Matcher**: Paste any job description to instantly compute keyword overlap, match percentage, and inject missing keywords with 1 click.
-- **⚡ Text-Based PDF Export**: Browser print dialog generates selectable, ATS-parseable PDFs with no rasterization.
-- **🏛️ 6 Curated Professional Templates**:
-  - **Modern Minimalist**: Clean Silicon Valley aesthetic with crisp sans-serif and pill skill tags.
-  - **Classic Ivy**: Traditional Harvard/Wall Street style with elegant serif headings.
-  - **Executive Two-Tone**: Distinguished executive layout with shaded sidebar for skills.
-  - **Mono Compact**: High-density technical aesthetic for dense 1-page resumes.
-  - **Swiss Editorial**: International typographic style with bold grotesque headers.
-  - **Academic CV**: Scholarly curriculum vitae layout with traditional serifs.
-- **📂 Starter Role Presets (10 Curated Industry Blueprints)**: Pre-configured, high-impact resumes with STAR/Google XYZ metrics, tech skill tags, and custom themes: Staff Software Engineer, Senior Product Designer, Lead Technical PM, New Graduate, Staff AI/ML Research Engineer, Principal Data Architect, Director of Engineering, Senior Staff SRE, Postdoctoral Fellow (Academic CV), and Lead Product Marketing Manager.
-- **📝 Dual Editor Modes**: Switch seamlessly between CodeMirror 6 markdown editor (with slash `/` shortcuts) and drag-to-reorder section cards.
-- **📏 Fine-Grained Layout Controls**: Dynamic font sizes (`small`, `medium`, `large`), page margins (`narrow`, `normal`, `relaxed`), and line-height controls.
-- **📐 Multi-Page A4 Sheet Canvas**: Visual page-break guides and manual `::: page-break :::` container support.
-- **💾 Auto-Save & Revision Rollback**: Persists changes to local storage with a 20-snapshot revision history.
-- **⌨️ Command Palette (`Cmd+K` / `Ctrl+K`)**: Rapid keyboard navigation across every tool, preset, template, and export format.
-
----
-
-## 🚀 Getting Started Locally
-
-### Prerequisites
-- Node.js 18+ or 20+
-- npm 9+
-
-### Installation & Development
-```bash
-# Clone the repository
-git clone https://github.com/solondas96/resume-os.git
-cd resume-os
-
-# Install dependencies
-npm install
-
-# Start local development server
-npm run dev
+```sh
+npm ci
+npm run dev            # the app at http://localhost:5173
+npm run lint           # type check
+npm run test:coverage  # unit tests with the coverage gate
+npm run build          # production build in dist/
+npm run e2e            # end-to-end tests in a real browser (Playwright)
+npm run e2e:build      # the same tests against the production build
+npm run e2e:pwa        # the offline test
+npm run perf           # first-screen timing on a slow connection
+npm run size           # the bundle size budget
 ```
 
-Visit `http://localhost:5173` in your browser.
+The first end-to-end run needs the browser: `npx playwright install chromium`.
 
-### Run Tests & Type Checks
-```bash
-# Run Vitest unit tests
-npm run test
+## How it is checked
 
-# Run TypeScript type check
-npm run lint
-```
+These numbers are from the release (commit `63e447d` and the tests in this repository):
 
-### Production Build
-```bash
-npm run build
-npm run preview
-```
+| Check | Result |
+| --- | --- |
+| Unit tests | 373 pass |
+| End-to-end tests (Chromium) | 33 pass |
+| Offline (PWA) test | passes |
+| First screen on Fast 3G with a 4× slower CPU | about 1.9 s (budget 2.5 s) |
+| Initial JavaScript, gzipped | 76 kB (budget 300 kB) |
+| Import accuracy, six real exports from LibreOffice | 100% |
+| Import accuracy, synthetic corpus | 99% |
+| Skills dictionary | 11,737 skills, 978 KB (budget 1.5 MB) |
+| First-time walkthrough, from first screen to PDF | 5 steps (budget 5) |
 
----
+The full record of each round is in [docs/PLAN.md](docs/PLAN.md), section 10.
 
-## 🚢 GitHub Pages Deployment
+## Known limits
 
-The repository is configured for automated deployments via GitHub Actions (`.github/workflows/deploy.yml`):
+- **Import accuracy is measured on LibreOffice exports and a synthetic set.** Word, Google Docs, Canva and LinkedIn exports are not in the test set yet (see `tests/fixtures/real/MISSING.md`).
+- **US Letter is about 6% shorter than A4.** A resume that fits one A4 page is tightened to fit one Letter page. A resume that is longer than one page keeps its spacing, and may run to one more page on Letter.
+- **The ESCO skills list is not included.** It needs a download that is sent by email. O\*NET covers the work activities and tools.
+- **The first-screen budget is 2.5 s,** not the 2 s first planned. Two network round trips and React set the floor on the simulated slow connection.
 
-1. Fork or push changes to your repository's `main` branch:
-   ```bash
-   git add .
-   git commit -m "feat: custom updates"
-   git push origin main
-   ```
-2. In GitHub, navigate to **Settings** > **Pages**.
-3. Under **Build and deployment** > **Source**, choose **GitHub Actions**.
-4. The workflow will automatically compile and publish your site at:  
-   **`https://<your-username>.github.io/resume-os/`**
+## Data and licences
 
----
+- Skill and occupation names come from **O\*NET 29.1** (CC BY 4.0). The field synonyms, the curated tech list and the copy are written for this project. See [ATTRIBUTIONS.md](ATTRIBUTIONS.md).
+- The PDF fonts (Geist and Newsreader) are self-hosted from `public/fonts/`.
 
-## 📚 Resources & Links
+## Project layout
 
-- **Live Site**: [https://solondas96.github.io/resume-os/](https://solondas96.github.io/resume-os/)
-- **GitHub Repository**: [https://github.com/solondas96/resume-os](https://github.com/solondas96/resume-os)
-
----
-
-## 📄 License
-MIT License. Open source and private by design.
+- `src/intelligence/` — scoring, job matching, tailoring, the skills dictionary (no React)
+- `src/model/` — the resume data model and its Markdown form (no React)
+- `src/import/` — reading PDF, Word and text files
+- `src/pdf/` — building the PDF
+- `src/components/` — the screens
+- `docs/` — the plan, the design tokens, the words we use, and the media for this page
+- `tests/` — end-to-end tests and the accuracy fixtures
