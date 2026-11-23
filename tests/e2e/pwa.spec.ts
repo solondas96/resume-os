@@ -1,4 +1,10 @@
-import { test, expect, waitForApp } from './helpers';
+// The plain runner: going offline makes the browser log network errors, which the shared helper would
+// report. This test allows exactly those, and fails on any other console error.
+import { test as base, expect } from '@playwright/test';
+import { waitForApp } from './helpers';
+
+const test = base;
+const isOfflineNoise = (msg: string) => /ERR_INTERNET_DISCONNECTED|Failed to load resource/.test(msg);
 
 /** What the service worker and the page look like, for a failure message */
 async function diagnostics(page: import('@playwright/test').Page) {
@@ -49,4 +55,6 @@ test('installable and works offline after the first load', async ({ page, contex
     throw new Error(`Offline start screen not shown. ${JSON.stringify({ diag, consoleErrors: consoleErrors.slice(0, 8) })}`);
   }
   await expect(page.getByRole('heading', { name: 'Start blank' })).toBeVisible();
+  // Nothing but the expected offline network messages
+  expect(consoleErrors.filter((m) => !isOfflineNoise(m))).toEqual([]);
 });
