@@ -11,6 +11,7 @@ import { BulletLinterDrawer } from '../audit/BulletLinterDrawer';
 import { JobMatchPanel } from '../match/JobMatchPanel';
 import { DesignPanel } from '../design/DesignPanel';
 import { HistoryPanel } from '../modals/HistoryModal';
+import { DataPanel } from '../data/DataPanel';
 
 const TABS: { id: InspectorTab; label: string }[] = [
   { id: 'health', label: 'Health' },
@@ -88,7 +89,14 @@ export const Inspector: React.FC = () => {
         {inspectorTab === 'health' && <BulletLinterDrawer embedded />}
         {inspectorTab === 'match' && <JobMatchPanel embedded />}
         {inspectorTab === 'design' && <DesignPanel embedded isOpen onClose={closeInspector} />}
-        {inspectorTab === 'history' && <HistoryPanel />}
+        {inspectorTab === 'history' && (
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <HistoryPanel />
+            <div className="border-t border-border">
+              <DataPanel />
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

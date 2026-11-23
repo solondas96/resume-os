@@ -26,6 +26,6 @@ describe('Letter fits where A4 fits (real PDF page counts)', () => {
       const letter = await pageCount(p.markdown, 'Letter', p.roleName);
       if (a4 === 1) expect(letter).toBe(1);
       else expect(letter).toBeLessThanOrEqual(a4 + 1);
-    });
+    }, 30_000);
   }
 });

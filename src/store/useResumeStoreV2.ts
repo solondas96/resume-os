@@ -37,7 +37,9 @@ import {
   saveRevision as persistRevision,
   loadRevisions,
   deleteRevision as deleteRevisionRecord,
+  deleteDatabase,
 } from '../services/persistence';
+import { planRestore, clearAppLocalStorage } from '../services/dataSafety';
 import { undoRedoManager } from '../services/undoRedo';
 import { jobIdOf } from '../intelligence/tailor';
 import { loadSkillsDataset } from '../intelligence/skillsData';
@@ -181,6 +183,12 @@ export interface ResumeStoreV2 extends DerivedFields {
   pageSize: PageSize;
   setPageSize: (size: PageSize) => void;
 
+  // Data safety: when the last backup was downloaded (ISO time), restore, and delete everything
+  lastBackupAt: string | null;
+  markBackup: () => void;
+  restoreBackup: (incoming: Resume[], applications: JobApplication[]) => Promise<number>;
+  deleteAllData: () => Promise<void>;
+
   // Onboarding tour: shown once after the first resume exists, and replayable from Help
   tourOpen: boolean;
   tourDone: boolean;
@@ -271,6 +279,7 @@ const SETTING_KEYS = {
   targetJob: 'targetJobDescription',
   applications: 'applications',
   pageSize: 'pageSize',
+  lastBackupAt: 'lastBackupAt',
   tourDone: 'tourDone',
 } as const;
 
@@ -330,6 +339,31 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     lastSavedAt: null,
     bulletSeed: '',
     openBulletBuilder: (text) => set({ inspectorTab: 'health', bulletSeed: text }),
+    lastBackupAt: null,
+    markBackup: () => {
+      const at = new Date().toISOString();
+      set({ lastBackupAt: at });
+      void saveSetting(SETTING_KEYS.lastBackupAt, at);
+    },
+    restoreBackup: async (incoming, applications) => {
+      const plan = planRestore(get().resumes, incoming);
+      for (const item of plan) await saveResume(item.resume);
+      // Applications are merged by id: nothing already here is replaced
+      const known = new Set(get().applications.map((a) => a.id));
+      const added = applications.filter((a) => !known.has(a.id));
+      if (added.length > 0) {
+        const merged = [...added, ...get().applications];
+        set({ applications: merged, stats: calculateStats(merged) });
+        void saveSetting(SETTING_KEYS.applications, merged);
+      }
+      await get().loadResumes();
+      return plan.length;
+    },
+    deleteAllData: async () => {
+      undoRedoManager.clear();
+      await deleteDatabase();
+      clearAppLocalStorage();
+    },
     pageSize: 'A4',
     setPageSize: (pageSize) => {
       set({ pageSize });
@@ -759,9 +793,11 @@ async function runInitialize(
 
   const apps: JobApplication[] = Array.isArray(applications) ? applications : [];
   const savedPageSize = await loadSetting(SETTING_KEYS.pageSize);
+  const savedBackupAt = await loadSetting(SETTING_KEYS.lastBackupAt);
   const savedTourDone = await loadSetting(SETTING_KEYS.tourDone);
   set({
     tourDone: savedTourDone === true,
+    lastBackupAt: typeof savedBackupAt === 'string' ? savedBackupAt : null,
     pageSize: savedPageSize === 'Letter' || savedPageSize === 'A4' ? savedPageSize : pageSizeForLocale(typeof navigator !== 'undefined' ? navigator.language : undefined),
     uiTheme: uiTheme === 'light' ? 'light' : 'dark',
     workspaceMode: workspaceMode === 'cover-letter' ? 'cover-letter' : 'resume',

@@ -2,6 +2,7 @@ import React, { Suspense, useState, useCallback, useRef, useEffect } from 'react
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
 import { OnboardingTour } from './components/onboarding/OnboardingTour';
+import { BackupReminder } from './components/data/BackupReminder';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
 import { useResumeStoreV2 } from './store/useResumeStoreV2';
 
@@ -243,6 +244,8 @@ export const App: React.FC = () => {
 
       {/* Bottom Unified Status Bar */}
       <Suspense fallback={null}><StatusBar /></Suspense>
+
+      <BackupReminder />
 
       {/* The one inspector: Health, Match, Design, History */}
       {inspectorTab && (

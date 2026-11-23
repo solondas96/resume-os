@@ -329,3 +329,25 @@ export async function loadRevisions(resumeId: string): Promise<any[]> {
 export async function initializePersistence(): Promise<void> {
   await initDB();
 }
+
+/**
+ * Delete the whole database (every resume, setting and version). The open connection is closed
+ * first. If another tab has it open, the browser removes it once that tab closes.
+ */
+export async function deleteDatabase(): Promise<void> {
+  if (dbInstance) {
+    try {
+      dbInstance.close();
+    } catch {
+      // already closed
+    }
+    dbInstance = null;
+  }
+  if (typeof window === 'undefined' || !window.indexedDB) return;
+  await new Promise<void>((resolve, reject) => {
+    const request = window.indexedDB.deleteDatabase(DB_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => resolve();
+  });
+}

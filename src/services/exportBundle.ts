@@ -17,7 +17,8 @@ import { generatePdf, FontLoader } from '../pdf/generate';
 import { PageSize } from '../pdf/layout';
 import { coverLetterPdf } from './pdfDownload';
 
-export const BACKUP_VERSION = 1;
+import { BACKUP_VERSION, parseBackup } from './dataSafety';
+export { BACKUP_VERSION, parseBackup };
 
 export interface BundleInput {
   /** The resume to export (hidden sections and bullets are left out of the copies) */
@@ -108,19 +109,6 @@ export function readBundle(zip: Uint8Array): Record<string, string> {
 }
 
 /** Parse a backup and check its shape and version */
-export function parseBackup(text: string): { ok: true; resumes: Resume[]; applications: JobApplication[]; coverLetterMarkdown: string } | { ok: false; error: string } {
-  let data: unknown;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    return { ok: false, error: 'The file is not valid JSON.' };
-  }
-  const b = data as { app?: string; version?: number; resumes?: Resume[]; applications?: JobApplication[]; coverLetterMarkdown?: string };
-  if (b.app !== 'ResumeLabs') return { ok: false, error: 'This is not a ResumeLabs backup.' };
-  if (b.version !== BACKUP_VERSION) return { ok: false, error: `Unsupported backup version ${b.version}.` };
-  if (!Array.isArray(b.resumes)) return { ok: false, error: 'The backup has no resumes.' };
-  return { ok: true, resumes: b.resumes, applications: b.applications ?? [], coverLetterMarkdown: b.coverLetterMarkdown ?? '' };
-}
 
 /** The bundle with the real PDFs added (resume.pdf and, if there is one, cover-letter.pdf) */
 export async function buildBundleWithPdfs(input: BundleInput, pageSize: PageSize, loadFont?: FontLoader): Promise<Record<string, Uint8Array>> {

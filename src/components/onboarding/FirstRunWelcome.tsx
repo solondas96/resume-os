@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { RestoreReview } from '../data/RestoreReview';
 import { FileUp, Zap, Edit3, CheckCircle2 } from 'lucide-react';
 
 interface FirstRunWelcomeProps {
@@ -20,6 +21,7 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
   isLoading = false,
 }) => {
   const [dragOver, setDragOver] = useState(false);
+  const [restoreText, setRestoreText] = useState<string | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -137,6 +139,29 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
               Create new
             </button>
           </div>
+        </div>
+
+        {/* Restore: a backup file from earlier, with a preview before anything changes */}
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          {restoreText === null ? (
+            <label className="cursor-pointer text-primary underline underline-offset-2">
+              Have a backup? Restore it
+              <input
+                type="file"
+                accept="application/json,.json"
+                className="sr-only"
+                aria-label="Choose a backup file to restore"
+                onChange={async (e) => {
+                  const f = e.currentTarget.files?.[0];
+                  if (f) setRestoreText(await f.text());
+                }}
+              />
+            </label>
+          ) : (
+            <div className="max-w-md mx-auto text-left bg-card border border-border rounded-2xl p-5">
+              <RestoreReview text={restoreText} onCancel={() => setRestoreText(null)} />
+            </div>
+          )}
         </div>
 
         {/* Footer */}

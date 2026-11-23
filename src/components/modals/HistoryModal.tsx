@@ -11,7 +11,7 @@ export const HistoryPanel: React.FC = () => {
   const { revisions, restoreRevision, deleteRevision, closeInspector } = useResumeStoreV2();
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-2">
+    <div className="p-4 space-y-2">
       {revisions.length === 0 ? (
         <div className="text-center py-10 text-muted-foreground text-xs">
           No saved versions yet. Edits and downloads save a copy here automatically.
