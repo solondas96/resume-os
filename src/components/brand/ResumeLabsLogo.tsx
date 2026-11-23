@@ -81,7 +81,7 @@ export const ResumeLabsLogo: React.FC<ResumeLabsLogoProps> = ({
 
       {/* Brand Wordmark */}
       {showText && (
-        <div className={`flex flex-col select-none leading-none ${textClassName}`}>
+        <div className={`hidden sm:flex flex-col select-none leading-none ${textClassName}`}>
           <div className="flex items-center gap-1 tracking-tight">
             <span className="font-semibold text-[15px] text-foreground">
               Resume
@@ -90,7 +90,7 @@ export const ResumeLabsLogo: React.FC<ResumeLabsLogoProps> = ({
               Labs
             </span>
           </div>
-          <span className="text-[11px] text-muted-foreground font-normal tracking-normal mt-0.5">
+          <span className="hidden sm:block text-[11px] text-muted-foreground font-normal tracking-normal mt-0.5">
             Precision Resume Engineering
           </span>
         </div>

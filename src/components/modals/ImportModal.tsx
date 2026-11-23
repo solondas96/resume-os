@@ -159,7 +159,7 @@ export const ImportModal: React.FC = () => {
 
   const replaceCurrent = () => {
     if (!canCreate || !currentResume) return;
-    saveRevision('Snapshot before import');
+    saveRevision('Saved before import');
     setMarkdown(reviewText);
     close();
   };
@@ -219,7 +219,7 @@ export const ImportModal: React.FC = () => {
               <textarea
                 value={pasteText}
                 onChange={(e) => setPasteText(e.target.value)}
-                placeholder="Paste resume text or Markdown..."
+                placeholder="Paste your resume text here..."
                 rows={6}
                 className="w-full bg-background border border-border rounded-xl p-3 text-xs text-foreground font-mono focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-hidden resize-none leading-relaxed"
               />

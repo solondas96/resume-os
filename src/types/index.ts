@@ -2,7 +2,8 @@ export type TemplateId = 'modern' | 'classic' | 'executive' | 'minimal' | 'swiss
 export type UiTheme = 'dark' | 'light';
 export type EditorViewMode = 'form' | 'markdown';
 export type WorkspaceMode = 'resume' | 'cover-letter';
-export type ActiveSidePanel = 'none' | 'match' | 'linter';
+/** The one inspector's tabs. The inspector is closed when the store holds null. */
+export type InspectorTab = 'health' | 'match' | 'design' | 'history';
 
 export type FontSizeOption = 'small' | 'medium' | 'large';
 export type MarginOption = 'narrow' | 'normal' | 'relaxed';

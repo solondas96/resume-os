@@ -1,30 +1,21 @@
 import React, { useState } from 'react';
 import {
   Printer,
-  History,
-  HelpCircle,
-  Palette,
-  Upload,
   FileText,
   ChevronDown,
   Edit3,
-  Sun,
-  Moon,
   Command,
-  Target,
   Sparkles,
   Download,
   FileCode,
   FileSpreadsheet,
   Loader2,
   FolderGit2,
-  Share2,
   Mail
 } from 'lucide-react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { useModelMarkdown } from '../../store/useModelMarkdown';
 import { ResumeLabsLogo } from '../brand/ResumeLabsLogo';
-import { DesignPanel } from '../design/DesignPanel';
 import { exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import { downloadResumePdf } from '../../services/pdfDownload';
 import confetti from 'canvas-confetti';
@@ -33,7 +24,6 @@ export const Header: React.FC = () => {
   const {
     currentResume,
     pageSize,
-    theme,
     setActiveModal,
     documentTitle,
     setDocumentTitle,
@@ -45,14 +35,15 @@ export const Header: React.FC = () => {
     setLibraryModalOpen,
     workspaceMode,
     setWorkspaceMode,
-    activeSidePanel,
-    setActiveSidePanel,
+    inspectorTab,
+    openInspector,
+    closeInspector,
     setShareModalOpen,
     coverLetterMarkdown,
   } = useResumeStoreV2();
 
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
-  const [designOpen, setDesignOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
@@ -109,7 +100,7 @@ export const Header: React.FC = () => {
   return (
     <header className="no-print h-14 bg-card/95 border-b border-border flex items-center justify-between px-3 sm:px-4 select-none z-30 relative transition-colors duration-150 backdrop-blur-xs">
       {/* Left: Brand logo & Editable Document Title & Library Trigger */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <ResumeLabsLogo size={28} showText={true} />
 
         <div className="h-4 w-[1px] bg-border mx-0.5 sm:mx-1 hidden md:block" />
@@ -152,8 +143,8 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Center: Mode Switcher (Resume vs Cover Letter) & Quick Actions */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      {/* Center: Mode Switcher (Resume vs Cover Letter). On phones it moves to More, so the header stays on one line */}
+      <div className="hidden md:flex items-center gap-1.5 sm:gap-2">
         {/* Workspace Mode Segmented Control */}
         <div className="flex items-center bg-muted/80 p-0.5 rounded-lg border border-border text-xs font-medium">
           <button
@@ -180,137 +171,75 @@ export const Header: React.FC = () => {
           </button>
         </div>
 
-        {/* Starter Role Presets */}
-        <button
-          onClick={() => setActiveModal('presets')}
-          title="Browse Professional Starter Presets"
-          className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 border border-border text-xs font-medium text-foreground transition active:scale-[0.98]"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-brand-text" />
-          <span className="hidden lg:inline">Presets</span>
-        </button>
-
-        {/* Job Match Panel Toggle */}
-        <button
-          onClick={() => setActiveSidePanel(activeSidePanel === 'match' ? 'none' : 'match')}
-          title="Job Match: score this resume against a job posting"
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition active:scale-[0.98] ${
-            activeSidePanel === 'match'
-              ? 'bg-accent text-accent-foreground border-brand/40 shadow-xs'
-              : 'bg-muted hover:bg-muted/80 border-border text-foreground'
-          }`}
-        >
-          <Target className="w-3.5 h-3.5 text-brand-text" />
-          <span className="hidden sm:inline">Job Match</span>
-        </button>
-
-        {/* Application tracker and cover letter generator */}
-        <button
-          onClick={() => setActiveModal('tracker')}
-          title="Application tracker"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-muted hover:bg-muted/80 text-xs font-medium text-foreground transition active:scale-[0.98]"
-        >
-          <span className="hidden sm:inline">Tracker</span>
-        </button>
-        <button
-          onClick={() => setActiveModal('cover-letter')}
-          title="Generate a cover letter"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-muted hover:bg-muted/80 text-xs font-medium text-foreground transition active:scale-[0.98]"
-        >
-          <span className="hidden sm:inline">Cover Letter</span>
-        </button>
-
-        {/* Bullet Linter Panel Toggle */}
-        {workspaceMode === 'resume' && (
-          <button
-            onClick={() => setActiveSidePanel(activeSidePanel === 'linter' ? 'none' : 'linter')}
-            title="Bullet Point Action Verb & STAR Linter"
-            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition active:scale-[0.98] ${
-              activeSidePanel === 'linter'
-                ? 'bg-accent text-accent-foreground border-brand/40 shadow-xs'
-                : 'bg-muted hover:bg-muted/80 border-border text-foreground'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-brand-text" />
-            <span className="hidden lg:inline">Linter</span>
-          </button>
-        )}
-
-        {/* Consolidated Design Panel Trigger */}
-        <button
-          onClick={() => setDesignOpen(true)}
-          title="Open Design & Layout Settings"
-          className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 border border-border text-xs font-medium text-foreground transition active:scale-[0.98]"
-        >
-          <Palette className="w-3.5 h-3.5 text-brand-text" />
-          <span>Design</span>
-          <span className="text-[10px] bg-background text-muted-foreground border border-border px-1.5 py-0.5 rounded capitalize font-mono hidden sm:inline">
-            {theme}
-          </span>
-        </button>
       </div>
 
-      {/* Right Controls: Share, Palette, Theme, History, Export */}
+      {/* Right controls: the inspector, search, and everything less common under More */}
       <div className="flex items-center gap-1 sm:gap-1.5">
-        {/* 1-Click Share Web Resume Link */}
+        {/* The one inspector: Health, Match, Design, History */}
         <button
-          onClick={() => setShareModalOpen(true)}
-          title="Share Web Resume (Recruiter Direct View Link)"
-          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border transition text-xs font-medium active:scale-[0.98]"
+          onClick={() => (inspectorTab ? closeInspector() : openInspector('health'))}
+          aria-expanded={!!inspectorTab}
+          title="Inspector: health, job match, design and saved versions"
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition active:scale-[0.98] ${
+            inspectorTab ? 'bg-accent text-accent-foreground border-brand/40' : 'bg-muted hover:bg-muted/80 border-border text-foreground'
+          }`}
         >
-          <Share2 className="w-3.5 h-3.5 text-brand-text" />
-          <span className="hidden md:inline">Share</span>
+          <Sparkles className="w-3.5 h-3.5 text-brand-text" />
+          <span className="hidden sm:inline">Inspector</span>
         </button>
 
-        {/* Cmd+K Quick Search Trigger */}
+        {/* Search and commands (Cmd+K / Ctrl+K) */}
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          title="Command Palette (Cmd+K / Ctrl+K)"
+          title="Search and commands (Cmd+K / Ctrl+K)"
           className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border transition text-xs font-mono"
         >
           <Command className="w-3 h-3" />
           <span className="text-[11px]">Cmd+K</span>
         </button>
 
-        {/* Theme Toggle (Light / Dark) */}
-        <button
-          onClick={toggleUiTheme}
-          title={`Switch to ${uiTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
-          className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
-        >
-          {uiTheme === 'dark' ? (
-            <Sun className="w-4 h-4 text-amber-500" />
-          ) : (
-            <Moon className="w-4 h-4 text-muted-foreground" />
+        {/* Less common actions */}
+        <div className="relative">
+          <button
+            onClick={() => setMoreOpen(!moreOpen)}
+            aria-haspopup="menu"
+            aria-expanded={moreOpen}
+            title="More: templates, library, share, import, help"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 border border-border text-xs font-medium text-foreground transition"
+          >
+            <span>More</span>
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {moreOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} />
+              <div role="menu" className="absolute right-0 top-full mt-1 z-50 w-64 bg-card border border-border rounded-xl shadow-lifted p-1.5 space-y-0.5">
+                {[
+                  { label: 'Start from a role', run: () => setActiveModal('presets') },
+                  { label: 'Resume library', run: () => setLibraryModalOpen(true) },
+                  { label: 'Application tracker', run: () => setActiveModal('tracker') },
+                  { label: 'Cover letter', run: () => setActiveModal('cover-letter') },
+                  { label: 'Share a web link', run: () => setShareModalOpen(true) },
+                  { label: 'Import a file', run: () => setActiveModal('import') },
+                  { label: 'Keyboard shortcuts and help', run: () => setActiveModal('shortcuts') },
+                  { label: uiTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode', run: toggleUiTheme },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreOpen(false);
+                      item.run();
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs text-foreground hover:bg-muted transition"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
-        </button>
-
-        {/* Revision History Trigger */}
-        <button
-          onClick={() => setActiveModal('history')}
-          title="Revision History & Snapshots"
-          className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition hidden sm:inline-flex"
-        >
-          <History className="w-4 h-4" />
-        </button>
-
-        {/* Shortcuts / Help */}
-        <button
-          onClick={() => setActiveModal('shortcuts')}
-          title="Keyboard Shortcuts & Markdown Reference"
-          className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition hidden sm:inline-flex"
-        >
-          <HelpCircle className="w-4 h-4" />
-        </button>
-
-        {/* Import Trigger */}
-        <button
-          onClick={() => setActiveModal('import')}
-          title="Import Resume (.md, .txt, JSON Resume)"
-          className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition hidden md:inline-flex"
-        >
-          <Upload className="w-4 h-4" />
-        </button>
+        </div>
 
         {/* Main action: a real PDF download */}
         <button
@@ -320,11 +249,11 @@ export const Header: React.FC = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-button text-white text-xs font-medium hover:opacity-90 disabled:opacity-40 transition active:scale-[0.98] min-h-[36px]"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>{isExportingPdf ? 'Preparing…' : 'Download PDF'}</span>
+          <span className="whitespace-nowrap">{isExportingPdf ? 'Preparing…' : (<><span className="sm:hidden">PDF</span><span className="hidden sm:inline">Download PDF</span></>)}</span>
         </button>
 
-        {/* Export Dropdown Trigger */}
-        <div className="relative">
+        {/* Export Dropdown Trigger (on phones, Download PDF covers the common case) */}
+        <div className="relative hidden sm:block">
           <button
             onClick={() => setExportMenuOpen(!exportMenuOpen)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground font-medium text-xs rounded-lg hover:opacity-90 transition active:scale-[0.98] shadow-xs"
@@ -412,11 +341,6 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Slide-over Design Panel */}
-      <DesignPanel
-        isOpen={designOpen}
-        onClose={() => setDesignOpen(false)}
-      />
     </header>
   );
 };

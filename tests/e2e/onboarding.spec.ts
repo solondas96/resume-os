@@ -43,7 +43,8 @@ test('tour: shows after the first resume, Skip dismisses it, and Help replays it
   await expect(page.getByRole('dialog')).toHaveCount(0);
 
   // Replay from Help
-  await page.getByTitle('Keyboard Shortcuts & Markdown Reference').click();
+  await page.getByRole('button', { name: 'More' }).click();
+  await page.getByRole('menuitem', { name: 'Keyboard shortcuts and help' }).click();
   await page.getByRole('button', { name: 'Take the tour again' }).click();
   await expect(page.getByRole('dialog', { name: 'Your resume is on the left' })).toBeVisible();
   await page.getByRole('button', { name: 'Skip tour' }).click();

@@ -67,7 +67,7 @@ export const CommandPalette: React.FC = () => {
     setShareModalOpen,
     workspaceMode,
     setWorkspaceMode,
-    setActiveSidePanel,
+    openInspector,
     fitToOnePage
   } = useResumeStoreV2();
 
@@ -184,7 +184,7 @@ export const CommandPalette: React.FC = () => {
       title: 'Open Job Match Panel',
       description: 'Score this resume against a job posting, then tailor a copy or track it',
       icon: <Target className="w-4 h-4 text-brand-text" />,
-      action: () => setActiveSidePanel('match'),
+      action: () => openInspector('match'),
       keywords: ['match', 'tailor', 'job', 'side', 'keywords', 'ats', 'score'],
     },
     {
@@ -193,7 +193,7 @@ export const CommandPalette: React.FC = () => {
       title: 'Open Inspector (Health & Bullet Linter)',
       description: 'Resume health breakdown, bullet verbs, metrics and impact scores',
       icon: <Sparkles className="w-4 h-4 text-brand-text" />,
-      action: () => setActiveSidePanel('linter'),
+      action: () => openInspector('health'),
       keywords: ['inspector', 'health', 'linter', 'bullets', 'verbs', 'star', 'impact', 'audit'],
     },
     {
@@ -280,10 +280,10 @@ export const CommandPalette: React.FC = () => {
       id: 'history',
       category: 'Export',
       title: 'View Revision History',
-      description: 'Rollback to earlier snapshots with timestamps',
+      description: 'Go back to a saved version of this resume',
       icon: <History className="w-4 h-4 text-amber-400" />,
-      action: () => setActiveModal('history'),
-      keywords: ['undo', 'history', 'revisions', 'restore', 'snapshots'],
+      action: () => openInspector('history'),
+      keywords: ['undo', 'history', 'revisions', 'restore', 'versions', 'snapshots'],
     },
 
     // Appearance & Views

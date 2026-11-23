@@ -50,9 +50,11 @@ export const A4Canvas: React.FC = () => {
   // Auto-fit scale listener: automatically syncs scale with store zoom
   useEffect(() => {
     const handleResize = () => {
-      if (!containerRef.current || !autoFitZoom) return;
+      // Phones always fit the page to the screen, so the preview is never cut off
+      const phone = typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches;
+      if (!containerRef.current || (!autoFitZoom && !phone)) return;
       const availableWidth = containerRef.current.clientWidth - 48; // padding
-      const targetScale = Math.min(1.05, Math.max(0.45, availableWidth / PAGE.w));
+      const targetScale = Math.min(1.05, Math.max(phone ? 0.3 : 0.45, availableWidth / PAGE.w));
       setZoom(Number(targetScale.toFixed(2)));
     };
 
@@ -110,7 +112,7 @@ export const A4Canvas: React.FC = () => {
       >
         <div
           ref={sheetRef}
-          className={`a4-sheet page-${pageSize.toLowerCase()} template-${theme} font-size-${fontSize} margin-${marginSize} line-height-${lineHeight} ${
+          className={`a4-sheet mx-auto page-${pageSize.toLowerCase()} template-${theme} font-size-${fontSize} margin-${marginSize} line-height-${lineHeight} ${
             compactSpacing ? 'compact-spacing' : ''
           } ${onePageMode ? 'one-page-clamped' : ''}`}
         >

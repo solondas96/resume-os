@@ -75,7 +75,7 @@ describe('FormEditor', () => {
     render(<FormEditor />);
     const section = screen.getByRole('region', { name: 'Section Experience' });
     fireEvent.click(within(section).getAllByRole('button', { name: /Improve/ })[0]);
-    expect(store().activeSidePanel).toBe('linter');
+    expect(store().inspectorTab).toBe('health');
     expect(store().bulletSeed).toBe('Worked on the billing system');
   });
 

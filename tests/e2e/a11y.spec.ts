@@ -15,7 +15,8 @@ async function serious(page: import('@playwright/test').Page, label: string) {
 }
 
 async function toggleTheme(page: import('@playwright/test').Page) {
-  await page.getByTitle(/Switch to (Light|Dark) Mode/).click();
+  await page.getByRole('button', { name: 'More' }).click();
+  await page.getByRole('menuitem', { name: /Switch to (light|dark) mode/ }).click();
 }
 
 test.describe('accessibility (WCAG 2.2 AA, serious and critical)', () => {
@@ -51,13 +52,15 @@ test.describe('accessibility (WCAG 2.2 AA, serious and critical)', () => {
     await page.goto('/');
     await waitForApp(page);
     await page.getByRole('heading', { name: 'Start blank' }).click();
-    await page.getByRole('button', { name: 'Tracker' }).click();
+    await page.getByRole('button', { name: 'More' }).click();
+    await page.getByRole('menuitem', { name: 'Application tracker' }).click();
     await expect(page.getByRole('heading', { name: 'Application Tracker' }).or(page.getByText('Application Tracker'))).toBeVisible();
     await serious(page, 'tracker board');
     await page.getByRole('button', { name: 'Table' }).click();
     await serious(page, 'tracker table');
     await page.getByRole('button', { name: 'Close tracker' }).click();
-    await page.getByRole('button', { name: /Share/ }).first().click();
+    await page.getByRole('button', { name: 'More' }).click();
+    await page.getByRole('menuitem', { name: 'Share a web link' }).click();
     await serious(page, 'share modal');
     await page.getByRole('button', { name: 'Close share' }).click();
   });

@@ -25,7 +25,7 @@ import {
   EditorViewMode,
   MobileViewTab,
   WorkspaceMode,
-  ActiveSidePanel,
+  InspectorTab,
 } from '../types';
 import {
   initializePersistence,
@@ -149,8 +149,10 @@ export interface ResumeStoreV2 extends DerivedFields {
   setShareModalOpen: (open: boolean) => void;
   activeModal: ModalName;
   setActiveModal: (modal: ModalName) => void;
-  activeSidePanel: ActiveSidePanel;
-  setActiveSidePanel: (panel: ActiveSidePanel) => void;
+  // The one inspector (Health, Match, Design, History). null when closed.
+  inspectorTab: InspectorTab | null;
+  openInspector: (tab?: InspectorTab) => void;
+  closeInspector: () => void;
   pageCount: number;
   setPageCount: (count: number) => void;
   workspaceMode: WorkspaceMode;
@@ -327,7 +329,7 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     isSaving: false,
     lastSavedAt: null,
     bulletSeed: '',
-    openBulletBuilder: (text) => set({ activeSidePanel: 'linter', bulletSeed: text }),
+    openBulletBuilder: (text) => set({ inspectorTab: 'health', bulletSeed: text }),
     pageSize: 'A4',
     setPageSize: (pageSize) => {
       set({ pageSize });
@@ -629,8 +631,9 @@ export const useResumeStoreV2 = create<ResumeStoreV2>((set, get) => {
     setShareModalOpen: (shareModalOpen) => set({ shareModalOpen }),
     activeModal: null,
     setActiveModal: (activeModal) => set({ activeModal }),
-    activeSidePanel: 'none',
-    setActiveSidePanel: (activeSidePanel) => set({ activeSidePanel }),
+    inspectorTab: null,
+    openInspector: (tab = 'health') => set({ inspectorTab: tab }),
+    closeInspector: () => set({ inspectorTab: null }),
     pageCount: 1,
     setPageCount: (pageCount) => set({ pageCount }),
     workspaceMode: 'resume',
@@ -732,8 +735,19 @@ async function runInitialize(
   await initializePersistence();
   await runMigrationOnStartup();
 
-  // The skills dataset loads in the background; matching uses the curated dictionary until then
-  void loadSkillsDataset();
+  // The skills dataset (about 1 MB) loads after the first screen is up, when the browser is idle.
+  // It would otherwise share the connection with the first screen. Matching uses the curated
+  // dictionary until it arrives.
+  if (typeof window !== 'undefined') {
+    const start = () => void loadSkillsDataset();
+    const whenIdle = () => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void };
+      if (w.requestIdleCallback) w.requestIdleCallback(start, { timeout: 4000 });
+      else setTimeout(start, 1500);
+    };
+    if (document.readyState === 'complete') whenIdle();
+    else window.addEventListener('load', whenIdle, { once: true });
+  }
 
   const [uiTheme, workspaceMode, coverLetter, targetJob, applications] = await Promise.all([
     loadSetting(SETTING_KEYS.uiTheme),

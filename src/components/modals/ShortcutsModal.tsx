@@ -22,7 +22,7 @@ export const ShortcutsModal: React.FC = () => {
         <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-card">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
             <HelpCircle className="w-4 h-4 text-brand-text" />
-            <span>Markdown & Icon Shortcuts</span>
+            <span>Shortcuts and text tips</span>
           </div>
           <div className="flex items-center gap-2">
           <button

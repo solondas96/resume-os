@@ -2,7 +2,6 @@ import React, { Suspense, useState, useCallback, useRef, useEffect } from 'react
 import { Header } from './components/navbar/Header';
 import { EditorPane } from './components/editor/EditorPane';
 import { A4Canvas } from './components/preview/A4Canvas';
-import { HistoryModal } from './components/modals/HistoryModal';
 import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { ImportModal } from './components/modals/ImportModal';
 import { PresetsModal } from './components/modals/PresetsModal';
@@ -18,15 +17,14 @@ import { parseShareHash } from './utils/shareResume';
 const TrackerModal = React.lazy(() => import('./components/tracker/TrackerModal').then((m) => ({ default: m.TrackerModal })));
 const CoverLetterModal = React.lazy(() => import('./components/cover/CoverLetterModal').then((m) => ({ default: m.CoverLetterModal })));
 const ShareModal = React.lazy(() => import('./components/share/ShareModal').then((m) => ({ default: m.ShareModal })));
-const BulletLinterDrawer = React.lazy(() => import('./components/audit/BulletLinterDrawer').then((m) => ({ default: m.BulletLinterDrawer })));
-const JobMatchPanel = React.lazy(() => import('./components/match/JobMatchPanel').then((m) => ({ default: m.JobMatchPanel })));
+const Inspector = React.lazy(() => import('./components/inspector/Inspector').then((m) => ({ default: m.Inspector })));
 const RecruiterView = React.lazy(() => import('./components/preview/RecruiterView').then((m) => ({ default: m.RecruiterView })));
 const ResumeLibraryModal = React.lazy(() => import('./components/library/ResumeLibraryModal').then((m) => ({ default: m.ResumeLibraryModal })));
 
 export const App: React.FC = () => {
   const initialize = useResumeStoreV2((s) => s.initialize);
   const uiTheme = useResumeStoreV2((s) => s.uiTheme);
-  const activeSidePanel = useResumeStoreV2((s) => s.activeSidePanel);
+  const inspectorTab = useResumeStoreV2((s) => s.inspectorTab);
   const libraryModalOpen = useResumeStoreV2((s) => s.libraryModalOpen);
   const shareModalOpen = useResumeStoreV2((s) => s.shareModalOpen);
   const activeModal = useResumeStoreV2((s) => s.activeModal);
@@ -161,7 +159,7 @@ export const App: React.FC = () => {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Markdown Editor
+            Editor
           </button>
           <button
             onClick={() => setMobileTab('preview')}
@@ -171,7 +169,7 @@ export const App: React.FC = () => {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            A4 Live Preview
+            Preview
           </button>
         </div>
       </div>
@@ -228,15 +226,10 @@ export const App: React.FC = () => {
       {/* Bottom Unified Status Bar */}
       <StatusBar />
 
-      {/* Slide-over Side Panels */}
-      {activeSidePanel === 'linter' && (
+      {/* The one inspector: Health, Match, Design, History */}
+      {inspectorTab && (
         <Suspense fallback={null}>
-          <BulletLinterDrawer />
-        </Suspense>
-      )}
-      {activeSidePanel === 'match' && (
-        <Suspense fallback={null}>
-          <JobMatchPanel />
+          <Inspector />
         </Suspense>
       )}
 
@@ -251,7 +244,6 @@ export const App: React.FC = () => {
           <ShareModal />
         </Suspense>
       )}
-      <HistoryModal />
       <ShortcutsModal />
       <OnboardingTour />
       <ImportModal />

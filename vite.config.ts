@@ -53,8 +53,8 @@ export default defineConfig({
   test: {
     // DOMPurify needs a DOM window at import time; tests run under jsdom
     environment: 'jsdom',
-    // Playwright owns tests/e2e (*.spec.ts)
-    exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**'],
+    // Playwright owns tests/e2e and tests/perf (*.spec.ts)
+    exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**', 'tests/perf/**'],
     coverage: {
       provider: 'v8',
       include: ['src/intelligence/**', 'src/model/**'],

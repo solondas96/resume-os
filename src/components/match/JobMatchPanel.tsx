@@ -18,9 +18,9 @@ const STRENGTH_STYLE: Record<string, string> = {
   missing: 'bg-destructive/10 text-destructive',
 };
 
-export const JobMatchPanel: React.FC = () => {
-  const activeSidePanel = useResumeStoreV2((s) => s.activeSidePanel);
-  const setActiveSidePanel = useResumeStoreV2((s) => s.setActiveSidePanel);
+export const JobMatchPanel: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+  const inspectorTab = useResumeStoreV2((s) => s.inspectorTab);
+  const closeInspector = useResumeStoreV2((s) => s.closeInspector);
   const currentResume = useResumeStoreV2((s) => s.currentResume);
   const jd = useResumeStoreV2((s) => s.targetJobDescription);
   const setJd = useResumeStoreV2((s) => s.setTargetJobDescription);
@@ -37,7 +37,7 @@ export const JobMatchPanel: React.FC = () => {
     [currentResume, jd]
   );
 
-  if (activeSidePanel !== 'match') return null;
+  if (!embedded && inspectorTab !== 'match') return null;
 
   const handleTailor = () => {
     if (!currentResume || !jd.trim()) return;
@@ -58,7 +58,8 @@ export const JobMatchPanel: React.FC = () => {
   const niceToHaves = result?.requirements.filter((r) => r.type === 'nice-to-have') ?? [];
 
   return (
-    <aside className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-card border-l border-border shadow-lifted z-40 flex flex-col no-print">
+    <aside className={embedded ? 'flex flex-col min-h-0 flex-1' : 'fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-card border-l border-border shadow-lifted z-40 flex flex-col no-print'}>
+      {!embedded && (
       <div className="px-5 py-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Target className="w-4 h-4 text-brand-text" />
@@ -68,7 +69,7 @@ export const JobMatchPanel: React.FC = () => {
           </div>
         </div>
         <button
-          onClick={() => setActiveSidePanel('none')}
+          onClick={() => closeInspector()}
           className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
           aria-label="Close job match"
         >
@@ -76,6 +77,7 @@ export const JobMatchPanel: React.FC = () => {
         </button>
       </div>
 
+      )}
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         <div>
           <label className="block text-xs font-medium text-foreground mb-1.5">Job description</label>

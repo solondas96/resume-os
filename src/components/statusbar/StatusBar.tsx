@@ -36,8 +36,9 @@ export const StatusBar: React.FC = () => {
     autoFitZoom,
     setAutoFitZoom,
     fitToOnePage,
-    activeSidePanel,
-    setActiveSidePanel,
+    inspectorTab,
+    openInspector,
+    closeInspector,
   } = useResumeStoreV2();
 
   const activeContent = workspaceMode === 'cover-letter' ? coverLetterMarkdown : markdown;
@@ -81,10 +82,10 @@ export const StatusBar: React.FC = () => {
           <>
             <div className="h-3 w-[1px] bg-border mx-1 hidden sm:block" />
             <button
-              onClick={() => setActiveSidePanel(activeSidePanel === 'linter' ? 'none' : 'linter')}
-              title="Open Bullet Point Linter & XYZ Impact Scorer"
+              onClick={() => (inspectorTab === 'health' ? closeInspector() : openInspector('health'))}
+              title="Open bullet checks: weak verbs and missing numbers"
               className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
-                activeSidePanel === 'linter'
+                inspectorTab === 'health'
                   ? 'bg-accent text-accent-foreground border border-brand/30'
                   : 'hover:bg-muted text-muted-foreground hover:text-foreground'
               }`}
@@ -98,16 +99,16 @@ export const StatusBar: React.FC = () => {
         {/* Health badge: opens the inspector breakdown */}
         <div className="h-3 w-[1px] bg-border mx-1 hidden sm:block" />
         <HealthBadge
-          active={activeSidePanel === 'linter'}
-          onClick={() => setActiveSidePanel(activeSidePanel === 'linter' ? 'none' : 'linter')}
+          active={inspectorTab === 'health'}
+          onClick={() => (inspectorTab === 'health' ? closeInspector() : openInspector('health'))}
         />
 
         {/* Job Match Pill */}
         <button
-          onClick={() => setActiveSidePanel(activeSidePanel === 'match' ? 'none' : 'match')}
+          onClick={() => (inspectorTab === 'match' ? closeInspector() : openInspector('match'))}
           title="Open Job Match"
           className={`hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
-            activeSidePanel === 'match'
+            inspectorTab === 'match'
               ? 'bg-accent text-accent-foreground border border-brand/30'
               : 'hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}

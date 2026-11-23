@@ -9,16 +9,16 @@ import {
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { analyzeBullets, quickFixBulletVerb } from '../../utils/bulletLinter';
 
-export const BulletLinterDrawer: React.FC = () => {
-  const { markdown, setMarkdown, activeSidePanel, setActiveSidePanel, saveRevision } = useResumeStoreV2();
+export const BulletLinterDrawer: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+  const { markdown, setMarkdown, inspectorTab, closeInspector, saveRevision } = useResumeStoreV2();
 
-  const isOpen = activeSidePanel === 'linter';
+  const isOpen = inspectorTab === 'health';
 
   const analysis = useMemo(() => {
     return analyzeBullets(markdown);
   }, [markdown]);
 
-  if (!isOpen) return null;
+  if (!embedded && !isOpen) return null;
 
   const handleApplyFix = (rawBullet: string, weakVerb: string, replacement: string) => {
     saveRevision('Before Action Verb Quick Fix');
@@ -34,10 +34,9 @@ export const BulletLinterDrawer: React.FC = () => {
       : 'text-rose-600 dark:text-rose-400';
 
   return (
-    <div className="no-print fixed z-40 bg-card shadow-2xl flex flex-col animate-in duration-200 motion-reduce:animate-none
-      inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t border-border slide-in-from-bottom
-      sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[420px] sm:rounded-none sm:border-t-0 sm:border-l sm:slide-in-from-right">
+    <div className={embedded ? 'flex flex-col min-h-0 flex-1' : 'no-print fixed z-40 bg-card shadow-2xl flex flex-col animate-in duration-200 motion-reduce:animate-none inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t border-border slide-in-from-bottom sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[420px] sm:rounded-none sm:border-t-0 sm:border-l sm:slide-in-from-right'}>
       {/* Drawer Header */}
+      {!embedded && (
       <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/20">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accent-foreground">
@@ -45,11 +44,11 @@ export const BulletLinterDrawer: React.FC = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold text-foreground tracking-tight">Inspector</h2>
-            <p className="text-xs text-muted-foreground">Health, bullet verbs and XYZ impact</p>
+            <p className="text-xs text-muted-foreground">Health, weak verbs and missing numbers</p>
           </div>
         </div>
         <button
-          onClick={() => setActiveSidePanel('none')}
+          onClick={() => closeInspector()}
           className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
           aria-label="Close inspector"
         >
@@ -57,6 +56,7 @@ export const BulletLinterDrawer: React.FC = () => {
         </button>
       </div>
 
+      )}
       {/* One scrolling body: on a short screen every section stays reachable */}
       <div className="flex-1 min-h-0 overflow-y-auto">
       <HealthBreakdown />
@@ -173,7 +173,7 @@ export const BulletLinterDrawer: React.FC = () => {
 
       {/* Guidance Footer */}
       <div className="p-4 border-t border-border bg-muted/30 text-xs text-muted-foreground">
-        <p className="font-medium text-foreground mb-1">Google XYZ Formula Tip:</p>
+        <p className="font-medium text-foreground mb-1">A simple formula for bullets:</p>
         <p className="text-[11px] leading-relaxed">
           "Accomplished <strong>[X]</strong> as measured by <strong>[Y]</strong>, by doing <strong>[Z]</strong>". Always quantify results with numbers, latency drops, or dollar volume.
         </p>

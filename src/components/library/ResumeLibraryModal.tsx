@@ -91,7 +91,7 @@ export const ResumeLibraryModal: React.FC = () => {
             </div>
             <div>
               <h2 className="text-base font-semibold text-foreground tracking-tight">Resume Library</h2>
-              <p className="text-xs text-muted-foreground">Manage and tailor resumes for different target roles</p>
+              <p className="text-xs text-muted-foreground">Keep a copy of your resume for each kind of job</p>
             </div>
           </div>
           <button

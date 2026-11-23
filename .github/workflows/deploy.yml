@@ -50,6 +50,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: First-screen timing on Fast 3G with 4x CPU (2 s budget)
+        run: npm run perf
+
       - name: Offline (PWA) tests against the production build
         run: npm run e2e:pwa
         env:
@@ -68,6 +71,16 @@ jobs:
         with:
           name: visual-pdf-check
           path: test-results/visual/
+          if-no-files-found: ignore
+
+      - name: Upload screenshots and the walkthrough report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-and-walkthrough
+          path: |
+            test-results/screenshots/
+            test-results/walkthrough.json
           if-no-files-found: ignore
 
       - name: Setup Pages

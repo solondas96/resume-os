@@ -393,11 +393,11 @@ export const EditorPane: React.FC = () => {
         <div className="flex items-center gap-2 text-[11px]">
           <button
             onClick={() => saveRevision()}
-            title="Commit revision snapshot now"
+            title="Save a version now"
             className="flex items-center gap-1 text-muted-foreground hover:text-foreground hover:bg-muted px-2 py-0.5 rounded transition"
           >
             <Save className="w-3 h-3 text-brand-text" />
-            <span>Snapshot</span>
+            <span>Save version</span>
           </button>
         </div>
       </div>

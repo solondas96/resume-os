@@ -17,9 +17,11 @@ import {
 interface DesignPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Inside the inspector: no overlay, header or footer */
+  embedded?: boolean;
 }
 
-export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => {
+export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose, embedded = false }) => {
   const {
     theme,
     setTheme,
@@ -39,19 +41,22 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
     setPageSize,
   } = useResumeStoreV2();
 
-  if (!isOpen) return null;
+  if (!embedded && !isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
+      {!embedded && (
       <div
         onClick={onClose}
         className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 transition-opacity"
       />
+      )}
 
       {/* Drawer Panel */}
-      <aside className="fixed right-0 top-0 bottom-0 w-80 sm:w-96 bg-card border-l border-border shadow-lifted z-50 flex flex-col transition-all duration-200 ease-out select-none">
+      <aside className={embedded ? 'flex flex-col min-h-0 flex-1 select-none' : 'fixed right-0 top-0 bottom-0 w-80 sm:w-96 bg-card border-l border-border shadow-lifted z-50 flex flex-col transition-all duration-200 ease-out select-none'}>
         {/* Panel Header */}
+        {!embedded && (
         <div className="h-14 px-5 bg-card border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 rounded-lg bg-accent text-accent-foreground border border-brand/20">
@@ -70,6 +75,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
           </button>
         </div>
 
+        )}
         {/* Panel Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-6 text-xs text-foreground">
           {/* 1. Templates Selection */}
@@ -298,8 +304,9 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             </div>
           </div>
         </div>
-
         {/* Panel Footer */}
+
+        {!embedded && (
         <div className="p-4 border-t border-border bg-card flex items-center justify-between">
           <span className="text-[11px] text-muted-foreground">Changes reflect immediately</span>
           <button
@@ -309,6 +316,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             Done
           </button>
         </div>
+        )}
       </aside>
     </>
   );

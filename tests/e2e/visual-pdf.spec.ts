@@ -71,11 +71,11 @@ for (const size of ['A4', 'Letter'] as const) {
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
     if (size === 'Letter') {
-      await page.getByTitle('Open Design & Layout Settings').click();
+      await page.getByRole('button', { name: 'Inspector' }).click();
+      await page.getByRole('tab', { name: 'Design' }).click();
       await page.getByLabel('Paper size').selectOption('Letter');
-      // Close with the backdrop (the footer's Done button sits below the fold at this viewport)
-      await page.mouse.click(10, 400);
-      await expect(page.getByRole('heading', { name: 'Design & Layout' })).toBeHidden({ timeout: 10_000 });
+      await page.getByRole('button', { name: 'Close inspector' }).click();
+      await expect(page.getByRole('complementary', { name: 'Inspector' })).toBeHidden({ timeout: 10_000 });
       await expect(page.locator('.a4-sheet.page-letter')).toBeVisible();
     }
 

@@ -13,7 +13,8 @@
     "build:skills": "tsx scripts/build-skills.ts",
     "e2e:pwa": "playwright test --config playwright.pwa.config.ts",
     "test:coverage": "vitest run --coverage",
-    "size": "size-limit"
+    "size": "size-limit",
+    "perf": "playwright test -c playwright.perf.config.ts"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.1",
