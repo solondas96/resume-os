@@ -75,7 +75,10 @@ jobs:
 
       - name: List the visual check files
         if: always()
-        run: ls -la test-results/visual || echo 'no visual check files'
+        run: |
+          echo "::notice title=visual check files::$(ls test-results/visual 2>&1 | tr '\n' ' ')"
+          echo "::notice title=screenshot files::$(ls test-results/screenshots 2>&1 | tr '\n' ' ')"
+          echo "::notice title=walkthrough::$(ls test-results/walkthrough.json 2>&1)"
 
       - name: Upload visual check (PDF page 1 next to the preview)
         if: always()
@@ -83,7 +86,7 @@ jobs:
         with:
           name: visual-pdf-check
           path: test-results/visual/
-          if-no-files-found: ignore
+          if-no-files-found: warn
 
       - name: Upload screenshots and the walkthrough report
         if: always()
@@ -93,4 +96,4 @@ jobs:
           path: |
             test-results/screenshots/
             test-results/walkthrough.json
-          if-no-files-found: ignore
+          if-no-files-found: warn
