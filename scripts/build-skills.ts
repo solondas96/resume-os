@@ -11,7 +11,7 @@
  * > ESCO > O*NET.
  */
 
-import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SKILLS as CURATED } from '../src/intelligence/skills';
@@ -36,7 +36,8 @@ export interface DatasetOut {
   titles: TitleOut[];
 }
 
-export const MAX_BYTES = 1_500_000;
+/** The budget for the dataset. SKILLS_MAX_BYTES overrides it, so the split can be tested with a small budget. */
+export const MAX_BYTES = Number(process.env.SKILLS_MAX_BYTES) || 1_500_000;
 const MAX_ALIASES = 6;
 
 /** Parse a delimited file, honouring quoted fields (ESCO uses commas, O*NET tabs) */
@@ -173,26 +174,121 @@ export function fromFields(): { skills: SkillOut[]; titles: TitleOut[] } {
   return { skills, titles: [] };
 }
 
+/** ISCO major group (first digit of the 4-digit ISCO code), tagged as "I<digit>" so it is not mistaken for an O*NET group */
+const ISCO_TAG = (code: string | undefined): string | null => (code && /^\d/.test(code.trim()) ? `I${code.trim()[0]}` : null);
+
+/**
+ * ESCO classification CSVs (English): skills_en.csv (labels and alternative labels), occupations_en.csv
+ * (for the ISCO group) and occupationSkillRelations_en.csv (which occupations use which skill).
+ * A missing file is skipped; a missing column is named in the log so the file can be checked.
+ */
 export function fromEsco(dir: string): { skills: SkillOut[]; titles: TitleOut[] } {
   const skills: SkillOut[] = [];
   const titles: TitleOut[] = [];
-  const skillFile = read(dir, 'skills_en.csv');
-  if (skillFile) {
-    for (const r of parseDelimited(skillFile, ',')) {
-      const kind = /knowledge/i.test(r['skillType'] ?? '') ? 'knowledge' : 'skill';
-      const alts = (r['altLabels'] ?? '').split(/\n/).map(key).filter(Boolean);
-      skills.push({ c: norm(r['preferredLabel']), a: alts, k: kind });
-    }
-  }
+  const iscoByOccupation = new Map<string, string>();
   const occFile = read(dir, 'occupations_en.csv');
   if (occFile) {
     for (const r of parseDelimited(occFile, ',')) {
       const alts = (r['altLabels'] ?? '').split(/\n/).map(key).filter(Boolean);
       titles.push({ c: norm(r['preferredLabel']), a: alts });
+      if (r['conceptUri'] && r['iscoGroup']) iscoByOccupation.set(r['conceptUri'], r['iscoGroup']);
     }
+  }
+  const skillsByUri = new Map<string, SkillOut>();
+  const skillFile = read(dir, 'skills_en.csv');
+  if (skillFile) {
+    for (const r of parseDelimited(skillFile, ',')) {
+      const kind = /knowledge/i.test(r['skillType'] ?? '') ? 'knowledge' : 'skill';
+      const alts = (r['altLabels'] ?? '').split(/\n/).map(key).filter(Boolean);
+      const entry: SkillOut = { c: norm(r['preferredLabel']), a: alts, k: kind };
+      if (!entry.c) continue;
+      skills.push(entry);
+      if (r['conceptUri']) skillsByUri.set(r['conceptUri'], entry);
+    }
+  }
+  const relFile = read(dir, 'occupationSkillRelations_en.csv');
+  if (relFile) {
+    const majors = new Map<SkillOut, Map<string, number>>();
+    for (const r of parseDelimited(relFile, ',')) {
+      const skill = skillsByUri.get(r['skillUri']);
+      const tag = ISCO_TAG(iscoByOccupation.get(r['occupationUri']));
+      if (!skill || !tag) continue;
+      const counts = majors.get(skill) ?? new Map<string, number>();
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      majors.set(skill, counts);
+    }
+    for (const [skill, counts] of majors) skill.o = topMajors(counts);
   }
   return { skills, titles };
 }
+
+/** A label reduced to its words, lowercase, so "Python (programming)" and "python programming" compare equal */
+export function normalisedLabel(label: string): string {
+  return label.toLowerCase().replace(/[^a-z0-9+#]+/g, ' ').trim();
+}
+
+/** Words of a label, as a set */
+const tokensOf = (label: string): Set<string> => new Set(normalisedLabel(label).split(' ').filter(Boolean));
+
+/**
+ * Drop the ESCO entries that duplicate something already in the dataset: the same normalised label,
+ * the same words in another order, or a token overlap of at least 80% (Jaccard) with one entry.
+ * Returns the entries kept and how many were dropped.
+ */
+export function dedupeAgainst(existing: SkillOut[], incoming: SkillOut[]): { kept: SkillOut[]; dropped: SkillOut[] } {
+  const byLabel = new Set<string>();
+  const byTokens = new Set<string>();
+  const index = new Map<string, number[]>(); // token -> indexes into `sets`
+  const sets: Set<string>[] = [];
+  const add = (label: string) => {
+    const set = tokensOf(label);
+    if (set.size === 0) return;
+    const id = sets.length;
+    sets.push(set);
+    byLabel.add(normalisedLabel(label));
+    byTokens.add([...set].sort().join(' '));
+    for (const t of set) index.set(t, [...(index.get(t) ?? []), id]);
+  };
+  for (const e of existing) {
+    add(e.c);
+    for (const a of e.a) add(a);
+  }
+  const kept: SkillOut[] = [];
+  const dropped: SkillOut[] = [];
+  for (const s of incoming) {
+    const set = tokensOf(s.c);
+    if (set.size === 0) {
+      dropped.push(s);
+      continue;
+    }
+    const sortedKey = [...set].sort().join(' ');
+    if (byLabel.has(normalisedLabel(s.c)) || byTokens.has(sortedKey)) {
+      dropped.push(s);
+      continue;
+    }
+    // Candidates share at least one word; compare the sets directly
+    const candidates = new Set<number>();
+    for (const t of set) for (const id of index.get(t) ?? []) candidates.add(id);
+    let near = false;
+    for (const id of candidates) {
+      const other = sets[id];
+      const inter = [...set].filter((t) => other.has(t)).length;
+      const union = set.size + other.size - inter;
+      if (union > 0 && inter / union >= 0.8) {
+        near = true;
+        break;
+      }
+    }
+    if (near) {
+      dropped.push(s);
+      continue;
+    }
+    kept.push(s);
+    add(s.c);
+  }
+  return { kept, dropped };
+}
+
 
 /** Merge sources in priority order; the first source to name a skill keeps its canonical form */
 export function merge(sources: { skills: SkillOut[]; titles: TitleOut[] }[]): { skills: SkillOut[]; titles: TitleOut[] } {
@@ -257,38 +353,65 @@ function main() {
   const onet = arg('onet');
   const escoArg = arg('esco');
   const escoDir = escoArg ?? (existsSync(ESCO_DEFAULT_DIR) ? ESCO_DEFAULT_DIR : undefined);
-  const sources: Parameters<typeof build>[0] = [];
-  if (escoDir && existsSync(join(escoDir, 'skills_en.csv'))) {
-    sources.push({
+  const onetSource = onet
+    ? [{
+        name: 'O*NET 29.1 Database',
+        license: 'CC BY 4.0',
+        attribution: 'Based on O*NET 29.1 Database by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA), licensed CC BY 4.0. https://www.onetcenter.org/license_db.html',
+        data: fromOnet(onet),
+      }]
+    : [];
+  if (!onet) console.log('O*NET: skipped (no --onet folder given).');
+
+  // The core: curated, field supplements and O*NET. ESCO is added after, and only where it adds something.
+  const core = build(onetSource);
+  const escoPresent = !!escoDir && existsSync(join(escoDir, 'skills_en.csv'));
+  let escoSource: Parameters<typeof build>[0] = [];
+  let escoOnly: { skills: SkillOut[]; titles: TitleOut[] } | null = null;
+  if (escoPresent && escoDir) {
+    const raw = fromEsco(escoDir);
+    const { kept, dropped } = dedupeAgainst(core.skills, raw.skills);
+    console.log(`ESCO: ${raw.skills.length} skills read, ${dropped.length} duplicates of curated, field or O*NET names dropped, ${kept.length} added.`);
+    for (const d of dropped) console.log(`  dropped (duplicate): ${d.c}`);
+    escoOnly = { skills: kept, titles: raw.titles };
+    escoSource = [{
       name: 'ESCO classification (European Skills, Competences, Qualifications and Occupations)',
       license: 'CC BY 4.0',
       attribution: 'ESCO, European Commission. Licensed CC BY 4.0. https://esco.ec.europa.eu/en/use-esco/download',
-      data: fromEsco(escoDir),
-    });
+      data: escoOnly,
+    }];
   } else {
-    console.log(`ESCO: skipped (no CSV files in ${escoArg ?? ESCO_DEFAULT_DIR}). Place the ESCO download there to include its synonyms.`);
+    console.log(`ESCO: skipped (no skills_en.csv in ${escoDir ?? ESCO_DEFAULT_DIR}). Place the ESCO CSVs there to include them.`);
   }
-  if (onet) {
-    sources.push({
-      name: 'O*NET 29.1 Database',
-      license: 'CC BY 4.0',
-      attribution: 'Based on O*NET 29.1 Database by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA), licensed CC BY 4.0. https://www.onetcenter.org/license_db.html',
-      data: fromOnet(onet),
-    });
+
+  const full = build([...onetSource, ...escoSource]);
+  const out = arg('out') ?? join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'data');
+  mkdirSync(out, { recursive: true });
+  const fullJson = JSON.stringify(full);
+  let written = 'skills.json';
+  // SKILLS_FORCE_SPLIT=1 writes the split even when the full set fits (used by the tests)
+  const forceSplit = process.env.SKILLS_FORCE_SPLIT === '1';
+  if (!forceSplit && (fullJson.length <= MAX_BYTES || !escoOnly)) {
+    writeFileSync(join(out, 'skills.json'), fullJson);
+    console.log(`skills: ${full.skills.length} (activities ${full.skills.filter((x) => x.k === 'activity').length}, tagged ${full.skills.filter((x) => x.o).length}), titles: ${full.titles.length}, ${(fullJson.length / 1024).toFixed(0)} KB`);
   } else {
-    console.log('O*NET: skipped (no --onet folder given).');
+    // Over the budget: the core loads first, and the ESCO entries load after it (src/intelligence/skillsData.ts)
+    const coreJson = JSON.stringify(core);
+    const escoDataset = build(escoSource);
+    const escoJson = JSON.stringify({ ...escoDataset, skills: escoOnly?.skills ?? [], titles: [] });
+    writeFileSync(join(out, 'skills.json'), coreJson);
+    writeFileSync(join(out, 'skills-esco.json'), escoJson);
+    written = 'skills.json + skills-esco.json';
+    const why = fullJson.length > MAX_BYTES ? 'the full set was over the budget' : 'split forced by SKILLS_FORCE_SPLIT';
+    console.log(`Split: core ${(coreJson.length / 1024).toFixed(0)} KB, ESCO ${(escoJson.length / 1024).toFixed(0)} KB (${why}; the full set is ${(fullJson.length / 1024).toFixed(0)} KB).`);
+    if (coreJson.length > MAX_BYTES || escoJson.length > MAX_BYTES) {
+      console.error('A split file is still over the budget.');
+      process.exit(1);
+    }
   }
-  const dataset = build(sources);
-  const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'data', 'skills.json');
-  mkdirSync(dirname(out), { recursive: true });
-  const json = JSON.stringify(dataset);
-  writeFileSync(out, json);
-  const bytes = statSync(out).size;
-  const activities = dataset.skills.filter((x) => x.k === 'activity').length;
-  const tagged = dataset.skills.filter((x) => x.o).length;
-  console.log(`skills: ${dataset.skills.length} (activities ${activities}, tagged ${tagged}), titles: ${dataset.titles.length}, ${(bytes / 1024).toFixed(0)} KB`);
-  if (bytes > MAX_BYTES) {
-    console.error(`Dataset is ${bytes} bytes, over the ${MAX_BYTES} byte budget`);
+  console.log(`wrote ${written}`);
+  if (fullJson.length > MAX_BYTES && escoOnly === null) {
+    console.error(`Dataset is ${fullJson.length} bytes, over the ${MAX_BYTES} byte budget`);
     process.exit(1);
   }
 }

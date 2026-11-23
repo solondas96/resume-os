@@ -8,7 +8,15 @@
 
 1. Download the source data. Raw downloads are **not** committed.
    - **O*NET 29.1 text database** (CC BY 4.0): https://www.onetcenter.org/database.html (the "Text" zip, `db_29_1_text.zip`). Unzip it.
-   - **ESCO classification, CSV, English** (CC BY 4.0), optional but recommended for synonyms: https://esco.ec.europa.eu/en/use-esco/download. Choose the classification dataset, language `en`, file type `csv`. The download link is sent by email. Unzip it so that `skills_en.csv` and `occupations_en.csv` are in one folder, then place that folder at `scripts/data/esco/`. The build finds it there without a flag. If the folder is absent, the build logs that ESCO was skipped and carries on.
+   - **ESCO classification, CSV, English** (CC BY 4.0), optional but recommended for synonyms. Steps:
+     1. Go to https://esco.ec.europa.eu/en/use-esco/download (the download link is sent by email).
+     2. Choose the **classification** dataset, language **English (en)**, file type **CSV**.
+     3. Unzip it. You need three files, with these exact names:
+        - `skills_en.csv`: skill and knowledge labels, with `altLabels` (one per line, quoted) and `conceptUri`.
+        - `occupations_en.csv`: occupation labels, with `conceptUri` and `iscoGroup` (the ISCO code).
+        - `occupationSkillRelations_en.csv`: which occupation uses which skill, with `occupationUri` and `skillUri`.
+     4. Put all three in one folder, `scripts/data/esco/`. The build finds it there without a flag. (`--esco <dir>` points elsewhere.)
+     5. If `skills_en.csv` is absent, the build logs `ESCO: skipped` and carries on. If the relations file is absent, ESCO labels are still added, just without occupation tags.
 2. Build the dataset:
 
    ```sh
@@ -23,7 +31,8 @@
 | Source | Used for | Kind |
 | --- | --- | --- |
 | Curated list, `src/intelligence/skills.ts` | Technology names and their common synonyms (`k8s` → Kubernetes). Always wins over the datasets. | skill, technology |
-| ESCO skills (with alternative labels) | Synonyms for skills and knowledge | skill, knowledge |
+| ESCO skills (with alternative labels) | Synonyms for skills and knowledge. A label that duplicates a curated, field or O\*NET name is dropped: the same label after normalising case, punctuation and word order, or a word overlap of 80% or more (Jaccard). The duplicate's alternative labels are not added to the existing entry. | skill, knowledge |
+| ESCO occupation relations | Each ESCO skill gets the ISCO major groups of the occupations that use it, tagged `I1` to `I9` (not O\*NET codes) | tags |
 | O*NET Skills and Knowledge | Skill and knowledge names | skill, knowledge |
 | O*NET Technology Skills | Software and technology names | technology |
 | O*NET Tools Used | Short, plain tool names (no digits, up to three words) | tool |
@@ -34,9 +43,29 @@
 
 Each skill from O*NET carries an `o` list: the three most common occupation major groups (first two digits of the SOC code) it appears under. Each field supplement carries an `f` field name. Both are for filtering and explanation; they do not change matching.
 
-Priority when one name is in several sources: curated, then field supplements, then ESCO, then O*NET.
+Priority when one name is in several sources: curated, then field supplements, then O\*NET, then ESCO. An ESCO label that matches an earlier name is dropped, so the O\*NET name is kept.
+
+### Size and the split
+
+The dataset must stay under 1.5 MB (`MAX_BYTES`). If the full set is over it, the build writes two files instead of one:
+- `public/data/skills.json`: the curated list, the field supplements and O\*NET. The app loads it first.
+- `public/data/skills-esco.json`: the ESCO entries that were kept. The app loads it after the core, and a missing file is not an error.
+
+The split is by source (core and ESCO), not by field. Splitting by field would need a field for each ESCO skill, which the ISCO groups do not give directly. `SKILLS_FORCE_SPLIT=1` writes the split for testing.
+
+### Per-field match rates
+
+The build cannot report these without the ESCO files. The fixture in `tests/fixtures/esco/` is made up, and it tests the mechanics only (see `src/intelligence/esco.test.ts`). Real before-and-after rates are reported when the developer's ESCO files are present.
+
+### Running the build
+
+```sh
+npm run build:skills -- --onet <dir>                          # with ESCO in scripts/data/esco/
+npm run build:skills -- --onet <dir> --esco <dir>             # ESCO from another folder
+npm run build:skills -- --onet <dir> --out <dir>              # write somewhere else (for trying it)
+```
 
 ### Limits
 
-- O*NET has no synonyms for skills, so synonyms for non-tech skills come from ESCO only. Without ESCO, a phrase such as "customer service" is not recognised, while "customer and personal service" is.
+- O*NET has no synonyms for skills, so synonyms for non-tech skills come from ESCO and the field supplements. Without ESCO, the field supplements still cover the common phrases for the 12 fields.
 - Single-word skill names (for example "Monitoring" or "Speaking") can match ordinary English. Review the matches before relying on them.

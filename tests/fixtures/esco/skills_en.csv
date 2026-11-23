@@ -1,0 +1,11 @@
+conceptUri,skillType,preferredLabel,altLabels,description
+"http://data.example/skill/1","skill/competence","Stock control","inventory management
+stock keeping","Keeping track of stock levels."
+"http://data.example/skill/2","skill/competence","Negotiation","bargaining
+haggling","Reaching agreement between parties."
+"http://data.example/skill/3","knowledge","Ancient Greek literature","classical Greek texts","Knowledge of texts written in ancient Greek, including ""Homer"" and Plato."
+"http://data.example/skill/4","skill/competence","Crop rotation","rotating crops
+rotation of crops","Changing the crop grown on a field each season."
+"http://data.example/skill/5","skill/competence","Strategy planning","planning strategy","Setting long-term direction."
+"http://data.example/skill/6","skill/competence","Strategic planning and analysis skills","analysis of strategy","Planning with analysis."
+"http://data.example/skill/7","skill/competence","Animal triage","animal emergency triage","Deciding the order of treatment for animals."

@@ -1,0 +1,4 @@
+occupationUri,relationType,skillUri
+"http://data.example/occ/1","essential","http://data.example/skill/1"
+"http://data.example/occ/2","essential","http://data.example/skill/7"
+"http://data.example/occ/2","optional","http://data.example/skill/4"

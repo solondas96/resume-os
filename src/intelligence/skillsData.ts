@@ -13,12 +13,20 @@ export function resetSkillsDataLoader(): void {
   loading = null;
 }
 
-export function loadSkillsDataset(url = './data/skills.json'): Promise<boolean> {
+/**
+ * The core file, then the ESCO file if the build wrote one (it is only written when the full set is
+ * over the size budget). A missing ESCO file is not an error.
+ */
+export function loadSkillsDataset(url = './data/skills.json', escoUrl = './data/skills-esco.json'): Promise<boolean> {
   if (!loading) {
     loading = fetch(url)
       .then(async (res) => {
         if (!res.ok) return false;
-        installSkillsDataset(await res.json());
+        const core = await res.json();
+        const esco = await fetch(escoUrl)
+          .then(async (r) => (r.ok ? r.json() : null))
+          .catch(() => null);
+        installSkillsDataset(esco ? { skills: [...core.skills, ...esco.skills] } : core);
         return true;
       })
       .catch(() => false);
