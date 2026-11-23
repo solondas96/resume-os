@@ -3,6 +3,7 @@ import { ShortcutsModal } from './components/modals/ShortcutsModal';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
 import { OnboardingTour } from './components/onboarding/OnboardingTour';
 import { BackupReminder } from './components/data/BackupReminder';
+import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
 import { useResumeStoreV2 } from './store/useResumeStoreV2';
 
@@ -165,7 +166,7 @@ export const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground font-sans transition-colors duration-150">
       {/* Top Navbar */}
-      <Suspense fallback={null}><Header /></Suspense>
+      <ErrorBoundary area="The header" faultId="header" compact><Suspense fallback={null}><Header /></Suspense></ErrorBoundary>
 
       {/* Mobile Tab Switcher (Visible on mobile/tablet screens < md) */}
       <div className="md:hidden flex items-center justify-center p-2 bg-muted/60 border-b border-border no-print transition-colors">
@@ -204,7 +205,7 @@ export const App: React.FC = () => {
             style={{ width: `${editorWidth}px` }}
             className="no-print h-full shrink-0 bg-card border-r border-border"
           >
-            <Suspense fallback={null}><EditorPane /></Suspense>
+            <ErrorBoundary area="The editor" faultId="editor" compact><Suspense fallback={null}><EditorPane /></Suspense></ErrorBoundary>
           </div>
 
           {/* Resizable Splitter Bar */}
@@ -220,7 +221,7 @@ export const App: React.FC = () => {
 
           {/* Right A4 Canvas Preview */}
           <div className="flex-1 h-full overflow-hidden bg-background transition-colors">
-            <Suspense fallback={null}><A4Canvas /></Suspense>
+            <ErrorBoundary area="The preview" faultId="preview" compact><Suspense fallback={null}><A4Canvas /></Suspense></ErrorBoundary>
           </div>
         </div>
 
@@ -231,11 +232,11 @@ export const App: React.FC = () => {
         <div className="flex-1 w-full h-full overflow-hidden">
           {mobileTab === 'editor' ? (
             <div className="w-full h-full overflow-hidden bg-card">
-              <Suspense fallback={null}><EditorPane /></Suspense>
+              <ErrorBoundary area="The editor" faultId="editor" compact><Suspense fallback={null}><EditorPane /></Suspense></ErrorBoundary>
             </div>
           ) : (
             <div className="w-full h-full overflow-hidden bg-background transition-colors">
-              <Suspense fallback={null}><A4Canvas /></Suspense>
+              <ErrorBoundary area="The preview" faultId="preview" compact><Suspense fallback={null}><A4Canvas /></Suspense></ErrorBoundary>
             </div>
           )}
         </div>
@@ -243,15 +244,17 @@ export const App: React.FC = () => {
       </div>
 
       {/* Bottom Unified Status Bar */}
-      <Suspense fallback={null}><StatusBar /></Suspense>
+      <ErrorBoundary area="The status bar" faultId="status" compact><Suspense fallback={null}><StatusBar /></Suspense></ErrorBoundary>
 
       <BackupReminder />
 
       {/* The one inspector: Health, Match, Design, History */}
       {inspectorTab && (
-        <Suspense fallback={null}>
-          <Inspector />
-        </Suspense>
+        <ErrorBoundary area="The inspector" faultId="inspector" compact>
+          <Suspense fallback={null}>
+            <Inspector />
+          </Suspense>
+        </ErrorBoundary>
       )}
 
       {/* Modals & Command Palette */}
