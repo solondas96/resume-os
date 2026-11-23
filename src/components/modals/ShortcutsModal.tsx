@@ -143,12 +143,15 @@ export const ShortcutsModal: React.FC = () => {
           <p className="text-[11px] text-muted-foreground">
             About data: skill and job-title names from O*NET 29.1 (CC BY 4.0). Everything is processed in your browser. See ATTRIBUTIONS.md.
           </p>
-          <button
-            onClick={() => setActiveModal(null)}
-            className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
-          >
-            Close
-          </button>
+          <div className="flex items-center gap-3">
+            <span data-testid="app-version" className="text-[11px] text-muted-foreground font-mono">ResumeLabs v{__APP_VERSION__}</span>
+            <button
+              onClick={() => setActiveModal(null)}
+              className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>

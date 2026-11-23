@@ -71,13 +71,42 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
+        id: pages-upload
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
 
+      - name: Refuse to deploy without the Pages artifact
+        if: steps.pages-upload.outcome != 'success'
+        run: |
+          echo "::error title=No Pages artifact::The Pages artifact was not uploaded, so nothing was deployed. Look at the 'Upload artifact' step."
+          exit 1
+
       - name: Deploy to GitHub Pages
         id: deployment
+        if: steps.pages-upload.outcome == 'success'
         uses: actions/deploy-pages@v4
+
+      - name: Smoke check the live site (app root and version)
+        if: steps.deployment.outcome == 'success'
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          EXPECTED=$(node -p "require('./package.json').version")
+          echo "Live URL: $PAGE_URL  expected version: $EXPECTED"
+          for i in $(seq 1 12); do
+            HTML=$(curl -fsSL "$PAGE_URL" || true)
+            VER=$(curl -fsSL "${PAGE_URL}version.json" 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || true)
+            ROOT=$(echo "$HTML" | grep -c 'id="root"' || true)
+            if [ "$ROOT" -ge 1 ] && [ "$VER" = "$EXPECTED" ]; then
+              echo "Smoke check passed: app root present, live version $VER"
+              exit 0
+            fi
+            echo "Attempt $i: app root found=$ROOT, live version=$VER (want $EXPECTED). Waiting."
+            sleep 10
+          done
+          echo "::error title=Smoke check failed::$PAGE_URL did not serve version $EXPECTED with the app root."
+          exit 1
 
       - name: List the visual check files
         if: always()

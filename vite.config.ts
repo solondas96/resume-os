@@ -1,11 +1,31 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
+
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
+
+/** Writes dist/version.json: the version and build time, read by the post-deploy smoke check */
+function versionFile(): Plugin {
+  return {
+    name: 'version-file',
+    apply: 'build',
+    writeBundle(options) {
+      if (!options.dir) return;
+      const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'));
+      fs.writeFileSync(path.join(options.dir, 'version.json'), JSON.stringify({ version: pkg.version, builtAt: new Date().toISOString() }));
+    },
+  };
+}
+
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8')).version),
+  },
   plugins: [
+    versionFile(),
     react(),
     VitePWA({
       // The user is asked before a new version takes over (see UpdatePrompt)
