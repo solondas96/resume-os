@@ -14,7 +14,8 @@
     "e2e:pwa": "playwright test --config playwright.pwa.config.ts",
     "test:coverage": "vitest run --coverage",
     "size": "size-limit",
-    "perf": "playwright test -c playwright.perf.config.ts"
+    "perf": "playwright test -c playwright.perf.config.ts",
+    "e2e:build": "playwright test -c playwright.build.config.ts"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.1",
