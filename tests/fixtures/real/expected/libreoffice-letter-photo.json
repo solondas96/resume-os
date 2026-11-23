@@ -1,5 +1,6 @@
 {
   "id": "libreoffice-letter-photo",
+  "kind": "text",
   "name": "Grace Okafor",
   "email": "grace.okafor@example.com",
   "phone": "(713) 555-0188",
@@ -43,6 +44,5 @@
     "PALS",
     "IV therapy",
     "Epic"
-  ],
-  "kind": "text"
+  ]
 }

@@ -263,8 +263,13 @@ function parseHeader(lines: string[], resume: Resume): Line[] {
       continue;
     }
 
-    // Plain contact text: "email · phone · location", or a single contact value
-    const parts = trimmed.split(/\s*·\s*/).map((p) => p.trim()).filter(Boolean);
+    // Plain contact text: "email · phone · location" (or "email | phone | location", as PDF and Word
+    // exports write it). Split on either separator only when the line has an email or a phone,
+    // so a headline such as "Staff Engineer | Platforms" is still a headline.
+    const looksLikeContact = EMAIL_RE.test(trimmed) || trimmed.split(/\s*[·|]\s*/).some((p) => isPhone(p.trim()));
+    const parts = (looksLikeContact ? trimmed.split(/\s*[·|]\s*/) : trimmed.split(/\s*·\s*/))
+      .map((p) => p.trim())
+      .filter(Boolean);
     let consumed = true;
     for (const part of parts) {
       const email = part.match(EMAIL_RE);

@@ -1,5 +1,6 @@
 {
   "id": "libreoffice-a4-eu",
+  "kind": "text",
   "name": "Lukas Weber",
   "email": "lukas.weber@example.de",
   "phone": "+49 30 1234 5678",
@@ -42,6 +43,5 @@
     "Scrum",
     "German",
     "English"
-  ],
-  "kind": "text"
+  ]
 }

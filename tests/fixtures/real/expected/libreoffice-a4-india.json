@@ -1,5 +1,6 @@
 {
   "id": "libreoffice-a4-india",
+  "kind": "text",
   "name": "Ananya Rao",
   "email": "ananya.rao@example.in",
   "phone": "+91 98765 43210",
@@ -44,6 +45,5 @@
     "PostgreSQL",
     "Kafka",
     "AWS"
-  ],
-  "kind": "text"
+  ]
 }

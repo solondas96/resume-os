@@ -1,5 +1,6 @@
 {
   "id": "libreoffice-a4-uk",
+  "kind": "text",
   "name": "Oliver Bennett",
   "email": "oliver.bennett@example.co.uk",
   "phone": "+44 20 7946 0123",
@@ -43,6 +44,5 @@
     "Python",
     "IFRS 9",
     "Excel"
-  ],
-  "kind": "text"
+  ]
 }

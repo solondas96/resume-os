@@ -58,7 +58,9 @@ const HEADING_ALIASES: Record<string, { title: string; kind: DetectedSection['ki
   licenses: { title: 'Certifications', kind: 'certifications' },
 };
 
-const BULLET_RE = /^(?:[•▪◦●·\-–—*]\s+|\d{1,2}[.)]\s+)/;
+// Bullet markers: the usual glyphs, plus the private-use codes that Symbol and Wingdings fonts
+// (used by Word and LibreOffice) write for bullets: U+F0B7, U+F0A7, U+F0D8, U+F09F
+const BULLET_RE = /^(?:[•▪◦●·\-–—*\uF0A7\uF0B7\uF0D8\uF09F]\s*|\d{1,2}[.)]\s+)/;
 const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 const PHONE_RE = /(?:\+?\d[\d\s().-]{6,}\d)/;
 const URL_RE = /((?:https?:\/\/)?(?:www\.)?(?:linkedin\.com|github\.com|[a-z0-9-]+\.[a-z]{2,})(?:\/[^\s]*)?)/i;
@@ -76,12 +78,12 @@ const SCHOOL_WORD = /\b(university|college|school|institute|academy)\b/i;
 export const splitDate = (text: string): { rest: string; dates?: string } => {
   const range = text.match(RANGE_AT_END);
   if (range && parseDateRange(range[1])) {
-    return { rest: text.slice(0, range.index).trim(), dates: formatRange(parseDateRange(range[1])!.start, parseDateRange(range[1])!.end) };
+    return { rest: text.slice(0, range.index).replace(/[|–—-]\s*$/, '').trim(), dates: formatRange(parseDateRange(range[1])!.start, parseDateRange(range[1])!.end) };
   }
   const single = text.match(SINGLE_AT_END);
   const singleRange = single ? parseDateRange(single[1]) : null;
   if (single && singleRange) {
-    return { rest: text.slice(0, single.index).trim(), dates: formatRange(singleRange.start, singleRange.end) };
+    return { rest: text.slice(0, single.index).replace(/[|–—-]\s*$/, '').trim(), dates: formatRange(singleRange.start, singleRange.end) };
   }
   return { rest: text };
 };
@@ -142,7 +144,9 @@ const titleCase = (s: string) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpp
 function headingFor(line: TextLine, body: number): { title: string; kind: DetectedSection['kind']; confidence: Confidence } | null {
   const text = line.text.replace(/:$/, '').trim();
   const alias = HEADING_ALIASES[text.toLowerCase()];
-  if (alias) return { ...alias, confidence: 'high' };
+  // Keep the document's own wording ("Profile", not "Summary"); the alias only picks the section kind
+  // All-caps headings read better in title case; mixed-case wording is kept as written
+  if (alias) return { title: isUpper(text) ? titleCase(text) : text, kind: alias.kind, confidence: 'high' };
   const words = text.split(/\s+/).length;
   if (BULLET_RE.test(line.text) || SPACE_DATE(text)) return null;
   if (line.size >= body * 1.15 && words <= 5 && text.length > 2) return { title: titleCase(text), kind: 'custom', confidence: 'medium' };
@@ -167,6 +171,25 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
   const out: string[] = [];
   const body = bodySize(lines);
   let uid = 0;
+  // Each column's own left margin (its most common x): a line indented past it is a list item,
+  // even when the bullet is drawn as a graphic and has no glyph in the text
+  const margins = new Map<string, Map<number, number>>();
+  for (const l of lines) {
+    const key = l.column ?? 'all';
+    const counts = margins.get(key) ?? new Map<number, number>();
+    const x = Math.round(l.x0);
+    counts.set(x, (counts.get(x) ?? 0) + 1);
+    margins.set(key, counts);
+  }
+  const marginOf = (line: TextLine): number => {
+    const counts = margins.get(line.column ?? 'all');
+    if (!counts) return 0;
+    let best = 0;
+    let bestN = -1;
+    for (const [x, n] of counts) if (n > bestN) { best = x; bestN = n; }
+    return best;
+  };
+  const indented = (line: TextLine) => line.x0 - marginOf(line) > 6;
   const unsortedId = () => `u${++uid}`;
 
   // ---- name and header ----------------------------------------------------
@@ -256,6 +279,8 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
       continue;
     }
 
+    // Order matters: a marked line is a bullet; a wrapped line joins the bullet before it;
+    // only then does an indented line (a bullet drawn without a glyph) start a new bullet
     if (BULLET_RE.test(text)) {
       out.push(`- ${text.replace(BULLET_RE, '').trim()}`);
       prevWasBullet = true;
@@ -267,6 +292,13 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
       // Wrapped bullet: join to the previous bullet line in the output
       const last = out.length - 1;
       out[last] = `${out[last]} ${text}`;
+      prev = line;
+      continue;
+    }
+
+    if (indented(line) && !SPACE_DATE(text)) {
+      out.push(`- ${text.trim()}`);
+      prevWasBullet = true;
       prev = line;
       continue;
     }

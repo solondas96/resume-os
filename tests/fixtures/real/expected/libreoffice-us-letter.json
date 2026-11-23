@@ -1,5 +1,6 @@
 {
   "id": "libreoffice-us-letter",
+  "kind": "text",
   "name": "Ava Thompson",
   "email": "ava.thompson@example.com",
   "phone": "(503) 555-0142",
@@ -43,6 +44,5 @@
     "SQL",
     "Tableau",
     "Power BI"
-  ],
-  "kind": "text"
+  ]
 }

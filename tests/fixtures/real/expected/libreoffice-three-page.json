@@ -1,5 +1,6 @@
 {
   "id": "libreoffice-three-page",
+  "kind": "text",
   "name": "Samuel Iyer",
   "email": "samuel.iyer@example.com",
   "phone": "+1 (416) 555-0199",
@@ -52,6 +53,5 @@
     "Google Ads",
     "SEO",
     "Salesforce"
-  ],
-  "kind": "text"
+  ]
 }

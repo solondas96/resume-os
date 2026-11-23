@@ -230,3 +230,18 @@ describe('day-first dates (UK, EU, India)', () => {
     expect(parseDateRange('32/13/2020')).toBeNull(); // day out of range
   });
 });
+
+describe('contact lines separated by | (as PDF and Word exports write them)', () => {
+  it('a line with an email and a phone, separated by pipes, sets the fields', () => {
+    const r = markdownToResume('# Ava Thompson\nava@example.com | (503) 555-0142 | Portland, OR\n\n## Skills\n- Excel\n', 'A');
+    expect(r.basics.email).toBe('ava@example.com');
+    expect(r.basics.phone).toBe('(503) 555-0142');
+    expect(r.basics.location).toBe('Portland, OR');
+    expect(r.basics.headline).toBeFalsy();
+  });
+  it('negative: a headline with pipes and no contact details stays a headline', () => {
+    const r = markdownToResume('# Ava\nStaff Engineer | Distributed Systems\n\n## Skills\n- Go\n', 'A');
+    expect(r.basics.headline).toBe('Staff Engineer | Distributed Systems');
+    expect(r.basics.location).toBeFalsy();
+  });
+});

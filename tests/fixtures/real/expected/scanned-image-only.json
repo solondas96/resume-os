@@ -1,5 +1,6 @@
 {
   "id": "scanned-image-only",
+  "kind": "scanned",
   "name": "Priya Desai",
   "email": null,
   "phone": null,
@@ -8,6 +9,5 @@
   ],
   "experience": [],
   "education": [],
-  "skills": [],
-  "kind": "scanned"
+  "skills": []
 }
