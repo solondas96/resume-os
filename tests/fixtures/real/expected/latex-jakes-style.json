@@ -1,0 +1,50 @@
+{
+  "id": "latex-jakes-style",
+  "kind": "text",
+  "name": "Marcus Okafor",
+  "email": "marcus.okafor@example.com",
+  "phone": "415-555-0190",
+  "sections": [
+    "Education",
+    "Experience",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Corebridge Software",
+      "role": "Platform Engineer",
+      "start": "Aug 2021",
+      "end": "Present",
+      "bullets": [
+        "Reduced deploy failures by 35% with automated canary checks",
+        "Ran the on-call rota for a team of nine across three time zones"
+      ]
+    },
+    {
+      "company": "Lumen Robotics",
+      "role": "Software Engineer",
+      "start": "Jul 2018",
+      "end": "Jul 2021",
+      "bullets": [
+        "Built the telemetry service that logged 2 million events per day"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Hallam University",
+      "degree": "BSc Mechanical Engineering",
+      "start": "Sep 2014",
+      "end": "Jun 2018"
+    }
+  ],
+  "skills": [
+    "Go",
+    "Python",
+    "Bash",
+    "Kubernetes",
+    "Terraform",
+    "Prometheus",
+    "Grafana"
+  ]
+}

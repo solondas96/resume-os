@@ -1,0 +1,33 @@
+% A made-up person. Compiled with moderncv (classic style) to tests/fixtures/real/pdf/latex-moderncv.pdf
+\documentclass[11pt,a4paper,sans]{moderncv}
+\moderncvstyle{classic}
+\moderncvcolor{blue}
+\usepackage[scale=0.8]{geometry}
+\name{Priya}{Raman}
+\title{Data Engineer}
+\address{12 Harbour Lane}{Leeds LS1 4AP}{United Kingdom}
+\phone[mobile]{+44 113 555 0188}
+\email{priya.raman@example.com}
+
+\begin{document}
+\makecvtitle
+
+\section{Experience}
+\cventry{Mar 2020 -- Present}{Senior Data Engineer}{Brightwater Analytics}{Leeds}{}{
+\begin{itemize}
+\item Built a nightly pipeline that cut report delay from 6 hours to 40 minutes
+\item Mentored four engineers on testing and code review
+\end{itemize}}
+\cventry{Jun 2016 -- Feb 2020}{Data Analyst}{Hollis Retail Group}{Manchester}{}{
+\begin{itemize}
+\item Automated weekly stock reports, saving 12 analyst-hours a week
+\end{itemize}}
+
+\section{Education}
+\cventry{Sep 2012 -- Jun 2016}{BSc Computer Science}{University of Sheffield}{Sheffield}{}{}
+
+\section{Skills}
+\cvitem{Languages}{Python, SQL, Scala}
+\cvitem{Tools}{Airflow, dbt, Spark, PostgreSQL}
+
+\end{document}

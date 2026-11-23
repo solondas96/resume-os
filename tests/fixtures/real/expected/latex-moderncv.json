@@ -1,0 +1,50 @@
+{
+  "id": "latex-moderncv",
+  "kind": "text",
+  "name": "Priya Raman",
+  "email": "priya.raman@example.com",
+  "phone": "+44 113 555 0188",
+  "sections": [
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Brightwater Analytics",
+      "role": "Senior Data Engineer",
+      "start": "Mar 2020",
+      "end": "Present",
+      "bullets": [
+        "Built a nightly pipeline that cut report delay from 6 hours to 40 minutes",
+        "Mentored four engineers on testing and code review"
+      ]
+    },
+    {
+      "company": "Hollis Retail Group",
+      "role": "Data Analyst",
+      "start": "Jun 2016",
+      "end": "Feb 2020",
+      "bullets": [
+        "Automated weekly stock reports, saving 12 analyst-hours a week"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Sheffield",
+      "degree": "BSc Computer Science",
+      "start": "Sep 2012",
+      "end": "Jun 2016"
+    }
+  ],
+  "skills": [
+    "Python",
+    "SQL",
+    "Scala",
+    "Airflow",
+    "dbt",
+    "Spark",
+    "PostgreSQL"
+  ]
+}

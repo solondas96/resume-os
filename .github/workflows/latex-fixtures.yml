@@ -1,0 +1,59 @@
+name: LaTeX fixtures (compile with TeX Live and score)
+
+# Runs when the LaTeX sources or this workflow change, and on demand.
+on:
+  push:
+    paths:
+      - 'tests/fixtures/real/latex/**'
+      - '.github/workflows/latex-fixtures.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install TeX Live (moderncv is in texlive-latex-extra)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
+      - name: Compile the made-up LaTeX résumés with TeX Live
+        run: |
+          mkdir -p build
+          cd tests/fixtures/real/latex/src
+          pdflatex -interaction=nonstopmode -output-directory ../../../../../build latex-moderncv.tex
+          pdflatex -interaction=nonstopmode -output-directory ../../../../../build latex-jakes-style.tex
+          pdflatex -interaction=nonstopmode -output-directory ../../../../../build latex-moderncv.tex
+          cd ../../../../..
+          ls -la build
+
+      - name: Score the TeX Live output (not committed; the committed PDFs are from tectonic)
+        run: |
+          cp build/latex-moderncv.pdf build/latex-jakes-style.pdf tests/fixtures/real/pdf/
+          npx vitest run tests/fixtures/real.test.ts
+          cat tests/fixtures/real/report.txt
+
+      - name: Upload the TeX Live scoring report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-texlive-report
+          path: |
+            tests/fixtures/real/report.txt
+            build/*.pdf
+          if-no-files-found: warn

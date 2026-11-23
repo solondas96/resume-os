@@ -9,9 +9,10 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { scoreOne } from './score';
 
+// Layout (see private/README.md): private/expected/<id>.json and private/pdf/<id>.pdf, the same as real/
 const dir = join(dirname(fileURLToPath(import.meta.url)), 'private');
-const ids = existsSync(dir)
-  ? readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')).filter((id) => existsSync(join(dir, 'pdf', `${id}.pdf`)))
+const ids = existsSync(join(dir, 'expected'))
+  ? readdirSync(join(dir, 'expected')).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')).filter((id) => existsSync(join(dir, 'pdf', `${id}.pdf`)))
   : [];
 
 describe.skipIf(ids.length === 0)('private fixtures (the developer\'s own resume)', () => {

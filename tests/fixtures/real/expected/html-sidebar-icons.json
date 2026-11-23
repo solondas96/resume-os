@@ -1,0 +1,49 @@
+{
+  "id": "html-sidebar-icons",
+  "kind": "text",
+  "name": "Tomas Novak",
+  "email": "tomas.novak@example.com",
+  "phone": "+420 605 555 0139",
+  "sections": [
+    "Profile",
+    "Experience",
+    "Education"
+  ],
+  "experience": [
+    {
+      "company": "Kestrel Apps",
+      "role": "Senior Mobile Developer",
+      "start": "Apr 2022",
+      "end": "Present",
+      "bullets": [
+        "Cut app start time by 40% by lazy-loading five heavy screens",
+        "Led a team of three across iOS and Android"
+      ]
+    },
+    {
+      "company": "Pivovar Digital",
+      "role": "Mobile Developer",
+      "start": "Jan 2019",
+      "end": "Mar 2022",
+      "bullets": [
+        "Shipped a loyalty app to 200,000 users with a 4.7 store rating"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Charles University",
+      "degree": "BSc Software Engineering",
+      "start": "2015",
+      "end": "2018"
+    }
+  ],
+  "skills": [
+    "Swift",
+    "Kotlin",
+    "React Native",
+    "Flutter",
+    "Firebase",
+    "GraphQL"
+  ]
+}

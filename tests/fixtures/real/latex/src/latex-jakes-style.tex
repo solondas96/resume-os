@@ -1,0 +1,40 @@
+% A made-up person. Written in the style of a single-column LaTeX resume (not a copy of any template).
+% Compiled to tests/fixtures/real/pdf/latex-jakes-style.pdf
+\documentclass[letterpaper,11pt]{article}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\pagestyle{empty}
+\titleformat{\section}{\large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\setlist[itemize]{leftmargin=1.2em, itemsep=1pt, topsep=2pt}
+
+\begin{document}
+\begin{center}
+  {\Huge \scshape Marcus Okafor} \\[3pt]
+  \small 415-555-0190 $|$ \href{mailto:marcus.okafor@example.com}{marcus.okafor@example.com} $|$ San Francisco, CA
+\end{center}
+
+\section{Education}
+\textbf{Hallam University} \hfill Sep 2014 -- Jun 2018 \\
+BSc Mechanical Engineering \hfill Sheffield, UK
+
+\section{Experience}
+\textbf{Corebridge Software} \hfill Aug 2021 -- Present \\
+\textit{Platform Engineer} \hfill San Francisco, CA
+\begin{itemize}
+  \item Reduced deploy failures by 35\% with automated canary checks
+  \item Ran the on-call rota for a team of nine across three time zones
+\end{itemize}
+
+\textbf{Lumen Robotics} \hfill Jul 2018 -- Jul 2021 \\
+\textit{Software Engineer} \hfill Sheffield, UK
+\begin{itemize}
+  \item Built the telemetry service that logged 2 million events per day
+\end{itemize}
+
+\section{Skills}
+\textbf{Languages:} Go, Python, Bash \\
+\textbf{Tools:} Kubernetes, Terraform, Prometheus, Grafana
+\end{document}

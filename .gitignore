@@ -29,5 +29,6 @@ playwright-report/
 
 # Coverage
 coverage/
-tests/fixtures/private/
+tests/fixtures/private/*
+!tests/fixtures/private/README.md
 *.tsbuildinfo

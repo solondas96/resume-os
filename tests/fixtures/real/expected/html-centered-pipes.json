@@ -1,0 +1,48 @@
+{
+  "id": "html-centered-pipes",
+  "kind": "text",
+  "name": "Kwame Mensah",
+  "email": "kwame.mensah@example.com",
+  "phone": "+233 30 555 0163",
+  "sections": [
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Baobab Health Tech",
+      "role": "Frontend Engineer",
+      "start": "Jan 2021",
+      "end": "Present",
+      "bullets": [
+        "Rebuilt the appointment booking flow, reducing drop-off by 22%",
+        "Wrote the accessibility checklist adopted by the whole company"
+      ]
+    },
+    {
+      "company": "Accra Media House",
+      "role": "Web Developer",
+      "start": "Jun 2018",
+      "end": "Dec 2020",
+      "bullets": [
+        "Launched the news site's mobile edition, reaching 80,000 monthly readers"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Ghana",
+      "degree": "BSc Computer Science",
+      "start": "2014",
+      "end": "2018"
+    }
+  ],
+  "skills": [
+    "TypeScript",
+    "React",
+    "Node.js",
+    "PostgreSQL",
+    "Accessibility (WCAG 2.2)"
+  ]
+}

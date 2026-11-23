@@ -1,0 +1,49 @@
+{
+  "id": "html-table-layout",
+  "kind": "text",
+  "name": "Amara Diallo",
+  "email": "amara.diallo@example.com",
+  "phone": "+33 1 55 50 01 42",
+  "sections": [
+    "Profile",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Rhône Distribution",
+      "role": "Operations Manager",
+      "start": "Mar 2020",
+      "end": "Present",
+      "bullets": [
+        "Reduced late deliveries from 9% to 3% by re-routing three depots",
+        "Managed a team of 24 across two shifts"
+      ]
+    },
+    {
+      "company": "Saône Stock",
+      "role": "Warehouse Supervisor",
+      "start": "May 2016",
+      "end": "Feb 2020",
+      "bullets": [
+        "Introduced barcode picking, lifting accuracy to 99.4%"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Lyon Business School",
+      "degree": "Diploma in Logistics Management",
+      "start": "2013",
+      "end": "2015"
+    }
+  ],
+  "skills": [
+    "SAP EWM",
+    "Excel",
+    "Lean Six Sigma",
+    "French",
+    "English"
+  ]
+}

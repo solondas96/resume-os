@@ -1,0 +1,49 @@
+{
+  "id": "html-two-column-grid",
+  "kind": "text",
+  "name": "Lena Fischer",
+  "email": "lena.fischer@example.com",
+  "phone": "+49 30 555 0177",
+  "sections": [
+    "Experience",
+    "Education"
+  ],
+  "experience": [
+    {
+      "company": "Nordlicht GmbH",
+      "role": "Data Scientist",
+      "start": "Feb 2021",
+      "end": "Present",
+      "bullets": [
+        "Built a churn model that retained 7% more subscribers in its first quarter",
+        "Set up the experiment platform used by six product teams"
+      ]
+    },
+    {
+      "company": "Elbe Logistik",
+      "role": "Analyst",
+      "start": "Sep 2018",
+      "end": "Jan 2021",
+      "bullets": [
+        "Forecast regional demand, cutting unsold stock by 15%"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Humboldt University of Berlin",
+      "degree": "MSc Statistics",
+      "start": "2016",
+      "end": "2018"
+    }
+  ],
+  "skills": [
+    "Python",
+    "R",
+    "SQL",
+    "scikit-learn",
+    "PyTorch",
+    "Tableau",
+    "Looker"
+  ]
+}
