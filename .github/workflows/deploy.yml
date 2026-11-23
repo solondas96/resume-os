@@ -123,6 +123,10 @@ jobs:
           path: test-results/visual/
           if-no-files-found: warn
 
+      - name: Render every page of the two-page résumés (page-break pictures)
+        if: always()
+        run: RENDER_PAGES=1 npx vitest run src/pdf/pagebreaks.test.ts -t "every page, as pictures"
+
       - name: Upload screenshots and the walkthrough report
         if: always()
         uses: actions/upload-artifact@v4
@@ -131,4 +135,5 @@ jobs:
           path: |
             test-results/screenshots/
             test-results/walkthrough.json
+            test-results/page-breaks/
           if-no-files-found: warn

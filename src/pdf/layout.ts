@@ -153,9 +153,29 @@ export function layoutResume(resume: Resume, opts: LayoutOptions): Layout {
     sectionBlock(section);
   }
 
+  /** Height of a role block up to and including its first bullet line, so it is never split from it */
+  function entryKeepHeight(section: Section, item: unknown): number {
+    const it = item as Record<string, unknown>;
+    const dates = dateText(it);
+    const head = section.kind === 'experience' ? String(it.role ?? '') : section.kind === 'education' ? String(it.school ?? '') : String(it.title ?? '');
+    const sub = section.kind === 'experience' ? String(it.company ?? '') : section.kind === 'education' ? String(it.degree ?? '') : String(it.subtitle ?? '');
+    const dateWidth = dates ? opts.measure(dates, style.body, body - 0.5) : 0;
+    const available = contentWidth - dateWidth - 8;
+    const headText = [head, sub].filter(Boolean).join(' — ') || '(untitled)';
+    let h = wrap(headText, style.heading, body + 0.5, available).length * (body + 0.5) * leading;
+    if (it.location) h += wrap(String(it.location), style.body, body - 0.5, contentWidth).length * (body - 0.5) * leading;
+    const bullets = (it.bullets as { text: string }[]) ?? [];
+    if (bullets.length) h += wrap(bullets[0].text, style.body, body, contentWidth - 12)[0] !== undefined ? body * leading : 0;
+    return h;
+  }
+
   function sectionBlock(section: Section) {
     const title = style.headingCase === 'caps' ? section.title.toUpperCase() : section.title;
-    ensure(body * 3);
+    // The heading is kept with its first item (or first line), so it is never left alone at a page's end
+    const firstItem = (section.kind === 'experience' || section.kind === 'education' || section.kind === 'projects') ? sectionItems(section)[0] : undefined;
+    const keep = firstItem !== undefined ? entryKeepHeight(section, firstItem) : body * leading;
+    const headingHeight = style.sectionGap * spacing + (body + 1) * 1.3 + (style.rule !== 'none' ? 4 : 0) + 2;
+    ensure(headingHeight + keep);
     y += style.sectionGap * spacing;
     line(title, { face: style.heading, size: body + 1, color: style.headingColor === 'accent' ? accent : style.ink });
     textLines.push(section.title);
@@ -226,7 +246,7 @@ export function layoutResume(resume: Resume, opts: LayoutOptions): Layout {
       head = String(it.title ?? '');
       sub = String(it.subtitle ?? '');
     }
-    ensure(body * 2.6);
+    ensure(entryKeepHeight(section, item));
     const headText = [head, sub].filter(Boolean).join(' — ') || '(untitled)';
     const dateWidth = dates ? opts.measure(dates, style.body, body - 0.5) : 0;
     const available = contentWidth - dateWidth - 8;
