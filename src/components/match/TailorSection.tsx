@@ -75,7 +75,7 @@ export const TailorSection: React.FC = () => {
             <button
               type="button"
               onClick={() => setDecisions(Object.fromEntries(changes.map((p) => [p.id, 'accept' as Decision])))}
-              className="text-xs text-brand hover:underline min-h-[32px]"
+              className="text-xs text-brand-text hover:underline min-h-[32px]"
             >
               Accept all
             </button>

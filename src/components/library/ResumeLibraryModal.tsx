@@ -97,6 +97,7 @@ export const ResumeLibraryModal: React.FC = () => {
           <button
             onClick={() => setLibraryModalOpen(false)}
             className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
+            aria-label="Close resume library"
           >
             <X className="w-4 h-4" />
           </button>
@@ -131,7 +132,7 @@ export const ResumeLibraryModal: React.FC = () => {
           ) : (
             <button
               onClick={() => setIsCreating(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white text-xs font-medium rounded-lg hover:bg-brand-hover transition active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-button text-white text-xs font-medium rounded-lg hover:bg-brand-hover transition active:scale-[0.98]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Create New Resume</span>
@@ -176,7 +177,7 @@ export const ResumeLibraryModal: React.FC = () => {
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div
                     className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                      isActive ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'
+                      isActive ? 'bg-brand-button text-white' : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     <FileText className="w-3.5 h-3.5" />
@@ -195,7 +196,7 @@ export const ResumeLibraryModal: React.FC = () => {
                         />
                         <button
                           onClick={() => handleSaveRename(resume.id)}
-                          className="p-1 text-xs text-brand hover:underline"
+                          className="p-1 text-xs text-brand-text hover:underline"
                         >
                           <Check className="w-3.5 h-3.5" />
                         </button>
@@ -204,7 +205,7 @@ export const ResumeLibraryModal: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <h3 className="text-sm font-semibold text-foreground truncate">{resume.meta.title}</h3>
                         {isActive && (
-                          <span className="text-[10px] uppercase font-mono tracking-wider font-semibold px-1.5 py-0.5 bg-brand text-white rounded">
+                          <span className="text-[10px] uppercase font-mono tracking-wider font-semibold px-1.5 py-0.5 bg-brand-button text-white rounded">
                             Active
                           </span>
                         )}

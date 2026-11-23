@@ -20,6 +20,8 @@ export default {
         },
         border: 'var(--border)',
         input: 'var(--input)',
+        'brand-text': 'var(--brand-text)',
+        'brand-button': 'var(--brand-button)',
         brand: {
           DEFAULT: 'var(--brand)',
           hover: 'var(--brand-hover)',

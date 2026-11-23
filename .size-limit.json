@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Initial JavaScript (what loads before the first screen)",
+    "path": "dist/assets/entry-*.js",
+    "gzip": true,
+    "limit": "300 KB"
+  }
+]

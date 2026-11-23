@@ -99,7 +99,7 @@ export const AtsPreviewSection: React.FC = () => {
           <div className="space-y-2">
             <div className="text-[11px] text-muted-foreground">Headings the PDF reader found: {pdf.headings.join(', ') || 'none'}</div>
             {pdf.problems.length === 0 ? (
-              <div className="text-xs text-emerald-600 dark:text-emerald-400">The PDF text matches your resume, in order.</div>
+              <div className="text-xs text-emerald-700 dark:text-emerald-400">The PDF text matches your resume, in order.</div>
             ) : (
               <ul className="space-y-2">
                 {pdf.problems.map((p, i) => (
@@ -147,7 +147,7 @@ export const SenioritySection: React.FC = () => {
         </select>
       </div>
       {target && result.missing.length === 0 && (
-        <div className="text-xs text-emerald-600 dark:text-emerald-400">The resume shows the signals expected for this level.</div>
+        <div className="text-xs text-emerald-700 dark:text-emerald-400">The resume shows the signals expected for this level.</div>
       )}
       {result.missing.map((m) => (
         <div key={m.signal} className="text-xs space-y-0.5">

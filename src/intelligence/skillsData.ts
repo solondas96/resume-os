@@ -8,6 +8,11 @@ import { installSkillsDataset } from './skills';
 
 let loading: Promise<boolean> | null = null;
 
+/** Forget the cached load (tests) */
+export function resetSkillsDataLoader(): void {
+  loading = null;
+}
+
 export function loadSkillsDataset(url = './data/skills.json'): Promise<boolean> {
   if (!loading) {
     loading = fetch(url)

@@ -37,6 +37,14 @@ export default defineConfig({
     }),
   ],
   base: './', // Vital for GitHub Pages subpath hosting
+  build: {
+    rollupOptions: {
+      output: {
+        // A stable name for the startup entry, so the size budget checks exactly that file
+        entryFileNames: 'assets/entry-[hash].js',
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -47,5 +55,15 @@ export default defineConfig({
     environment: 'jsdom',
     // Playwright owns tests/e2e (*.spec.ts)
     exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/intelligence/**', 'src/model/**'],
+      reporter: ['text', 'json-summary'],
+      // The gate: these folders must stay at or above 90% line coverage, or CI fails
+      thresholds: {
+        'src/intelligence/**': { lines: 90 },
+        'src/model/**': { lines: 90 },
+      },
+    },
   },
 });

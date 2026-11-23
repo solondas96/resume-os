@@ -34,7 +34,7 @@ export const RecruiterView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand text-white rounded-lg hover:bg-brand-hover transition active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand-button text-white rounded-lg hover:bg-brand-hover transition active:scale-[0.98]"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print / PDF</span>

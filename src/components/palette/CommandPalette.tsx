@@ -170,7 +170,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Sections',
       title: 'Open Resume Library',
       description: 'Switch between tailored resumes, clone, or create new versions',
-      icon: <FolderGit2 className="w-4 h-4 text-brand" />,
+      icon: <FolderGit2 className="w-4 h-4 text-brand-text" />,
       action: () => setLibraryModalOpen(true),
       keywords: ['library', 'resumes', 'profiles', 'switch', 'clone', 'duplicate'],
     },
@@ -179,7 +179,7 @@ export const CommandPalette: React.FC = () => {
       category: 'AI',
       title: 'Open Job Match Panel',
       description: 'Score this resume against a job posting, then tailor a copy or track it',
-      icon: <Target className="w-4 h-4 text-brand" />,
+      icon: <Target className="w-4 h-4 text-brand-text" />,
       action: () => setActiveSidePanel('match'),
       keywords: ['match', 'tailor', 'job', 'side', 'keywords', 'ats', 'score'],
     },
@@ -188,7 +188,7 @@ export const CommandPalette: React.FC = () => {
       category: 'AI',
       title: 'Open Inspector (Health & Bullet Linter)',
       description: 'Resume health breakdown, bullet verbs, metrics and impact scores',
-      icon: <Sparkles className="w-4 h-4 text-brand" />,
+      icon: <Sparkles className="w-4 h-4 text-brand-text" />,
       action: () => setActiveSidePanel('linter'),
       keywords: ['inspector', 'health', 'linter', 'bullets', 'verbs', 'star', 'impact', 'audit'],
     },
@@ -197,7 +197,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Share Web Resume (Recruiter Link)',
       description: 'Generate private client-side URL link to share with recruiters',
-      icon: <Share2 className="w-4 h-4 text-brand" />,
+      icon: <Share2 className="w-4 h-4 text-brand-text" />,
       action: () => setShareModalOpen(true),
       keywords: ['share', 'link', 'url', 'recruiter', 'public', 'portfolio'],
     },
@@ -233,7 +233,7 @@ export const CommandPalette: React.FC = () => {
       category: 'AI',
       title: 'Generate Cover Letter',
       description: 'Build a cover letter template from your resume and a company and role',
-      icon: <Sparkles className="w-4 h-4 text-brand" />,
+      icon: <Sparkles className="w-4 h-4 text-brand-text" />,
       action: () => setActiveModal('cover-letter'),
       keywords: ['cover', 'letter', 'generate', 'template', 'application'],
     },
@@ -479,7 +479,7 @@ export const CommandPalette: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-muted text-brand">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-muted text-brand-text">
                     {cmd.icon}
                   </div>
                   <div>

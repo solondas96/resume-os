@@ -110,7 +110,7 @@ export const TrackerModal: React.FC = () => {
       <div className="bg-card border border-border rounded-2xl w-full max-w-5xl shadow-lifted flex flex-col max-h-[90vh] overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
-            <Briefcase className="w-4 h-4 text-brand" />
+            <Briefcase className="w-4 h-4 text-brand-text" />
             <span>Application Tracker</span>
           </div>
           <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export const TrackerModal: React.FC = () => {
                       <td className="py-2 pr-3 font-mono">{app.matchScore !== undefined ? `${app.matchScore}%` : '—'}</td>
                       <td className="py-2 pr-3">
                         {app.tailoredResumeId && resumeTitle(app.tailoredResumeId) ? (
-                          <button type="button" onClick={() => openResume(app.tailoredResumeId!)} className="inline-flex items-center gap-1 text-brand hover:underline">
+                          <button type="button" onClick={() => openResume(app.tailoredResumeId!)} className="inline-flex items-center gap-1 text-brand-text hover:underline">
                             <FileText className="w-3 h-3" /> {resumeTitle(app.tailoredResumeId)}
                           </button>
                         ) : <span className="text-muted-foreground">—</span>}
@@ -241,9 +241,9 @@ const Card: React.FC<{
           <div className="text-muted-foreground truncate">{app.role}</div>
         </div>
       </div>
-      {app.matchScore !== undefined && <div className="font-mono text-[11px] text-brand">match {app.matchScore}%</div>}
+      {app.matchScore !== undefined && <div className="font-mono text-[11px] text-brand-text">match {app.matchScore}%</div>}
       {resumeTitle && app.tailoredResumeId && (
-        <button type="button" onClick={() => onOpenResume(app.tailoredResumeId!)} className="text-[11px] text-brand hover:underline truncate block max-w-full text-left">
+        <button type="button" onClick={() => onOpenResume(app.tailoredResumeId!)} className="text-[11px] text-brand-text hover:underline truncate block max-w-full text-left">
           Resume: {resumeTitle}
         </button>
       )}

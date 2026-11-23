@@ -142,7 +142,7 @@ export const ImportModal: React.FC = () => {
       <div className="bg-card border border-border rounded-2xl max-w-4xl w-full shadow-lifted flex flex-col max-h-[90vh] overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
-            <Upload className="w-4 h-4 text-brand" />
+            <Upload className="w-4 h-4 text-brand-text" />
             <span>Import resume</span>
           </div>
           <button onClick={close} className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted transition" aria-label="Close import">
@@ -154,7 +154,7 @@ export const ImportModal: React.FC = () => {
           {!result && !busy && (
             <>
               <label className="border-2 border-dashed border-border hover:border-brand rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-muted/30 transition group">
-                <FileText className="w-8 h-8 text-muted-foreground group-hover:text-brand transition mb-2" />
+                <FileText className="w-8 h-8 text-muted-foreground group-hover:text-brand-text transition mb-2" />
                 <span className="text-xs text-foreground font-medium">Choose a PDF, DOCX, TXT or Markdown file</span>
                 <span className="text-[11px] text-muted-foreground mt-1">Processed in your browser. Nothing is uploaded.</span>
                 <input
@@ -276,7 +276,7 @@ export const ImportModal: React.FC = () => {
                     </div>
                   ))}
 
-                  <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+                  <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-400">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Nothing is created until you confirm.</span>
                   </div>

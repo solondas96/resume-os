@@ -112,3 +112,22 @@ AI/LLM features; user accounts; servers or databases; payments; analytics or tel
 ## 9. Definition of done
 
 A first-time, non-technical user can: drop in a PDF → confirm parsed sections → see a health score with explained fixes → paste a job description and see met and missed requirements → create a tailored copy with accept/reject → check the ATS preview → export a text-based PDF and cover letter, offline, with nothing leaving the browser.
+
+## 10. Status (evidence)
+
+Each milestone is in `main`. The table is the state of the code at the time of writing; the numbers are reproduced by the commands in the README.
+
+| Milestone | Status | Notes |
+| --- | --- | --- |
+| 0 Known problems | Done | XSS (DOMPurify, share-link test), text-based PDF export, dead parser removed, README |
+| 1 Structured model | Done | Model is the source; Markdown is a view; migration from v1; IndexedDB. Round-trip tests for all presets |
+| 2 Usable by anyone | Done | First-run welcome, form editor (default), import with review, onboarding tour not built |
+| 3 Intelligence | Done | Health, match, tailoring, ATS readout and PDF check, seniority, bullet builder, skills dictionary from O*NET |
+| 4 Job hunt | Done with deviations | Tracker board/table, bundle (print HTML instead of PDF files), share v2, cover letter, PWA |
+| 9 Quality gates | Done | Coverage, bundle budget, accessibility, all in CI |
+
+Known gaps, stated plainly:
+- No PDF files are produced in the browser (print dialog only).
+- The onboarding tour and the drag-to-reorder of unsorted lines are not built (move by select instead).
+- ESCO skill synonyms need the developer's bulk download (emailed); O*NET alone has none.
+- The PDF accuracy corpus is synthetic.

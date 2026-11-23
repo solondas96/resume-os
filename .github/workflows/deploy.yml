@@ -36,8 +36,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests
-        run: npm run test
+      - name: Unit tests with the coverage gate (90% lines in intelligence and model)
+        run: npm run test:coverage
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
@@ -54,6 +54,9 @@ jobs:
         run: npm run e2e:pwa
         env:
           CI: true
+
+      - name: Bundle size budget (initial JavaScript, 300 KB gzipped)
+        run: npm run size
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

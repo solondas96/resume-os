@@ -40,7 +40,7 @@ export const CoverLetterModal: React.FC = () => {
       <div className="bg-card border border-border rounded-2xl max-w-md w-full shadow-lifted flex flex-col overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
-            <FileText className="w-4 h-4 text-brand" />
+            <FileText className="w-4 h-4 text-brand-text" />
             <span>Generate Cover Letter</span>
           </div>
           <button

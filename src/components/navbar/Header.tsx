@@ -118,7 +118,7 @@ export const Header: React.FC = () => {
           title="Open Resume Library (Switch & Manage Multiple Resumes)"
           className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-foreground bg-muted hover:bg-muted/80 rounded-lg border border-border transition active:scale-[0.98]"
         >
-          <FolderGit2 className="w-3.5 h-3.5 text-brand" />
+          <FolderGit2 className="w-3.5 h-3.5 text-brand-text" />
           <span className="truncate max-w-[100px] lg:max-w-[140px]">{documentTitle}</span>
           <span className="text-[10px] font-mono text-muted-foreground bg-background px-1 rounded border border-border">
             {resumes.length}
@@ -162,7 +162,7 @@ export const Header: React.FC = () => {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <FileText className="w-3 h-3 text-brand" />
+            <FileText className="w-3 h-3 text-brand-text" />
             <span>Resume</span>
           </button>
           <button
@@ -173,7 +173,7 @@ export const Header: React.FC = () => {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <Mail className="w-3 h-3 text-brand" />
+            <Mail className="w-3 h-3 text-brand-text" />
             <span>Cover Letter</span>
           </button>
         </div>
@@ -184,7 +184,7 @@ export const Header: React.FC = () => {
           title="Browse Professional Starter Presets"
           className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 border border-border text-xs font-medium text-foreground transition active:scale-[0.98]"
         >
-          <Sparkles className="w-3.5 h-3.5 text-brand" />
+          <Sparkles className="w-3.5 h-3.5 text-brand-text" />
           <span className="hidden lg:inline">Presets</span>
         </button>
 
@@ -198,7 +198,7 @@ export const Header: React.FC = () => {
               : 'bg-muted hover:bg-muted/80 border-border text-foreground'
           }`}
         >
-          <Target className="w-3.5 h-3.5 text-brand" />
+          <Target className="w-3.5 h-3.5 text-brand-text" />
           <span className="hidden sm:inline">Job Match</span>
         </button>
 
@@ -229,7 +229,7 @@ export const Header: React.FC = () => {
                 : 'bg-muted hover:bg-muted/80 border-border text-foreground'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-brand" />
+            <Sparkles className="w-3.5 h-3.5 text-brand-text" />
             <span className="hidden lg:inline">Linter</span>
           </button>
         )}
@@ -240,7 +240,7 @@ export const Header: React.FC = () => {
           title="Open Design & Layout Settings"
           className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 border border-border text-xs font-medium text-foreground transition active:scale-[0.98]"
         >
-          <Palette className="w-3.5 h-3.5 text-brand" />
+          <Palette className="w-3.5 h-3.5 text-brand-text" />
           <span>Design</span>
           <span className="text-[10px] bg-background text-muted-foreground border border-border px-1.5 py-0.5 rounded capitalize font-mono hidden sm:inline">
             {theme}
@@ -256,7 +256,7 @@ export const Header: React.FC = () => {
           title="Share Web Resume (Recruiter Direct View Link)"
           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border transition text-xs font-medium active:scale-[0.98]"
         >
-          <Share2 className="w-3.5 h-3.5 text-brand" />
+          <Share2 className="w-3.5 h-3.5 text-brand-text" />
           <span className="hidden md:inline">Share</span>
         </button>
 
@@ -340,7 +340,7 @@ export const Header: React.FC = () => {
                   className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-muted text-xs text-foreground flex items-center justify-between transition group"
                 >
                   <div className="flex items-center gap-2">
-                    <Download className="w-3.5 h-3.5 text-brand" />
+                    <Download className="w-3.5 h-3.5 text-brand-text" />
                     <span className="font-medium">1-Click Direct PDF</span>
                   </div>
                   <span className="text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded font-mono font-medium">

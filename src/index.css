@@ -49,6 +49,9 @@
   --ring: #c96442;
   --brand: #c96442;
   --brand-hover: #b5563a;
+  /* Text and button colours that pass WCAG AA (4.5:1) on the card and background */
+  --brand-text: #a64c2d;
+  --brand-button: #a64c2d;
   --accent: #f5e9e2;
   --accent-foreground: #7a3a22;
   --primary: #141413;
@@ -80,6 +83,8 @@
   --ring: #d97757;
   --brand: #d97757;
   --brand-hover: #c96442;
+  --brand-text: #ec9a7a;
+  --brand-button: #a64c2d;
   --accent: #3d2e27;
   --accent-foreground: #f0c4b1;
   --primary: #f5f4ee;

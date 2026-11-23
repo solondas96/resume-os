@@ -21,7 +21,7 @@ export const ShortcutsModal: React.FC = () => {
         {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-card">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
-            <HelpCircle className="w-4 h-4 text-brand" />
+            <HelpCircle className="w-4 h-4 text-brand-text" />
             <span>Markdown & Icon Shortcuts</span>
           </div>
           <button
@@ -63,7 +63,7 @@ export const ShortcutsModal: React.FC = () => {
                 title="Copy snippet"
               >
                 {copiedKey === 'col-sample' ? (
-                  <Check className="w-3.5 h-3.5 text-brand" />
+                  <Check className="w-3.5 h-3.5 text-brand-text" />
                 ) : (
                   <Copy className="w-3.5 h-3.5" />
                 )}
@@ -89,7 +89,7 @@ export const ShortcutsModal: React.FC = () => {
                 >
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-4 h-4 text-brand inline-flex items-center"
+                      className="w-4 h-4 text-brand-text inline-flex items-center"
                       dangerouslySetInnerHTML={{ __html: ICON_SVGS[iconName] }}
                     />
                     <span className="font-mono text-[11px] text-foreground">

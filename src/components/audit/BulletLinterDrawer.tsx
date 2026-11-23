@@ -28,7 +28,7 @@ export const BulletLinterDrawer: React.FC = () => {
 
   const scoreColor =
     analysis.overallScore >= 80
-      ? 'text-emerald-600 dark:text-emerald-400'
+      ? 'text-emerald-700 dark:text-emerald-400'
       : analysis.overallScore >= 60
       ? 'text-amber-600 dark:text-amber-400'
       : 'text-rose-600 dark:text-rose-400';
@@ -41,7 +41,7 @@ export const BulletLinterDrawer: React.FC = () => {
       <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/20">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accent-foreground">
-            <Sparkles className="w-4 h-4 text-brand" />
+            <Sparkles className="w-4 h-4 text-brand-text" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-foreground tracking-tight">Inspector</h2>
@@ -51,6 +51,7 @@ export const BulletLinterDrawer: React.FC = () => {
         <button
           onClick={() => setActiveSidePanel('none')}
           className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
+          aria-label="Close inspector"
         >
           <X className="w-4 h-4" />
         </button>
@@ -156,7 +157,7 @@ export const BulletLinterDrawer: React.FC = () => {
                   </span>
                   <button
                     onClick={() => handleApplyFix(bullet.raw, bullet.weakVerb!, bullet.suggestedVerb!)}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand text-white rounded text-[11px] font-medium hover:bg-brand-hover transition active:scale-[0.98]"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-button text-white rounded text-[11px] font-medium hover:bg-brand-hover transition active:scale-[0.98]"
                   >
                     <span>Replace Verb</span>
                     <ArrowRight className="w-3 h-3" />

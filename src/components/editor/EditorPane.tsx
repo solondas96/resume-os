@@ -1,9 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react';
-import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
-import { markdown as markdownLang } from '@codemirror/lang-markdown';
-import { oneDark } from '@codemirror/theme-one-dark';
+import React, { Suspense, useCallback, useRef, useState } from 'react';
+import type { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { FormEditor } from '../form/FormEditor';
+
+// Loaded only when the Advanced Markdown view is open
+const MarkdownCodeMirror = React.lazy(() => import('./MarkdownCodeMirror'));
 import {
   Bold,
   Italic,
@@ -78,7 +79,7 @@ export const EditorPane: React.FC = () => {
       title: 'Work Experience',
       desc: 'Insert job title, company, dates, and STAR bullet template',
       snippet: '\n## Work Experience\n\n### Company Name — Senior Role\n*San Francisco, CA* | *2022 – Present*\n\n`Skill 1` `Skill 2`\n\n- Spearheaded [initiative], delivering [X% measurable outcome] by [action].\n- Engineered [system], scaling throughput from [X] to [Y].\n',
-      icon: <Briefcase className="w-4 h-4 text-brand" />,
+      icon: <Briefcase className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'sec-summary',
@@ -86,7 +87,7 @@ export const EditorPane: React.FC = () => {
       title: 'Executive Summary',
       desc: 'Brief 2-3 sentence overview of your profile and strengths',
       snippet: '\n## Summary\nResults-driven engineer with 8+ years of experience designing scalable platforms and cloud architectures.\n',
-      icon: <Heading2 className="w-4 h-4 text-brand" />,
+      icon: <Heading2 className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'sec-skills',
@@ -94,7 +95,7 @@ export const EditorPane: React.FC = () => {
       title: 'Technical Skills Matrix',
       desc: 'Two-column categorized languages, frameworks, and cloud tools',
       snippet: '\n## Technical Skills\n\n::: left\n- **Languages:** TypeScript, Go, Python, SQL\n- **Frontend:** React, Next.js, Tailwind CSS\n:::\n\n::: right\n- **Backend:** Node.js, gRPC, Docker, Kubernetes\n- **Database:** PostgreSQL, Redis, Kafka\n:::\n',
-      icon: <Wrench className="w-4 h-4 text-brand" />,
+      icon: <Wrench className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'sec-projects',
@@ -102,7 +103,7 @@ export const EditorPane: React.FC = () => {
       title: 'Key Projects',
       desc: 'Open source projects or high-impact portfolio apps',
       snippet: '\n## Key Projects\n\n### Project Name — Architecture Title\n*Creator & Maintainer* | [icon:github github.com/user/repo](https://github.com)\n\n- Engineered high-throughput caching engine, earning **4.2k+ GitHub stars**.\n',
-      icon: <FolderGit2 className="w-4 h-4 text-brand" />,
+      icon: <FolderGit2 className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'sec-edu',
@@ -110,7 +111,7 @@ export const EditorPane: React.FC = () => {
       title: 'Education',
       desc: 'University, degree, honors, and graduation year',
       snippet: '\n## Education\n\n### University Name\n*Bachelor of Science in Computer Science* | *2018 – 2022*\n- Graduated with Honors (GPA: 3.85/4.0)\n',
-      icon: <GraduationCap className="w-4 h-4 text-brand" />,
+      icon: <GraduationCap className="w-4 h-4 text-brand-text" />,
     },
 
     // Templates
@@ -120,7 +121,7 @@ export const EditorPane: React.FC = () => {
       title: 'Two-Column Layout',
       desc: 'Side-by-side ::: left and ::: right block containers',
       snippet: '\n::: left\n[icon:email user@example.com](mailto:user@example.com)\n[icon:phone +1 555-0192](tel:+15550192)\n:::\n\n::: right\n[icon:linkedin linkedin.com/in/user](https://linkedin.com)\n[icon:github github.com/user](https://github.com)\n:::\n',
-      icon: <Columns className="w-4 h-4 text-brand" />,
+      icon: <Columns className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'tmpl-star',
@@ -128,7 +129,7 @@ export const EditorPane: React.FC = () => {
       title: 'STAR Impact Bullet Point',
       desc: 'Quantified accomplishment template with metric placeholders',
       snippet: '- Spearheaded [initiative], achieving **[X% metric]** improvement by [action].\n',
-      icon: <Sparkles className="w-4 h-4 text-brand" />,
+      icon: <Sparkles className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'tmpl-pagebreak',
@@ -136,7 +137,7 @@ export const EditorPane: React.FC = () => {
       title: 'Manual Page Break',
       desc: 'Force subsequent content onto the next printed A4 page',
       snippet: '\n::: page-break\n:::\n',
-      icon: <Scissors className="w-4 h-4 text-brand" />,
+      icon: <Scissors className="w-4 h-4 text-brand-text" />,
     },
 
     // Icons
@@ -154,7 +155,7 @@ export const EditorPane: React.FC = () => {
       title: 'LinkedIn Profile',
       desc: '[icon:linkedin linkedin.com/in/...](...)',
       snippet: '[icon:linkedin linkedin.com/in/username](https://linkedin.com/in/username)',
-      icon: <Linkedin className="w-4 h-4 text-brand" />,
+      icon: <Linkedin className="w-4 h-4 text-brand-text" />,
     },
     {
       id: 'icon-github',
@@ -382,7 +383,7 @@ export const EditorPane: React.FC = () => {
               title="Insert Two-Column Container"
               className="flex items-center gap-1 px-1.5 py-1 hover:bg-muted text-muted-foreground hover:text-foreground rounded transition text-[11px]"
             >
-              <Columns className="w-3.5 h-3.5 text-brand" />
+              <Columns className="w-3.5 h-3.5 text-brand-text" />
               <span>2-Col</span>
             </button>
           </div>
@@ -395,7 +396,7 @@ export const EditorPane: React.FC = () => {
             title="Commit revision snapshot now"
             className="flex items-center gap-1 text-muted-foreground hover:text-foreground hover:bg-muted px-2 py-0.5 rounded transition"
           >
-            <Save className="w-3 h-3 text-brand" />
+            <Save className="w-3 h-3 text-brand-text" />
             <span>Snapshot</span>
           </button>
         </div>
@@ -408,25 +409,17 @@ export const EditorPane: React.FC = () => {
         </div>
       ) : (
         <div className="flex-1 overflow-hidden relative bg-card">
-          <CodeMirror
-            ref={editorRef}
-            value={content}
-            height="100%"
-            theme={uiTheme === 'dark' ? oneDark : 'light'}
-            extensions={[markdownLang()]}
-            onChange={(val) => setContent(val)}
-            onUpdate={handleUpdate}
-            basicSetup={{
-              lineNumbers: true,
-              highlightActiveLineGutter: true,
-              foldGutter: true,
-              syntaxHighlighting: true,
-              bracketMatching: true,
-              closeBrackets: true,
-              autocompletion: true,
-            }}
-            className="h-full text-[13px] font-mono leading-relaxed"
-          />
+          <Suspense fallback={<div className="p-4 text-xs text-muted-foreground">Loading the text editor…</div>}>
+            <MarkdownCodeMirror
+              ref={editorRef}
+              value={content}
+              height="100%"
+              dark={uiTheme === 'dark'}
+              onChange={(val) => setContent(val)}
+              onUpdate={handleUpdate}
+              className="h-full text-[13px] font-mono leading-relaxed"
+            />
+          </Suspense>
 
           {/* Floating Selection Toolbar */}
           {hasSelection && selectionToolbarPos && (
@@ -456,7 +449,7 @@ export const EditorPane: React.FC = () => {
               <button
                 onClick={() => applyFormatting('`', '`')}
                 title="Skill Tag Chip"
-                className="p-1.5 hover:bg-muted rounded text-xs text-brand"
+                className="p-1.5 hover:bg-muted rounded text-xs text-brand-text"
               >
                 <Code className="w-3.5 h-3.5" />
               </button>
@@ -482,7 +475,7 @@ export const EditorPane: React.FC = () => {
             <div className="absolute top-4 left-12 w-72 bg-card border border-border shadow-lifted rounded-xl z-50 overflow-hidden text-xs">
               <div className="px-3 py-1.5 bg-muted border-b border-border text-[10px] font-mono text-muted-foreground uppercase tracking-wider flex items-center justify-between">
                 <span>Insert Blocks</span>
-                <span className="text-brand">/{slashFilter}</span>
+                <span className="text-brand-text">/{slashFilter}</span>
               </div>
               <div className="max-h-64 overflow-y-auto p-1.5 space-y-1">
                 {filteredCommands.length === 0 ? (
@@ -501,7 +494,7 @@ export const EditorPane: React.FC = () => {
                           : 'text-foreground hover:bg-muted'
                       }`}
                     >
-                      <div className="w-5 h-5 flex items-center justify-center rounded bg-muted text-brand flex-shrink-0">
+                      <div className="w-5 h-5 flex items-center justify-center rounded bg-muted text-brand-text flex-shrink-0">
                         {cmd.icon}
                       </div>
                       <div className="flex-1 truncate">

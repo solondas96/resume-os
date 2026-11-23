@@ -61,7 +61,7 @@ export const JobMatchPanel: React.FC = () => {
     <aside className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-card border-l border-border shadow-lifted z-40 flex flex-col no-print">
       <div className="px-5 py-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Target className="w-4 h-4 text-brand" />
+          <Target className="w-4 h-4 text-brand-text" />
           <div>
             <h2 className="text-sm font-semibold text-foreground">Job Match</h2>
             <p className="text-xs text-muted-foreground">See how this resume covers a job posting</p>

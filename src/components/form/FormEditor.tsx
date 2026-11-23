@@ -246,7 +246,7 @@ const BulletRow: React.FC<{
           </div>
         )}
         <div className="flex items-center gap-1">
-          <button type="button" onClick={onImprove} className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs text-brand hover:bg-brand/10 transition min-h-[32px]">
+          <button type="button" onClick={onImprove} className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs text-brand-text hover:bg-brand/10 transition min-h-[32px]">
             <Sparkles className="w-3.5 h-3.5" />
             Improve
           </button>
@@ -361,7 +361,7 @@ const EntryEditor: React.FC<{
         <button
           type="button"
           onClick={() => updateModel((r) => edit.addBullet(r, sectionId, itemId, ''))}
-          className="inline-flex items-center gap-1 text-xs text-brand hover:underline min-h-[36px]"
+          className="inline-flex items-center gap-1 text-xs text-brand-text hover:underline min-h-[36px]"
         >
           <Plus className="w-3.5 h-3.5" /> Add bullet
         </button>
@@ -395,7 +395,7 @@ const SkillsEditor: React.FC<{ section: Extract<Section, { kind: 'skills' }> }> 
       <button
         type="button"
         onClick={() => updateModel((r) => edit.mapSection(r, section.id, (s) => (s.kind === 'skills' ? { ...s, groups: [...s.groups, edit.newGroup('')] } : s)))}
-        className="inline-flex items-center gap-1 text-xs text-brand hover:underline min-h-[36px]"
+        className="inline-flex items-center gap-1 text-xs text-brand-text hover:underline min-h-[36px]"
       >
         <Plus className="w-3.5 h-3.5" /> Add skill group
       </button>
@@ -435,7 +435,7 @@ const LinesEditor: React.FC<{ section: Extract<Section, { kind: 'custom' | 'cert
           </button>
         </div>
       ))}
-      <button type="button" onClick={() => setLines((ls) => [...ls, edit.newLine('bullet', '')])} className="inline-flex items-center gap-1 text-xs text-brand hover:underline min-h-[36px]">
+      <button type="button" onClick={() => setLines((ls) => [...ls, edit.newLine('bullet', '')])} className="inline-flex items-center gap-1 text-xs text-brand-text hover:underline min-h-[36px]">
         <Plus className="w-3.5 h-3.5" /> Add line
       </button>
     </div>
@@ -458,7 +458,7 @@ const SummaryEditor: React.FC<{ section: Extract<Section, { kind: 'summary' }> }
           className={`${inputClass} resize-y`}
         />
       ))}
-      <button type="button" onClick={() => setParagraphs((ps) => [...ps, ''])} className="inline-flex items-center gap-1 text-xs text-brand hover:underline min-h-[36px]">
+      <button type="button" onClick={() => setParagraphs((ps) => [...ps, ''])} className="inline-flex items-center gap-1 text-xs text-brand-text hover:underline min-h-[36px]">
         <Plus className="w-3.5 h-3.5" /> Add paragraph
       </button>
     </div>
@@ -535,7 +535,7 @@ const SectionCard: React.FC<{ section: Section; findings: Map<string, Finding[]>
                   ))}
                 </SortableContext>
               </DndContext>
-              <button type="button" onClick={addEntry} className="inline-flex items-center gap-1 text-xs text-brand hover:underline min-h-[36px]">
+              <button type="button" onClick={addEntry} className="inline-flex items-center gap-1 text-xs text-brand-text hover:underline min-h-[36px]">
                 <Plus className="w-3.5 h-3.5" /> Add {section.kind === 'experience' ? 'role' : section.kind === 'education' ? 'school' : 'project'}
               </button>
             </>
@@ -579,7 +579,7 @@ const BasicsCard: React.FC<{ resume: Resume }> = ({ resume }) => {
             </button>
           </div>
         ))}
-        <button type="button" onClick={() => setBasics({ links: [...b.links, edit.newLink()] })} className="inline-flex items-center gap-1 text-xs text-brand hover:underline min-h-[36px]">
+        <button type="button" onClick={() => setBasics({ links: [...b.links, edit.newLink()] })} className="inline-flex items-center gap-1 text-xs text-brand-text hover:underline min-h-[36px]">
           <Plus className="w-3.5 h-3.5" /> Add link
         </button>
       </div>

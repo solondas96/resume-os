@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { Header } from './components/navbar/Header';
 import { EditorPane } from './components/editor/EditorPane';
 import { A4Canvas } from './components/preview/A4Canvas';
@@ -8,21 +8,27 @@ import { ImportModal } from './components/modals/ImportModal';
 import { PresetsModal } from './components/modals/PresetsModal';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { CommandPalette } from './components/palette/CommandPalette';
-import { ResumeLibraryModal } from './components/library/ResumeLibraryModal';
-import { ShareModal } from './components/share/ShareModal';
-import { BulletLinterDrawer } from './components/audit/BulletLinterDrawer';
-import { JobMatchPanel } from './components/match/JobMatchPanel';
-import { TrackerModal } from './components/tracker/TrackerModal';
-import { CoverLetterModal } from './components/cover/CoverLetterModal';
-import { RecruiterView } from './components/preview/RecruiterView';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
 import { useResumeStoreV2 } from './store/useResumeStoreV2';
 import { parseShareHash } from './utils/shareResume';
 
+// Loaded when opened, so their code is not in the startup bundle
+const TrackerModal = React.lazy(() => import('./components/tracker/TrackerModal').then((m) => ({ default: m.TrackerModal })));
+const CoverLetterModal = React.lazy(() => import('./components/cover/CoverLetterModal').then((m) => ({ default: m.CoverLetterModal })));
+const ShareModal = React.lazy(() => import('./components/share/ShareModal').then((m) => ({ default: m.ShareModal })));
+const BulletLinterDrawer = React.lazy(() => import('./components/audit/BulletLinterDrawer').then((m) => ({ default: m.BulletLinterDrawer })));
+const JobMatchPanel = React.lazy(() => import('./components/match/JobMatchPanel').then((m) => ({ default: m.JobMatchPanel })));
+const RecruiterView = React.lazy(() => import('./components/preview/RecruiterView').then((m) => ({ default: m.RecruiterView })));
+const ResumeLibraryModal = React.lazy(() => import('./components/library/ResumeLibraryModal').then((m) => ({ default: m.ResumeLibraryModal })));
+
 export const App: React.FC = () => {
   const initialize = useResumeStoreV2((s) => s.initialize);
   const uiTheme = useResumeStoreV2((s) => s.uiTheme);
+  const activeSidePanel = useResumeStoreV2((s) => s.activeSidePanel);
+  const libraryModalOpen = useResumeStoreV2((s) => s.libraryModalOpen);
+  const shareModalOpen = useResumeStoreV2((s) => s.shareModalOpen);
+  const activeModal = useResumeStoreV2((s) => s.activeModal);
   const mobileTab = useResumeStoreV2((s) => s.mobileTab);
   const setMobileTab = useResumeStoreV2((s) => s.setMobileTab);
   const recruiterViewMode = useResumeStoreV2((s) => s.recruiterViewMode);
@@ -109,7 +115,7 @@ export const App: React.FC = () => {
   if (recruiterViewMode) {
     return (
       <>
-        <RecruiterView />
+        <Suspense fallback={null}><RecruiterView /></Suspense>
         <ImportModal />
       </>
     );
@@ -222,18 +228,42 @@ export const App: React.FC = () => {
       <StatusBar />
 
       {/* Slide-over Side Panels */}
-      <BulletLinterDrawer />
-      <JobMatchPanel />
+      {activeSidePanel === 'linter' && (
+        <Suspense fallback={null}>
+          <BulletLinterDrawer />
+        </Suspense>
+      )}
+      {activeSidePanel === 'match' && (
+        <Suspense fallback={null}>
+          <JobMatchPanel />
+        </Suspense>
+      )}
 
       {/* Modals & Command Palette */}
-      <ResumeLibraryModal />
-      <ShareModal />
+      {libraryModalOpen && (
+        <Suspense fallback={null}>
+          <ResumeLibraryModal />
+        </Suspense>
+      )}
+      {shareModalOpen && (
+        <Suspense fallback={null}>
+          <ShareModal />
+        </Suspense>
+      )}
       <HistoryModal />
       <ShortcutsModal />
       <ImportModal />
       <PresetsModal />
-      <TrackerModal />
-      <CoverLetterModal />
+      {activeModal === 'tracker' && (
+        <Suspense fallback={null}>
+          <TrackerModal />
+        </Suspense>
+      )}
+      {activeModal === 'cover-letter' && (
+        <Suspense fallback={null}>
+          <CoverLetterModal />
+        </Suspense>
+      )}
       <CommandPalette />
     </div>
   );

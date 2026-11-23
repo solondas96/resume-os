@@ -50,27 +50,27 @@ export const PresetsModal: React.FC = () => {
   const getPresetIcon = (iconName: string) => {
     switch (iconName) {
       case 'code':
-        return <Code className="w-5 h-5 text-brand" />;
+        return <Code className="w-5 h-5 text-brand-text" />;
       case 'palette':
-        return <Palette className="w-5 h-5 text-brand" />;
+        return <Palette className="w-5 h-5 text-brand-text" />;
       case 'briefcase':
-        return <Briefcase className="w-5 h-5 text-brand" />;
+        return <Briefcase className="w-5 h-5 text-brand-text" />;
       case 'graduation-cap':
-        return <GraduationCap className="w-5 h-5 text-brand" />;
+        return <GraduationCap className="w-5 h-5 text-brand-text" />;
       case 'cpu':
-        return <Cpu className="w-5 h-5 text-brand" />;
+        return <Cpu className="w-5 h-5 text-brand-text" />;
       case 'database':
-        return <Database className="w-5 h-5 text-brand" />;
+        return <Database className="w-5 h-5 text-brand-text" />;
       case 'users':
-        return <Users className="w-5 h-5 text-brand" />;
+        return <Users className="w-5 h-5 text-brand-text" />;
       case 'server':
-        return <Server className="w-5 h-5 text-brand" />;
+        return <Server className="w-5 h-5 text-brand-text" />;
       case 'book-open':
-        return <BookOpen className="w-5 h-5 text-brand" />;
+        return <BookOpen className="w-5 h-5 text-brand-text" />;
       case 'megaphone':
-        return <Megaphone className="w-5 h-5 text-brand" />;
+        return <Megaphone className="w-5 h-5 text-brand-text" />;
       default:
-        return <Sparkles className="w-5 h-5 text-brand" />;
+        return <Sparkles className="w-5 h-5 text-brand-text" />;
     }
   };
 
@@ -81,7 +81,7 @@ export const PresetsModal: React.FC = () => {
         <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-card">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-accent text-accent-foreground border border-brand/20">
-              <Sparkles className="w-5 h-5 text-brand" />
+              <Sparkles className="w-5 h-5 text-brand-text" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-foreground">Starter Role Presets</h2>
@@ -113,7 +113,7 @@ export const PresetsModal: React.FC = () => {
                       {getPresetIcon(preset.iconName)}
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-foreground group-hover:text-brand transition">
+                      <h3 className="text-sm font-semibold text-foreground group-hover:text-brand-text transition">
                         {preset.roleName}
                       </h3>
                       <p className="text-xs text-muted-foreground">{preset.candidateName}</p>
@@ -137,7 +137,7 @@ export const PresetsModal: React.FC = () => {
 
               <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
                 <span className="text-[11px] text-muted-foreground">Click to load blueprint</span>
-                <span className="text-xs font-medium text-brand group-hover:underline flex items-center gap-1">
+                <span className="text-xs font-medium text-brand-text group-hover:underline flex items-center gap-1">
                   Use Preset →
                 </span>
               </div>

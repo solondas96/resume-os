@@ -13,7 +13,7 @@ export const HistoryModal: React.FC = () => {
         {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-card">
           <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
-            <Clock className="w-4 h-4 text-brand" />
+            <Clock className="w-4 h-4 text-brand-text" />
             <span>Revision History</span>
           </div>
           <button
@@ -65,7 +65,7 @@ export const HistoryModal: React.FC = () => {
                     }}
                     className="flex items-center gap-1 px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-medium rounded-lg transition"
                   >
-                    <RotateCcw className="w-3 h-3 text-brand" />
+                    <RotateCcw className="w-3 h-3 text-brand-text" />
                     <span>Restore</span>
                   </button>
                   <button

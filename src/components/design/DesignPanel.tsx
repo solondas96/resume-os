@@ -52,7 +52,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
         <div className="h-14 px-5 bg-card border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 rounded-lg bg-accent text-accent-foreground border border-brand/20">
-              <Palette className="w-4 h-4 text-brand" />
+              <Palette className="w-4 h-4 text-brand-text" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-foreground">Design & Layout</h2>
@@ -75,7 +75,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
               <label className="font-medium text-foreground uppercase tracking-wider text-[11px]">
                 Resume Template
               </label>
-              <span className="text-[10px] text-brand font-mono">Live Preview</span>
+              <span className="text-[10px] text-brand-text font-mono">Live Preview</span>
             </div>
 
             <div className="grid grid-cols-1 gap-2.5">
@@ -92,7 +92,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-foreground text-xs">{tmpl.name}</span>
                     {theme === tmpl.id && (
-                      <span className="flex items-center gap-1 text-[10px] text-brand font-medium bg-accent px-1.5 py-0.5 rounded">
+                      <span className="flex items-center gap-1 text-[10px] text-brand-text font-medium bg-accent px-1.5 py-0.5 rounded">
                         <Check className="w-3 h-3" />
                         <span>Active</span>
                       </span>
@@ -150,7 +150,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             <div className="bg-muted/40 border border-border p-3 rounded-xl space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-medium text-foreground text-xs flex items-center gap-1.5">
-                  <Type className="w-3.5 h-3.5 text-brand" />
+                  <Type className="w-3.5 h-3.5 text-brand-text" />
                   Base Font Size
                 </span>
                 <span className="text-[10px] text-muted-foreground font-mono capitalize">{fontSize}</span>
@@ -176,7 +176,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             <div className="bg-muted/40 border border-border p-3 rounded-xl space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-medium text-foreground text-xs flex items-center gap-1.5">
-                  <Maximize2 className="w-3.5 h-3.5 text-brand" />
+                  <Maximize2 className="w-3.5 h-3.5 text-brand-text" />
                   Page Margins
                 </span>
                 <span className="text-[10px] text-muted-foreground font-mono capitalize">{marginSize}</span>
@@ -202,7 +202,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             <div className="bg-muted/40 border border-border p-3 rounded-xl space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-medium text-foreground text-xs flex items-center gap-1.5">
-                  <AlignJustify className="w-3.5 h-3.5 text-brand" />
+                  <AlignJustify className="w-3.5 h-3.5 text-brand-text" />
                   Line Height
                 </span>
                 <span className="text-[10px] text-muted-foreground font-mono capitalize">{lineHeight}</span>
@@ -235,7 +235,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             <div className="bg-muted/40 border border-border p-3 rounded-xl flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="font-medium text-foreground text-xs flex items-center gap-1.5">
-                  <Sliders className="w-3.5 h-3.5 text-brand" />
+                  <Sliders className="w-3.5 h-3.5 text-brand-text" />
                   <span>Compact Spacing</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground">Tighter line-heights and section margins</p>
@@ -258,7 +258,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({ isOpen, onClose }) => 
             <div className="bg-muted/40 border border-border p-3 rounded-xl flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="font-medium text-foreground text-xs flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-brand" />
+                  <FileText className="w-3.5 h-3.5 text-brand-text" />
                   <span>1-Page Fit Mode</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground">Strictly clamps canvas to 1123px A4 height</p>

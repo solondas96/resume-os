@@ -60,6 +60,27 @@ Encode your resume into a private, client-side URL hash link. Send `/#view=...` 
 
 ---
 
+## ✅ Quality gates
+
+Every push runs these in CI (`.github/workflows/deploy.yml`). A failing gate blocks the deploy.
+
+| Gate | Command | Threshold | Measured |
+| --- | --- | --- | --- |
+| Types and lint | `npm run lint` | zero errors | 0 errors |
+| Unit and component tests | `npm run test:coverage` | all pass | 298 pass |
+| Coverage, `src/intelligence` | same | ≥ 90% lines | 97.9% lines |
+| Coverage, `src/model` | same | ≥ 90% lines | 94.4% lines |
+| End-to-end (Chromium) | `npm run e2e` | all pass | 19 pass |
+| Offline (PWA), production build | `npm run e2e:pwa` | all pass | 1 pass |
+| Accessibility (axe, WCAG 2.2 AA) | in `tests/e2e/a11y.spec.ts` | no serious or critical issues | 0 on welcome, editor (both themes), Markdown view, inspector, tracker, share and library |
+| Initial JavaScript, gzipped | `npm run size` | ≤ 300 KB | 208.6 KB |
+| PDF import accuracy | `tests/fixtures/corpus.test.ts` | ≥ 95% mean field accuracy | 99% (16 resumes, `tests/fixtures/corpus/report.txt`) |
+
+Notes on the evidence:
+- The coverage numbers are per folder (`vite.config.ts`). Other folders are reported, not gated.
+- The accuracy figure is on a synthetic corpus generated from `tests/fixtures/corpus/spec.mjs`. It measures the rules on known layouts, not on real résumés.
+- The colour tokens for text and buttons (`--brand-text`, `--brand-button`) were chosen to meet 4.5:1 contrast on the card and background in both themes.
+
 ## 📄 PDF import
 
 PDFs are read with pdf.js using each text item's position: lines are grouped by baseline inside each detected column, the reading order is the left column then the right, and headings are found by alias, size, or emphasis. Entry headers are split into company, role and dates. Anything that cannot be placed is kept and listed for the user to move. The review shows the original text next to what was found.

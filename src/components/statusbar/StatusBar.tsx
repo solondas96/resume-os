@@ -65,8 +65,8 @@ export const StatusBar: React.FC = () => {
         <div className="flex items-center gap-1.5 font-medium">
           {isSaving ? (
             <>
-              <Loader2 className="w-3 h-3 text-brand animate-spin" />
-              <span className="text-brand">Saving...</span>
+              <Loader2 className="w-3 h-3 text-brand-text animate-spin" />
+              <span className="text-brand-text">Saving...</span>
             </>
           ) : (
             <>
@@ -89,7 +89,7 @@ export const StatusBar: React.FC = () => {
                   : 'hover:bg-muted text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Sparkles className="w-3 h-3 text-brand" />
+              <Sparkles className="w-3 h-3 text-brand-text" />
               <span>Impact: {linterResult.overallScore}%</span>
             </button>
           </>
@@ -112,7 +112,7 @@ export const StatusBar: React.FC = () => {
               : 'hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}
         >
-          <Target className="w-3 h-3 text-brand" />
+          <Target className="w-3 h-3 text-brand-text" />
           <span>Job Match</span>
         </button>
       </div>
@@ -125,13 +125,13 @@ export const StatusBar: React.FC = () => {
               title={`${pageCount} A4 pages. Content spills onto multiple pages.`}
               className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent border border-brand/30 text-accent-foreground font-medium font-mono"
             >
-              <AlertTriangle className="w-3 h-3 text-brand" />
+              <AlertTriangle className="w-3 h-3 text-brand-text" />
               <span>{pageCount} Pages (Spill)</span>
             </div>
 
             <button
               onClick={fitToOnePage}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand text-white font-medium text-[10px] hover:bg-brand-hover transition active:scale-[0.98]"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-button text-white font-medium text-[10px] hover:bg-brand-hover transition active:scale-[0.98]"
               title="Automatically optimize line-height, margins and font size to pull content onto 1 page"
             >
               <Sparkles className="w-2.5 h-2.5" />
@@ -143,7 +143,7 @@ export const StatusBar: React.FC = () => {
             title="Clean single-page resume layout"
             className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground font-mono"
           >
-            <FileText className="w-3 h-3 text-brand" />
+            <FileText className="w-3 h-3 text-brand-text" />
             <span>1 Page (Fit)</span>
           </div>
         )}

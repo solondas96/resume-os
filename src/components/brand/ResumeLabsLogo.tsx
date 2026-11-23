@@ -18,7 +18,7 @@ export const ResumeLabsLogo: React.FC<ResumeLabsLogoProps> = ({
       {/* Calm, refined geometric monogram */}
       <div
         style={{ width: size, height: size }}
-        className="relative flex-shrink-0 flex items-center justify-center rounded-xl bg-brand text-white shadow-card transition-transform duration-200"
+        className="relative flex-shrink-0 flex items-center justify-center rounded-xl bg-brand-button text-white shadow-card transition-transform duration-200"
       >
         <svg
           viewBox="0 0 32 32"
@@ -86,7 +86,7 @@ export const ResumeLabsLogo: React.FC<ResumeLabsLogoProps> = ({
             <span className="font-semibold text-[15px] text-foreground">
               Resume
             </span>
-            <span className="font-semibold text-[15px] text-brand">
+            <span className="font-semibold text-[15px] text-brand-text">
               Labs
             </span>
           </div>

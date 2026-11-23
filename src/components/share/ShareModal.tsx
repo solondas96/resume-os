@@ -66,7 +66,7 @@ export const ShareModal: React.FC = () => {
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accent-foreground">
-              <Share2 className="w-4 h-4 text-brand" />
+              <Share2 className="w-4 h-4 text-brand-text" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-foreground tracking-tight">Share Web Resume</h2>
@@ -76,6 +76,7 @@ export const ShareModal: React.FC = () => {
           <button
             onClick={() => setShareModalOpen(false)}
             className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
+            aria-label="Close share"
           >
             <X className="w-4 h-4" />
           </button>
@@ -84,7 +85,7 @@ export const ShareModal: React.FC = () => {
         {/* Content */}
         <div className="p-6 space-y-4">
           <div className="p-3.5 rounded-xl bg-accent/40 border border-brand/20 text-xs flex items-start gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+            <ShieldCheck className="w-4 h-4 text-brand-text shrink-0 mt-0.5" />
             <div className="space-y-0.5 text-muted-foreground">
               <strong className="text-foreground font-medium block">100% Client-Side & Private</strong>
               The resume data is encoded directly into the URL fragment. No data is stored on external servers or tracked by third parties.
@@ -112,17 +113,18 @@ export const ShareModal: React.FC = () => {
           </fieldset>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-foreground">Shareable Link</label>
+            <label htmlFor="share-link" className="text-xs font-medium text-foreground">Shareable Link</label>
             <div className="flex items-center gap-2">
               <input
+                id="share-link"
                 type="text"
                 readOnly
                 value={shareUrl}
-                className="flex-1 px-3 py-2 text-xs bg-muted/50 border border-border rounded-xl text-foreground font-mono truncate focus:outline-hidden"
+                className="flex-1 px-3 py-2 text-xs bg-background border border-border rounded-xl text-foreground font-mono truncate focus:outline-hidden"
               />
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-brand text-white text-xs font-medium rounded-xl hover:bg-brand-hover transition active:scale-[0.98] shrink-0"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-brand-button text-white text-xs font-medium rounded-xl hover:bg-brand-hover transition active:scale-[0.98] shrink-0"
               >
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -133,7 +135,7 @@ export const ShareModal: React.FC = () => {
           <div className="pt-2 flex items-center justify-between border-t border-border">
             <button
               onClick={handlePreviewRecruiterView}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-brand hover:underline"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-text hover:underline"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Preview Recruiter View</span>
