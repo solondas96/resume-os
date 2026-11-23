@@ -164,6 +164,21 @@ export function itemCount(section: Section): number {
 }
 
 /**
+ * Remove contact details for a shared copy. The phone or email is cleared from the header;
+ * the form and the saved resume are not changed.
+ */
+export function redactContact(resume: Resume, opts: { email?: boolean; phone?: boolean }): Resume {
+  return {
+    ...resume,
+    basics: {
+      ...resume.basics,
+      email: opts.email ? undefined : resume.basics.email,
+      phone: opts.phone ? undefined : resume.basics.phone,
+    },
+  };
+}
+
+/**
  * The resume as it should appear in outputs (preview, share, export):
  * hidden sections and hidden bullets are removed. The form still shows them.
  */

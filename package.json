@@ -10,7 +10,8 @@
     "test": "vitest run",
     "lint": "tsc --noEmit",
     "e2e": "playwright test",
-    "build:skills": "tsx scripts/build-skills.ts"
+    "build:skills": "tsx scripts/build-skills.ts",
+    "e2e:pwa": "playwright test --config playwright.pwa.config.ts"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.1",
@@ -25,7 +26,9 @@
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "dompurify": "^3.5.0",
+    "fflate": "^0.8.3",
     "lucide-react": "^0.468.0",
+    "lz-string": "^1.5.0",
     "mammoth": "^1.13.0",
     "markdown-it": "^14.1.0",
     "markdown-it-container": "^4.0.0",
@@ -52,6 +55,7 @@
     "tsx": "^4.23.15",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0"
   }
 }

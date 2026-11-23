@@ -3,6 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 // End-to-end tests run against the Vite dev server in Chromium only.
 export default defineConfig({
   testDir: 'tests/e2e',
+  // The offline test needs the production build and runs in its own config (npm run e2e:pwa)
+  testIgnore: /pwa\.spec\.ts/,
   timeout: 60_000,
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,

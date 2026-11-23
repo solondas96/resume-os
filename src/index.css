@@ -1,3 +1,33 @@
+/* Self-hosted fonts (Latin subset): no requests to font services, so the app works offline */
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist-mono-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/newsreader-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/newsreader-italic-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -4,6 +4,7 @@
  */
 
 import { Resume } from '../model/resume';
+import { matchJobDescription } from '../intelligence/jobMatcher';
 
 export interface CoverLetterData {
   candidateName: string;
@@ -41,12 +42,37 @@ function extractTopAchievements(resume: Resume): string[] {
 /**
  * Generate cover letter template
  */
+/**
+ * Up to three bullets that best evidence the job's requirements: strong evidence first,
+ * must-haves before nice-to-haves. Used as placeholders the user rewrites in their own words.
+ */
+export function evidenceForJob(resume: Resume, jobDescription: string, limit = 3): string[] {
+  if (!jobDescription.trim()) return [];
+  const rank = { strong: 0, moderate: 1, weak: 2, missing: 3 } as const;
+  const reqs = matchJobDescription(jobDescription, resume).requirements
+    .filter((r) => r.evidence)
+    .sort((a, b) => (a.type === b.type ? 0 : a.type === 'must-have' ? -1 : 1) || rank[a.strength] - rank[b.strength]);
+  const out: string[] = [];
+  for (const r of reqs) {
+    const text = r.evidence!.bulletText;
+    if (!out.includes(text)) out.push(text);
+    if (out.length === limit) break;
+  }
+  return out;
+}
+
 export function generateCoverLetterTemplate(
   resume: Resume,
   companyName: string,
-  position: string
+  position: string,
+  evidence?: string[]
 ): CoverLetterData {
-  const achievements = extractTopAchievements(resume);
+  // With job evidence, the slots hold the matched bullets to rewrite; otherwise the first achievements
+  const achievements = evidence && evidence.length ? evidence : extractTopAchievements(resume);
+  const slot = (i: number) =>
+    evidence && evidence.length
+      ? achievements[i] !== undefined ? `[Rewrite in your own words, using this as evidence: "${achievements[i]}"]` : '[Another example from your experience]'
+      : achievements[i] || `Key accomplishment ${i + 1}`;
 
   const content = `[Date]
 
@@ -59,9 +85,9 @@ Dear [Hiring Manager/Hiring Team],
 I am writing to express my strong interest in the ${position} position at ${companyName}. With [X years] of experience in [industry/field] and a proven track record of [key achievement], I am confident in my ability to contribute meaningfully to your team.
 
 In my current/previous role at [Company], I have demonstrated expertise in:
-- ${achievements[0] || 'Key accomplishment 1'}
-- ${achievements[1] || 'Key accomplishment 2'}
-- ${achievements[2] || 'Key accomplishment 3'}
+- ${slot(0)}
+- ${slot(1)}
+- ${slot(2)}
 
 I am particularly drawn to ${companyName} because [research about company/why you're interested]. I am excited about the opportunity to [specific role responsibility] and believe my skills in [relevant skills] align well with your team's needs.
 

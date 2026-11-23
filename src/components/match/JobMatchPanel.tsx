@@ -7,6 +7,7 @@
 import React, { useMemo, useState } from 'react';
 import { X, Target, Copy, Plus } from 'lucide-react';
 import { matchJobDescription } from '../../intelligence/jobMatcher';
+import { jobIdOf } from '../../intelligence/tailor';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TailorSection } from './TailorSection';
 
@@ -46,7 +47,9 @@ export const JobMatchPanel: React.FC = () => {
   const handleTrack = () => {
     if (!company.trim() && !role.trim()) return;
     const id = addApplication(company.trim() || 'Unknown company', role.trim() || 'Unknown role');
-    if (result) updateApplication(id, { matchScore: result.score });
+    // Link to the tailored copy when this resume is one for this job
+    const linked = currentResume && currentResume.meta.targetJobId === jobIdOf(jd) ? currentResume.id : undefined;
+    updateApplication(id, { ...(result ? { matchScore: result.score } : {}), ...(linked ? { tailoredResumeId: linked } : {}) });
     setTracked(true);
     setTimeout(() => setTracked(false), 1500);
   };

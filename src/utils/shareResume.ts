@@ -1,3 +1,7 @@
+// Default import: lz-string is CommonJS, and Node's ESM loader (used by Playwright) has no named exports for it
+import lz from 'lz-string';
+
+const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = lz;
 import { TemplateId, FontSizeOption, MarginOption, LineHeightOption } from '../types';
 
 export interface SharePayload {
@@ -97,4 +101,54 @@ export function getShareableUrl(resume: {
   const code = encodeResumeForShare(resume);
   const base = window.location.origin + window.location.pathname;
   return `${base}#view=${code}`;
+}
+
+// ---- share links v2 ----------------------------------------------------------
+// v2 links are compressed with lz-string, so they are shorter than v1 (base64 JSON).
+// v1 "#view=" links still open: parseShareHash handles both.
+
+export interface SharePayloadV2 {
+  v: 2;
+  title: string;
+  markdown: string;
+  theme: TemplateId;
+  accentColor: string;
+  fontSize: FontSizeOption;
+  marginSize: MarginOption;
+  lineHeight: LineHeightOption;
+}
+
+export function encodeShareV2(payload: Omit<SharePayloadV2, 'v'>): string {
+  return compressToEncodedURIComponent(JSON.stringify({ v: 2, ...payload } satisfies SharePayloadV2));
+}
+
+/** The resume fields a link carries, from either format. Null if the hash is not a valid share link. */
+export function parseShareHash(hash: string): (Omit<SharePayloadV2, 'v'>) | null {
+  if (hash.startsWith('#v2=')) {
+    try {
+      const json = decompressFromEncodedURIComponent(hash.slice(4));
+      if (!json) return null;
+      const p = JSON.parse(json) as SharePayloadV2;
+      if (p.v !== 2 || typeof p.markdown !== 'string') return null;
+      return {
+        title: p.title || 'Shared Resume',
+        markdown: p.markdown,
+        theme: p.theme || 'modern',
+        accentColor: p.accentColor || '#c96442',
+        fontSize: p.fontSize || 'medium',
+        marginSize: p.marginSize || 'normal',
+        lineHeight: p.lineHeight || 'normal',
+      };
+    } catch {
+      return null;
+    }
+  }
+  if (hash.startsWith('#view=')) return decodeSharedResume(hash.slice('#view='.length));
+  return null;
+}
+
+/** The full v2 link for the page */
+export function getShareableUrlV2(payload: Omit<SharePayloadV2, 'v'>): string {
+  const base = window.location.origin + window.location.pathname;
+  return `${base}#v2=${encodeShareV2(payload)}`;
 }

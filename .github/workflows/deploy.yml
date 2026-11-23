@@ -50,6 +50,11 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Offline (PWA) tests against the production build
+        run: npm run e2e:pwa
+        env:
+          CI: true
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

@@ -18,7 +18,7 @@ import { RecruiterView } from './components/preview/RecruiterView';
 import { FirstRunWelcome } from './components/onboarding/FirstRunWelcome';
 import { setupUndoRedoKeyBindings } from './services/undoRedo';
 import { useResumeStoreV2 } from './store/useResumeStoreV2';
-import { decodeSharedResume } from './utils/shareResume';
+import { parseShareHash } from './utils/shareResume';
 
 export const App: React.FC = () => {
   const initialize = useResumeStoreV2((s) => s.initialize);
@@ -72,8 +72,7 @@ export const App: React.FC = () => {
   // Shared recruiter link (#view=...): previewed in memory, nothing is saved
   useEffect(() => {
     if (!ready || typeof window === 'undefined') return;
-    if (!window.location.hash.startsWith('#view=')) return;
-    const decoded = decodeSharedResume(window.location.hash.replace('#view=', ''));
+    const decoded = parseShareHash(window.location.hash);
     if (decoded) openSharedView(decoded);
   }, [ready, openSharedView]);
 

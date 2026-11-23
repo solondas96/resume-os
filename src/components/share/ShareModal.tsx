@@ -8,8 +8,9 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
-import { useModelMarkdown } from '../../store/useModelMarkdown';
-import { getShareableUrl } from '../../utils/shareResume';
+import { getShareableUrlV2 } from '../../utils/shareResume';
+import { redactContact, forOutput } from '../../model/edit';
+import { resumeToMarkdown } from '../../model/serialize';
 
 export const ShareModal: React.FC = () => {
   const {
@@ -25,20 +26,24 @@ export const ShareModal: React.FC = () => {
   } = useResumeStoreV2();
 
   const [copied, setCopied] = useState(false);
+  const [hidePhone, setHidePhone] = useState(false);
+  const [hideEmail, setHideEmail] = useState(false);
+  const currentResume = useResumeStoreV2((s) => s.currentResume);
 
-  const modelMarkdown = useModelMarkdown();
+  // The link carries the redacted copy only: the hidden details are not in the URL at all
   const shareUrl = useMemo(() => {
-    if (!shareModalOpen) return '';
-    return getShareableUrl({
+    if (!shareModalOpen || !currentResume) return '';
+    const shared = redactContact(forOutput(currentResume), { phone: hidePhone, email: hideEmail });
+    return getShareableUrlV2({
       title: documentTitle,
-      markdown: modelMarkdown,
+      markdown: resumeToMarkdown(shared),
       theme,
       accentColor,
       fontSize,
       marginSize,
       lineHeight,
     });
-  }, [shareModalOpen, documentTitle, modelMarkdown, theme, accentColor, fontSize, marginSize, lineHeight]);
+  }, [shareModalOpen, currentResume, hidePhone, hideEmail, documentTitle, theme, accentColor, fontSize, marginSize, lineHeight]);
 
   if (!shareModalOpen) return null;
 
@@ -85,6 +90,26 @@ export const ShareModal: React.FC = () => {
               The resume data is encoded directly into the URL fragment. No data is stored on external servers or tracked by third parties.
             </div>
           </div>
+
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+            <span className="font-semibold shrink-0">Warning</span>
+            <span>
+              Anyone with this link can read this resume. The resume is inside the link, so it cannot be taken back.
+              Share it only with people you trust.
+            </span>
+          </div>
+
+          <fieldset className="space-y-2 text-xs">
+            <legend className="font-medium text-foreground mb-1">Hide from the shared copy</legend>
+            <label className="flex items-center gap-2 text-muted-foreground min-h-[32px]">
+              <input type="checkbox" checked={hidePhone} onChange={(e) => setHidePhone(e.target.checked)} />
+              Phone number
+            </label>
+            <label className="flex items-center gap-2 text-muted-foreground min-h-[32px]">
+              <input type="checkbox" checked={hideEmail} onChange={(e) => setHideEmail(e.target.checked)} />
+              Email address
+            </label>
+          </fieldset>
 
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-foreground">Shareable Link</label>

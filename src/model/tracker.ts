@@ -74,3 +74,47 @@ export function calculateStats(applications: JobApplication[]): ApplicationStats
 
   return stats;
 }
+
+/** Board column order */
+export const STATUS_ORDER: ApplicationStatus[] = ['saved', 'applied', 'screening', 'interview', 'offer', 'rejected', 'withdrawn'];
+
+/** Applications grouped by status, in board order; each group keeps the input order */
+export function groupByStatus(applications: JobApplication[]): Record<ApplicationStatus, JobApplication[]> {
+  const groups = Object.fromEntries(STATUS_ORDER.map((s) => [s, [] as JobApplication[]])) as Record<ApplicationStatus, JobApplication[]>;
+  for (const app of applications) groups[app.status].push(app);
+  return groups;
+}
+
+export type SortKey = 'company' | 'role' | 'status' | 'matchScore' | 'lastUpdated';
+
+/**
+ * Sort applications by a column. Ties keep the original order (stable), and a missing match
+ * score sorts last whichever way the column is sorted.
+ */
+export function sortApplications(applications: JobApplication[], key: SortKey, direction: 'asc' | 'desc'): JobApplication[] {
+  const value = (a: JobApplication): string | number | undefined => {
+    switch (key) {
+      case 'company':
+        return a.company.toLowerCase();
+      case 'role':
+        return a.role.toLowerCase();
+      case 'status':
+        return STATUS_ORDER.indexOf(a.status);
+      case 'matchScore':
+        return a.matchScore;
+      case 'lastUpdated':
+        return a.lastUpdated;
+    }
+  };
+  const sign = direction === 'asc' ? 1 : -1;
+  return applications
+    .map((app, index) => ({ app, index, v: value(app) }))
+    .sort((x, y) => {
+      if (x.v === undefined && y.v === undefined) return x.index - y.index;
+      if (x.v === undefined) return 1;
+      if (y.v === undefined) return -1;
+      const cmp = x.v < y.v ? -1 : x.v > y.v ? 1 : 0;
+      return cmp * sign || x.index - y.index;
+    })
+    .map((x) => x.app);
+}

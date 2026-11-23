@@ -201,9 +201,8 @@ export async function exportDirectPdf(
 /**
  * Clean plain-text converter for pasting into Applicant Tracking Systems (ATS)
  */
-export function exportPlainText(markdown: string, filename: string = 'Resume.txt') {
-  const cleanFilename = filename.endsWith('.txt') ? filename : `${filename}.txt`;
-
+/** Plain text from the resume's Markdown: no markup, headings and bullets kept readable */
+export function markdownToPlainText(markdown: string): string {
   let text = markdown;
 
   // Remove ::: container lines
@@ -233,7 +232,12 @@ export function exportPlainText(markdown: string, filename: string = 'Resume.txt
   // Clean extra blank lines
   text = text.replace(/\n{3,}/g, '\n\n').trim();
 
-  downloadFile(text, cleanFilename, 'text/plain;charset=utf-8');
+  return text;
+}
+
+export function exportPlainText(markdown: string, filename: string = 'Resume.txt') {
+  const cleanFilename = filename.endsWith('.txt') ? filename : `${filename}.txt`;
+  downloadFile(markdownToPlainText(markdown), cleanFilename, 'text/plain;charset=utf-8');
 }
 
 /**

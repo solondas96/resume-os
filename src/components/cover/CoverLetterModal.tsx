@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { X, FileText } from 'lucide-react';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
-import { generateCoverLetterTemplate, coverLetterToMarkdown } from '../../services/coverLetterGenerator';
+import { generateCoverLetterTemplate, coverLetterToMarkdown, evidenceForJob } from '../../services/coverLetterGenerator';
 
 export const CoverLetterModal: React.FC = () => {
   const activeModal = useResumeStoreV2((s) => s.activeModal);
@@ -15,6 +15,7 @@ export const CoverLetterModal: React.FC = () => {
   const setCoverLetterMarkdown = useResumeStoreV2((s) => s.setCoverLetterMarkdown);
   const setWorkspaceMode = useResumeStoreV2((s) => s.setWorkspaceMode);
   const targetRole = currentResume?.meta.targetRole ?? '';
+  const targetJobDescription = useResumeStoreV2((s) => s.targetJobDescription);
 
   const [company, setCompany] = useState('');
   const [position, setPosition] = useState('');
@@ -25,7 +26,8 @@ export const CoverLetterModal: React.FC = () => {
 
   const handleGenerate = () => {
     if (!currentResume) return;
-    const data = generateCoverLetterTemplate(currentResume, company.trim(), position.trim());
+    const evidence = evidenceForJob(currentResume, targetJobDescription);
+    const data = generateCoverLetterTemplate(currentResume, company.trim(), position.trim(), evidence);
     setCoverLetterMarkdown(coverLetterToMarkdown(data));
     setWorkspaceMode('cover-letter');
     setActiveModal(null);

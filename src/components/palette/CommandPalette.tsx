@@ -3,6 +3,7 @@ import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TEMPLATES, ACCENT_COLORS } from '../../data/templates';
 import { exportDirectPdf, exportPlainText, exportJsonResume } from '../../utils/exportHelpers';
 import { useModelMarkdown } from '../../store/useModelMarkdown';
+import { downloadBundle } from '../../services/exportBundle';
 import {
   Search,
   Layout,
@@ -41,6 +42,10 @@ export const CommandPalette: React.FC = () => {
   const modelMarkdown = useModelMarkdown();
   const markdown = useResumeStoreV2((s) => s.markdown); // editor text, for inserting sections
   const {
+    currentResume,
+    resumes,
+    coverLetterMarkdown,
+    applications,
     commandPaletteOpen,
     setCommandPaletteOpen,
     setTheme,
@@ -144,6 +149,21 @@ export const CommandPalette: React.FC = () => {
       icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
       action: () => exportJsonResume(modelMarkdown, 'resume.json'),
       keywords: ['json', 'resume', 'schema', 'export', 'data'],
+    },
+    {
+      id: 'export-bundle',
+      category: 'Export',
+      title: 'Export Bundle (.zip): resume, text, print HTML, cover letter, backup',
+      description: 'One zip with every format, plus a full backup. Nothing is uploaded.',
+      icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
+      action: () =>
+        downloadBundle({
+          resume: currentResume!,
+          allResumes: resumes,
+          coverLetterMarkdown,
+          applications,
+        }),
+      keywords: ['bundle', 'zip', 'backup', 'export', 'all', 'download'],
     },
     {
       id: 'resume-library',
