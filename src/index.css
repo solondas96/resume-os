@@ -745,7 +745,8 @@ html, body, #root {
   .a4-sheet {
     box-shadow: none !important;
     border: none !important;
-    margin: 0 auto !important;
+    /* Left-aligned on the paper: auto margins would centre it in the screen width */
+    margin: 0 !important;
     width: 210mm !important;
     max-width: 210mm !important;
     min-height: 297mm !important;

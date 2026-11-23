@@ -68,7 +68,9 @@ const TOKEN = String.raw`(?:(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2
 // Dates may be in parentheses: "Engineer (2019 – Present)"
 const RANGE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?(${TOKEN}\s*(?:–|—|-|\bto\b)\s*${TOKEN})\)?\s*$`, 'i');
 const SINGLE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?((?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2})\)?\s*$`, 'i');
-const COMPANY_WORD = /\b(inc|llc|llp|pllc|plc|ltd|lp|corp|corporation|co|company|group|labs?|university|college|school|institute|hospital|medical|clinic|center|centre|partners|associates|studio|agency|bank|systems|technologies|solutions|software|health|foundation|academy|department|district|industries|media|cloud|electric|power|logistics|retail|digital|outfitters|apparel|holdings|ventures|works|network|networks|pharmacy|cancer|gulf|emirates)\b/i;
+const COMPANY_WORD = /\b(inc|llc|llp|pllc|plc|ltd|lp|corp|corporation|co|company|group|labs?|university|college|school|institute|hospital|medical|clinic|center|centre|partners|associates|studio|agency|bank|systems|technologies|solutions|health|foundation|academy|department|district|industries|media|cloud|electric|power|logistics|retail|digital|outfitters|apparel|holdings|ventures|works|network|networks|pharmacy|cancer|gulf|emirates)\b/i;
+/** Words that name a role. A part with one is the role, not the company */
+const ROLE_WORD = /\b(engineer|developer|manager|director|analyst|designer|nurse|teacher|lead|senior|junior|staff|principal|associate|specialist|consultant|coordinator|chef|accountant|lawyer|counsel|pharmacist|intern|officer|executive|architect|scientist|researcher|administrator|assistant|head|technician|electrician|foreman|representative|advisor|editor|writer|producer|partner)\b/i;
 const SCHOOL_WORD = /\b(university|college|school|institute|academy)\b/i;
 
 export const splitDate = (text: string): { rest: string; dates?: string } => {
@@ -117,12 +119,17 @@ export function splitEntryHeader(text: string, kind: 'experience' | 'education' 
 
     const aCompany = COMPANY_WORD.test(a);
     const bCompany = COMPANY_WORD.test(b);
+    const aRole = ROLE_WORD.test(a);
+    const bRole = ROLE_WORD.test(b);
     if (sep === ' at ') return { head: b, detail: a, confident: true }; // "Role at Company"
     if (sep === ' — ' || sep === ' – ' || sep === ' - ') {
+      // A part with a role word is the role; the other part is the company
+      if (aRole !== bRole) return aRole ? { head: b, detail: a, confident: true } : { head: a, detail: b, confident: true };
       if (bCompany && !aCompany) return { head: b, detail: a, confident: true };
       return { head: a, detail: b, confident: aCompany || bCompany }; // company first by default
     }
     // ", " and " | ": role first by default
+    if (aRole !== bRole) return aRole ? { head: b, detail: a, confident: true } : { head: a, detail: b, confident: true };
     if (aCompany && !bCompany) return { head: a, detail: b, confident: true };
     return { head: b, detail: a, confident: aCompany || bCompany };
   }

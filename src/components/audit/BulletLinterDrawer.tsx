@@ -34,9 +34,9 @@ export const BulletLinterDrawer: React.FC = () => {
       : 'text-rose-600 dark:text-rose-400';
 
   return (
-    <div className="fixed z-40 bg-card shadow-2xl flex flex-col animate-in duration-200 motion-reduce:animate-none
+    <div className="no-print fixed z-40 bg-card shadow-2xl flex flex-col animate-in duration-200 motion-reduce:animate-none
       inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t border-border slide-in-from-bottom
-      sm:inset-y-0 sm:left-auto sm:right-0 sm:bottom-auto sm:max-h-none sm:w-[420px] sm:rounded-none sm:border-t-0 sm:border-l sm:slide-in-from-right">
+      sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[420px] sm:rounded-none sm:border-t-0 sm:border-l sm:slide-in-from-right">
       {/* Drawer Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/20">
         <div className="flex items-center gap-2">
@@ -56,6 +56,8 @@ export const BulletLinterDrawer: React.FC = () => {
         </button>
       </div>
 
+      {/* One scrolling body: on a short screen every section stays reachable */}
+      <div className="flex-1 min-h-0 overflow-y-auto">
       <HealthBreakdown />
       <SenioritySection />
       <AtsPreviewSection />
@@ -98,7 +100,7 @@ export const BulletLinterDrawer: React.FC = () => {
       </div>
 
       {/* Bullets List */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-3.5">
+      <div className="p-5 space-y-3.5">
         {analysis.bullets.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground text-xs">
             No bullet points found in work experience. Add lines starting with "-" to analyze.
@@ -164,6 +166,8 @@ export const BulletLinterDrawer: React.FC = () => {
             </div>
           ))
         )}
+      </div>
+
       </div>
 
       {/* Guidance Footer */}

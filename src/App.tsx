@@ -179,7 +179,7 @@ export const App: React.FC = () => {
           {/* Left Editor */}
           <div
             style={{ width: `${editorWidth}px` }}
-            className="h-full shrink-0 bg-card border-r border-border"
+            className="no-print h-full shrink-0 bg-card border-r border-border"
           >
             <EditorPane />
           </div>

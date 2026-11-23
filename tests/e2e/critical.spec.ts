@@ -101,8 +101,13 @@ test.describe('export', () => {
     await page.getByRole('button', { name: 'Create resume' }).click();
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
+    // Also with a side panel open: panels must not print over the resume
+    await page.getByRole('button', { name: /Health\s*\d+/ }).click();
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.a4-sheet')).toHaveCount(1);
+    // The sheet must start at the left edge of the page, not pushed right by hidden app chrome
+    const left = await page.locator('.a4-sheet').evaluate((el) => el.getBoundingClientRect().left);
+    expect(left).toBeLessThan(5);
     const visibleChrome = await page.locator('.no-print').evaluateAll((els) =>
       els.filter((el) => getComputedStyle(el).display !== 'none').length
     );

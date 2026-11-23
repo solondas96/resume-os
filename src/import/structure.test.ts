@@ -42,6 +42,10 @@ describe('splitEntryHeader', () => {
   it('education: the school is the part with a school word', () => {
     expect(splitEntryHeader('BSc Computer Science, State University', 'education')).toMatchObject({ head: 'State University', detail: 'BSc Computer Science' });
   });
+  it('a role word decides which part is the role, even when both parts look like companies', () => {
+    expect(splitEntryHeader('Senior Software Engineer — Acme Corp', 'experience')).toMatchObject({ head: 'Acme Corp', detail: 'Senior Software Engineer' });
+    expect(splitEntryHeader('Acme Corp — Senior Software Engineer', 'experience')).toMatchObject({ head: 'Acme Corp', detail: 'Senior Software Engineer' });
+  });
   it('negative: an unrecognised pair is marked not confident', () => {
     expect(splitEntryHeader('Alpha — Beta', 'experience').confident).toBe(false);
   });
