@@ -83,6 +83,16 @@ function kindForHeading(title: string): Section['kind'] {
 export function parseDate(text: string): YearMonth | 'present' | null {
   const t = text.trim();
   if (/^(present|now|current|to date)$/i.test(t)) return 'present';
+  // Day-first dates (UK, EU, India): DD/MM/YYYY or DD.MM.YYYY. The day is ignored; only the month is kept.
+  const full = t.match(/^(\d{1,2})[\/.](\d{1,2})[\/.]((?:19|20)\d{2})$/);
+  if (full) {
+    const a = parseInt(full[1], 10);
+    const b = parseInt(full[2], 10);
+    // If one part cannot be a month, the other is the month. If both can, read DD/MM (the day comes first).
+    const month = a > 12 ? b : b > 12 ? a : b;
+    if (month >= 1 && month <= 12 && (a <= 31 && b <= 31)) return { year: parseInt(full[3], 10), month };
+    return null;
+  }
   const numeric = t.match(/^(\d{1,2})\/((?:19|20)\d{2})$/);
   if (numeric && parseInt(numeric[1], 10) >= 1 && parseInt(numeric[1], 10) <= 12) {
     return { year: parseInt(numeric[2], 10), month: parseInt(numeric[1], 10) };

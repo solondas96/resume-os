@@ -1,0 +1,3 @@
+real-world PDFs scored: 0 of 6 (missing: 6)
+(no PDFs present yet; see MISSING.md)
+not yet scored: libreoffice-a4-eu, libreoffice-a4-india, libreoffice-a4-uk, libreoffice-letter-photo, libreoffice-three-page, libreoffice-us-letter

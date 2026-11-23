@@ -214,3 +214,19 @@ describe('"to date" ranges', () => {
     expect(parseDateRange('2020 to date')).toEqual({ start: { year: 2020 }, end: 'present' });
   });
 });
+
+describe('day-first dates (UK, EU, India)', () => {
+  it('DD/MM/YYYY reads the month from the second part', () => {
+    expect(parseDateRange('01/03/2019 – 15/08/2022')).toEqual({ start: { year: 2019, month: 3 }, end: { year: 2022, month: 8 } });
+  });
+  it('DD.MM.YYYY (German style) reads the same way', () => {
+    expect(parseDateRange('22.03.2019')).toEqual({ start: { year: 2019, month: 3 } });
+  });
+  it('when one part cannot be a month, the other is the month (US-style MM/DD/YYYY is still read)', () => {
+    expect(parseDateRange('03/25/2020')).toEqual({ start: { year: 2020, month: 3 } });
+  });
+  it('negative: a day-first date with an impossible month is not a date', () => {
+    expect(parseDateRange('13/13/2020')).toBeNull(); // neither part can be a month
+    expect(parseDateRange('32/13/2020')).toBeNull(); // day out of range
+  });
+});

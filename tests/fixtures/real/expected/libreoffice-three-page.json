@@ -1,0 +1,57 @@
+{
+  "id": "libreoffice-three-page",
+  "name": "Samuel Iyer",
+  "email": "samuel.iyer@example.com",
+  "phone": "+1 (416) 555-0199",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Maplewood Brands",
+      "role": "Director of Marketing",
+      "start": "Apr 2017",
+      "end": "Present",
+      "bullets": [
+        "Grew paid acquisition revenue by 60% over three years",
+        "Managed a team of 12 across brand, performance and content"
+      ]
+    },
+    {
+      "company": "Lakeshore Media",
+      "role": "Marketing Manager",
+      "start": "Mar 2012",
+      "end": "Mar 2017",
+      "bullets": [
+        "Launched the loyalty programme with 200,000 members in year one"
+      ]
+    },
+    {
+      "company": "Pinecrest Agency",
+      "role": "Account Lead",
+      "start": "Jun 2009",
+      "end": "Feb 2012",
+      "bullets": [
+        "Ran campaigns for eight retail clients"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Ryerson University",
+      "degree": "BComm Marketing",
+      "start": "Sep 2005",
+      "end": "Jun 2009"
+    }
+  ],
+  "skills": [
+    "HubSpot",
+    "Google Ads",
+    "SEO",
+    "Salesforce"
+  ],
+  "kind": "text"
+}

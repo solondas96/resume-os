@@ -1,0 +1,49 @@
+{
+  "id": "libreoffice-a4-india",
+  "name": "Ananya Rao",
+  "email": "ananya.rao@example.in",
+  "phone": "+91 98765 43210",
+  "sections": [
+    "Summary",
+    "Work Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Nimbus Software Pvt Ltd",
+      "role": "Senior Software Engineer",
+      "start": "Jun 2017",
+      "end": "Mar 2021",
+      "bullets": [
+        "Built the settlement service handling 40,000 transactions a day",
+        "Cut p95 latency from 900 ms to 220 ms by moving reads to a cache"
+      ]
+    },
+    {
+      "company": "Kestrel Systems",
+      "role": "Software Engineer",
+      "start": "Jul 2021",
+      "end": "Present",
+      "bullets": [
+        "Leads a team of five on the card issuing platform"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Visvesvaraya Technological University",
+      "degree": "BE Computer Science",
+      "start": "Jun 2008",
+      "end": "Jun 2012"
+    }
+  ],
+  "skills": [
+    "Java",
+    "Kotlin",
+    "PostgreSQL",
+    "Kafka",
+    "AWS"
+  ],
+  "kind": "text"
+}

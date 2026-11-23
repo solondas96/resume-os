@@ -1,0 +1,48 @@
+{
+  "id": "libreoffice-a4-uk",
+  "name": "Oliver Bennett",
+  "email": "oliver.bennett@example.co.uk",
+  "phone": "+44 20 7946 0123",
+  "sections": [
+    "Profile",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Harbourline Bank",
+      "role": "Senior Analyst",
+      "start": "Mar 2019",
+      "end": "Aug 2022",
+      "bullets": [
+        "Reduced provision variance by 12% through a revised loss model",
+        "Led the quarterly stress-test submission for two portfolios"
+      ]
+    },
+    {
+      "company": "Crescent Finance Ltd",
+      "role": "Analyst",
+      "start": "Sep 2016",
+      "end": "Feb 2019",
+      "bullets": [
+        "Built monthly arrears reporting for the collections team"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Bristol",
+      "degree": "MSc Financial Mathematics",
+      "start": "Sep 2014",
+      "end": "Jun 2015"
+    }
+  ],
+  "skills": [
+    "SAS",
+    "Python",
+    "IFRS 9",
+    "Excel"
+  ],
+  "kind": "text"
+}

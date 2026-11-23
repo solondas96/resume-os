@@ -1,0 +1,48 @@
+{
+  "id": "libreoffice-letter-photo",
+  "name": "Grace Okafor",
+  "email": "grace.okafor@example.com",
+  "phone": "(713) 555-0188",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Bayview Medical Center",
+      "role": "Charge Nurse",
+      "start": "Feb 2019",
+      "end": "Present",
+      "bullets": [
+        "Coordinated triage for up to 60 patients per shift",
+        "Trained 14 new nurses in sepsis protocols"
+      ]
+    },
+    {
+      "company": "Gulf Coast Hospital",
+      "role": "Staff Nurse",
+      "start": "Jul 2015",
+      "end": "Jan 2019",
+      "bullets": [
+        "Administered IV therapy and medication for a 24-bed unit"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Houston Community College",
+      "degree": "ADN Nursing",
+      "start": "Sep 2011",
+      "end": "May 2015"
+    }
+  ],
+  "skills": [
+    "ACLS",
+    "PALS",
+    "IV therapy",
+    "Epic"
+  ],
+  "kind": "text"
+}

@@ -29,3 +29,4 @@ playwright-report/
 
 # Coverage
 coverage/
+tests/fixtures/private/

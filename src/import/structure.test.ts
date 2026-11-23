@@ -66,3 +66,12 @@ describe('moveLineToSection', () => {
     expect(moveLineToSection(md, 'Stray note', 'No such section')).toBe(md);
   });
 });
+
+describe('day-first dates in a resume line', () => {
+  it('a DD/MM/YYYY range at the end of an entry line is found and normalised', () => {
+    expect(splitDate('Senior Analyst — Harbourline Bank 01/03/2019 – 15/08/2022')).toEqual({
+      rest: 'Senior Analyst — Harbourline Bank',
+      dates: 'Mar 2019 – Aug 2022',
+    });
+  });
+});

@@ -64,7 +64,7 @@ const PHONE_RE = /(?:\+?\d[\d\s().-]{6,}\d)/;
 const URL_RE = /((?:https?:\/\/)?(?:www\.)?(?:linkedin\.com|github\.com|[a-z0-9-]+\.[a-z]{2,})(?:\/[^\s]*)?)/i;
 // Month names only: a bare word before a year is not a month ("Science 2012" is not a date)
 const MONTH = String.raw`(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?`;
-const TOKEN = String.raw`(?:(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2}|(?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|\d{1,2}\/(?:19|20)\d{2}|present|now|current|to date|today)`;
+const TOKEN = String.raw`(?:(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2}|(?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|\d{1,2}[\/.]\d{1,2}[\/.](?:19|20)\d{2}|\d{1,2}\/(?:19|20)\d{2}|present|now|current|to date|today)`;
 // Dates may be in parentheses: "Engineer (2019 – Present)"
 const RANGE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?(${TOKEN}\s*(?:–|—|-|\bto\b)\s*${TOKEN})\)?\s*$`, 'i');
 const SINGLE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?((?:${MONTH}\s+)?(?:19|20)\d{2}(?:\s+to\s+date)?|(?:Spring|Summer|Fall|Autumn|Winter)\s+(?:19|20)\d{2})\)?\s*$`, 'i');

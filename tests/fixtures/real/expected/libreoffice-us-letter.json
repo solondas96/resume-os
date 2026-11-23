@@ -1,0 +1,48 @@
+{
+  "id": "libreoffice-us-letter",
+  "name": "Ava Thompson",
+  "email": "ava.thompson@example.com",
+  "phone": "(503) 555-0142",
+  "sections": [
+    "Summary",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Northwind Logistics",
+      "role": "Operations Analyst",
+      "start": "Jan 2019",
+      "end": "Present",
+      "bullets": [
+        "Cut stockouts by 18% with a weekly demand forecast",
+        "Built the carrier scorecard used by 40 dispatchers"
+      ]
+    },
+    {
+      "company": "Cascade Retail",
+      "role": "Inventory Clerk",
+      "start": "Jun 2016",
+      "end": "Dec 2018",
+      "bullets": [
+        "Reconciled stock counts across six distribution sites"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Oregon State University",
+      "degree": "BSc Industrial Engineering",
+      "start": "Sep 2012",
+      "end": "Jun 2016"
+    }
+  ],
+  "skills": [
+    "Excel",
+    "SQL",
+    "Tableau",
+    "Power BI"
+  ],
+  "kind": "text"
+}

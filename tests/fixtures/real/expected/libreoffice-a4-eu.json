@@ -1,0 +1,47 @@
+{
+  "id": "libreoffice-a4-eu",
+  "name": "Lukas Weber",
+  "email": "lukas.weber@example.de",
+  "phone": "+49 30 1234 5678",
+  "sections": [
+    "Profile",
+    "Experience",
+    "Education",
+    "Skills"
+  ],
+  "experience": [
+    {
+      "company": "Rheinwerk Automation GmbH",
+      "role": "Project Manager",
+      "start": "Mar 2018",
+      "end": "Present",
+      "bullets": [
+        "Delivered three production lines, 8% under budget"
+      ]
+    },
+    {
+      "company": "Elbe Engineering AG",
+      "role": "Project Engineer",
+      "start": "Sep 2014",
+      "end": "Feb 2018",
+      "bullets": [
+        "Commissioned PLC control systems at two plants"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Technische Universität Dresden",
+      "degree": "Dipl.-Ing. Mechatronics",
+      "start": "Sep 2004",
+      "end": "Jun 2010"
+    }
+  ],
+  "skills": [
+    "Siemens TIA Portal",
+    "Scrum",
+    "German",
+    "English"
+  ],
+  "kind": "text"
+}

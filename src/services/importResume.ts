@@ -11,6 +11,10 @@ import { htmlToLines } from '../import/docxHtml';
 // Bundled worker: served from our own origin, never from a CDN
 import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 
+/** Shown when a PDF has no text layer (for example, a scan). No OCR is attempted. */
+export const NO_TEXT_MESSAGE =
+  "This PDF is an image, so its text can't be read. Try exporting it again from Word or Google Docs, or paste the text.";
+
 export interface ImportResult {
   success: boolean;
   /** Structure detection output (sections with confidence, unsorted lines), for the review */
@@ -132,9 +136,10 @@ export async function importResume(file: File): Promise<ImportResult> {
     let pageText = '';
 
     if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-      const lines = await extractTextLines(await file.arrayBuffer(), pdfWorkerUrl);
+      // In the browser, use the bundled worker. In Node (tests), pdf.js uses its own.
+      const lines = await extractTextLines(await file.arrayBuffer(), typeof window !== 'undefined' ? pdfWorkerUrl : undefined);
       if (lines.length === 0) {
-        result.errors.push('File appears to be empty or unreadable (no selectable text; a scanned PDF needs OCR)');
+        result.errors.push(NO_TEXT_MESSAGE);
         return result;
       }
       const structure = structureFromLines(lines);
