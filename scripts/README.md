@@ -8,14 +8,14 @@
 
 1. Download the source data. Raw downloads are **not** committed.
    - **O*NET 29.1 text database** (CC BY 4.0): https://www.onetcenter.org/database.html (the "Text" zip, `db_29_1_text.zip`). Unzip it.
-   - **ESCO classification, CSV, English** (CC BY 4.0), optional but recommended for synonyms: https://esco.ec.europa.eu/en/use-esco/download. Choose the classification dataset, language `en`, file type `csv`. The download link is sent by email. Unzip it so that `skills_en.csv` and `occupations_en.csv` are in one folder.
+   - **ESCO classification, CSV, English** (CC BY 4.0), optional but recommended for synonyms: https://esco.ec.europa.eu/en/use-esco/download. Choose the classification dataset, language `en`, file type `csv`. The download link is sent by email. Unzip it so that `skills_en.csv` and `occupations_en.csv` are in one folder, then place that folder at `scripts/data/esco/`. The build finds it there without a flag. If the folder is absent, the build logs that ESCO was skipped and carries on.
 2. Build the dataset:
 
    ```sh
    npm run build:skills -- --onet path/to/db_29_1_text --esco path/to/esco-csv
    ```
 
-   `--esco` is optional. The build fails if the output is over 1.5 MB.
+   `--esco` is optional (it overrides `scripts/data/esco/`). The build fails if the output is over 1.5 MB.
 3. Commit `public/data/skills.json` only. Commit a new `generated` date with each rebuild, and update `ATTRIBUTIONS.md` if a source changes.
 
 ### What goes in
@@ -28,8 +28,13 @@
 | O*NET Technology Skills | Software and technology names | technology |
 | O*NET Tools Used | Short, plain tool names (no digits, up to three words) | tool |
 | O*NET occupations and alternate titles | Job-title names, up to three alternates each | titles |
+| O*NET Detailed Work Activities (DWA Reference) | Work activities such as "Review art or design materials" | activity |
+| O*NET Task Statements, via Tasks to DWAs | Only to tag each activity with the occupations whose tasks it supports. The task text is not stored: 18,797 statements would add about 2 MB, over the budget | tags |
+| Field synonym supplements, `src/intelligence/fieldSynonyms.ts` | About 30 entries for each of 12 non-tech fields (healthcare, education, sales, marketing, customer service, administration, finance and accounting, HR, operations and logistics, hospitality, construction and trades, legal) | skill, field |
 
-Priority when one name is in several sources: curated, then ESCO, then O*NET.
+Each skill from O*NET carries an `o` list: the three most common occupation major groups (first two digits of the SOC code) it appears under. Each field supplement carries an `f` field name. Both are for filtering and explanation; they do not change matching.
+
+Priority when one name is in several sources: curated, then field supplements, then ESCO, then O*NET.
 
 ### Limits
 

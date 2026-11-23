@@ -15,11 +15,14 @@ import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'no
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SKILLS as CURATED } from '../src/intelligence/skills';
+import { FIELD_SUPPLEMENTS } from '../src/intelligence/fieldSynonyms';
 
 export interface SkillOut {
   c: string; // canonical name
   a: string[]; // aliases (lowercase)
-  k: string; // kind: skill, knowledge, technology, tool
+  k: string; // kind: skill, knowledge, technology, tool, activity, field
+  o?: string[]; // occupation tags: the most common O*NET major groups (first two digits of the SOC code)
+  f?: string; // field tag, for the non-tech field supplements
 }
 export interface TitleOut {
   c: string;
@@ -73,6 +76,9 @@ export function parseDelimited(text: string, delimiter: string): Record<string, 
     .map((r) => Object.fromEntries(header.map((h, i) => [h.trim(), (r[i] ?? '').trim()])));
 }
 
+/** Generated files stay under this budget; the build fails over it */
+export const ESCO_DEFAULT_DIR = join(dirname(fileURLToPath(import.meta.url)), 'data', 'esco');
+
 const norm = (s: string) => s.replace(/\s+/g, ' ').trim();
 const key = (s: string) => norm(s).toLowerCase();
 
@@ -87,19 +93,56 @@ function read(dir: string, file: string): string | null {
   return existsSync(path) ? readFileSync(path, 'utf8') : null;
 }
 
+/** Occupation major groups kept per skill: enough to tag a skill by job family, short enough to stay small */
+const MAJOR_TAGS = 3;
+
+/** The most common O*NET major groups (first two digits of the SOC code) for a name */
+export function topMajors(counts: Map<string, number>): string[] {
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, MAJOR_TAGS)
+    .map(([major]) => major);
+}
+
 export function fromOnet(dir: string): { skills: SkillOut[]; titles: TitleOut[] } {
-  const skills: SkillOut[] = [];
-  const add = (names: Iterable<string>, kind: string, keep: (n: string) => boolean = () => true) => {
-    for (const n of names) if (n && keep(n)) skills.push({ c: norm(n), a: [], k: kind });
+  // Names from several O*NET files, each with the occupations it appears in
+  const tagged = new Map<string, { c: string; k: string; majors: Map<string, number> }>();
+  const add = (name: string, kind: string, code: string | undefined, keep: (n: string) => boolean = () => true) => {
+    const c = norm(name);
+    if (!c || !keep(c)) return;
+    const k = key(c);
+    let e = tagged.get(k);
+    if (!e) {
+      e = { c, k: kind, majors: new Map() };
+      tagged.set(k, e);
+    }
+    if (code) {
+      const major = code.slice(0, 2);
+      e.majors.set(major, (e.majors.get(major) ?? 0) + 1);
+    }
   };
-  const column = (file: string, col: string) => {
+  const rows = (file: string) => {
     const text = read(dir, file);
-    return text ? parseDelimited(text, '\t').map((r) => r[col]).filter(Boolean) : [];
+    return text ? parseDelimited(text, '\t') : [];
   };
-  add(new Set(column('Skills.txt', 'Element Name')), 'skill');
-  add(new Set(column('Knowledge.txt', 'Element Name')), 'knowledge');
-  add(new Set(column('Technology Skills.txt', 'Example')), 'technology');
-  add(new Set(column('Tools Used.txt', 'Example')), 'tool', plainToolName);
+  for (const r of rows('Skills.txt')) add(r['Element Name'], 'skill', r['O*NET-SOC Code']);
+  for (const r of rows('Knowledge.txt')) add(r['Element Name'], 'knowledge', r['O*NET-SOC Code']);
+  for (const r of rows('Technology Skills.txt')) add(r['Example'], 'technology', r['O*NET-SOC Code']);
+  for (const r of rows('Tools Used.txt')) add(r['Example'], 'tool', r['O*NET-SOC Code'], plainToolName);
+
+  // Detailed work activities (DWAs). A task statement links an occupation to a DWA, so each DWA
+  // is tagged with the occupations whose tasks it supports. The task text itself is not stored.
+  const dwaTitles = new Map<string, string>();
+  for (const r of rows('DWA Reference.txt')) if (r['DWA ID'] && r['DWA Title']) dwaTitles.set(r['DWA ID'], r['DWA Title'].replace(/\.$/, ''));
+  for (const r of rows('Tasks to DWAs.txt')) {
+    const title = dwaTitles.get(r['DWA ID']);
+    if (title) add(title, 'activity', r['O*NET-SOC Code']);
+  }
+
+  const skills: SkillOut[] = [...tagged.values()].map((e) => {
+    const majors = topMajors(e.majors);
+    return majors.length ? { c: e.c, a: [], k: e.k, o: majors } : { c: e.c, a: [], k: e.k };
+  });
 
   const occupations = read(dir, 'Occupation Data.txt');
   const alternates = read(dir, 'Alternate Titles.txt');
@@ -119,6 +162,15 @@ export function fromOnet(dir: string): { skills: SkillOut[]; titles: TitleOut[] 
     }
   }
   return { skills, titles };
+}
+
+/** Field supplements: project-authored synonyms for non-tech professions */
+export function fromFields(): { skills: SkillOut[]; titles: TitleOut[] } {
+  const skills: SkillOut[] = [];
+  for (const f of FIELD_SUPPLEMENTS) {
+    for (const e of f.entries) skills.push({ c: e.canonical, a: e.aliases, k: 'field', f: f.field });
+  }
+  return { skills, titles: [] };
 }
 
 export function fromEsco(dir: string): { skills: SkillOut[]; titles: TitleOut[] } {
@@ -154,8 +206,13 @@ export function merge(sources: { skills: SkillOut[]; titles: TitleOut[] }[]): { 
       if (existing) {
         for (const a of s.a) if (!existing.a.includes(a) && a !== k) existing.a.push(a);
         existing.a = existing.a.slice(0, MAX_ALIASES);
+        if (!existing.o && s.o) existing.o = s.o;
+        if (!existing.f && s.f) existing.f = s.f;
       } else {
-        seen.set(k, { c: s.c, a: [...new Set(s.a)].filter((a) => a !== k).slice(0, MAX_ALIASES), k: s.k });
+        const entry: SkillOut = { c: s.c, a: [...new Set(s.a)].filter((a) => a !== k).slice(0, MAX_ALIASES), k: s.k };
+        if (s.o) entry.o = s.o;
+        if (s.f) entry.f = s.f;
+        seen.set(k, entry);
       }
     }
     for (const t of src.titles) {
@@ -176,12 +233,14 @@ export function curatedSource(): { skills: SkillOut[]; titles: TitleOut[] } {
 }
 
 export function build(sources: { name: string; license: string; attribution: string; data: { skills: SkillOut[]; titles: TitleOut[] } }[]): DatasetOut {
-  const merged = merge([curatedSource(), ...sources.map((s) => s.data)]);
+  // Priority, as documented in scripts/README.md: curated, fields, ESCO, O*NET
+  const merged = merge([curatedSource(), fromFields(), ...sources.map((s) => s.data)]);
   return {
     version: 1,
     generated: new Date().toISOString().slice(0, 10),
     sources: [
       { name: 'Curated tech supplement', license: 'Project-authored', attribution: 'ResumeLabs' },
+      { name: 'Field synonym supplements (12 non-tech fields)', license: 'Project-authored', attribution: 'ResumeLabs' },
       ...sources.map((s) => ({ name: s.name, license: s.license, attribution: s.attribution })),
     ],
     skills: merged.skills,
@@ -196,12 +255,19 @@ function arg(name: string): string | undefined {
 
 function main() {
   const onet = arg('onet');
-  const esco = arg('esco');
-  if (!onet && !esco) {
-    console.error('Usage: npx tsx scripts/build-skills.ts --onet <dir> [--esco <dir>]');
-    process.exit(1);
-  }
+  const escoArg = arg('esco');
+  const escoDir = escoArg ?? (existsSync(ESCO_DEFAULT_DIR) ? ESCO_DEFAULT_DIR : undefined);
   const sources: Parameters<typeof build>[0] = [];
+  if (escoDir && existsSync(join(escoDir, 'skills_en.csv'))) {
+    sources.push({
+      name: 'ESCO classification (European Skills, Competences, Qualifications and Occupations)',
+      license: 'CC BY 4.0',
+      attribution: 'ESCO, European Commission. Licensed CC BY 4.0. https://esco.ec.europa.eu/en/use-esco/download',
+      data: fromEsco(escoDir),
+    });
+  } else {
+    console.log(`ESCO: skipped (no CSV files in ${escoArg ?? ESCO_DEFAULT_DIR}). Place the ESCO download there to include its synonyms.`);
+  }
   if (onet) {
     sources.push({
       name: 'O*NET 29.1 Database',
@@ -209,14 +275,8 @@ function main() {
       attribution: 'Based on O*NET 29.1 Database by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA), licensed CC BY 4.0. https://www.onetcenter.org/license_db.html',
       data: fromOnet(onet),
     });
-  }
-  if (esco) {
-    sources.push({
-      name: 'ESCO classification (European Skills, Competences, Qualifications and Occupations)',
-      license: 'CC BY 4.0',
-      attribution: 'ESCO, European Commission. Licensed CC BY 4.0. https://esco.ec.europa.eu/en/use-esco/download',
-      data: fromEsco(esco),
-    });
+  } else {
+    console.log('O*NET: skipped (no --onet folder given).');
   }
   const dataset = build(sources);
   const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'data', 'skills.json');
@@ -224,7 +284,9 @@ function main() {
   const json = JSON.stringify(dataset);
   writeFileSync(out, json);
   const bytes = statSync(out).size;
-  console.log(`skills: ${dataset.skills.length}, titles: ${dataset.titles.length}, ${(bytes / 1024).toFixed(0)} KB`);
+  const activities = dataset.skills.filter((x) => x.k === 'activity').length;
+  const tagged = dataset.skills.filter((x) => x.o).length;
+  console.log(`skills: ${dataset.skills.length} (activities ${activities}, tagged ${tagged}), titles: ${dataset.titles.length}, ${(bytes / 1024).toFixed(0)} KB`);
   if (bytes > MAX_BYTES) {
     console.error(`Dataset is ${bytes} bytes, over the ${MAX_BYTES} byte budget`);
     process.exit(1);
