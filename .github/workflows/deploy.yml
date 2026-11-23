@@ -61,6 +61,18 @@ jobs:
       - name: Bundle size budget (initial JavaScript, 300 KB gzipped)
         run: npm run size
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
       - name: List the visual check files
         if: always()
         run: ls -la test-results/visual || echo 'no visual check files'
@@ -82,15 +94,3 @@ jobs:
             test-results/screenshots/
             test-results/walkthrough.json
           if-no-files-found: ignore
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
