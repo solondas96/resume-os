@@ -56,6 +56,8 @@ export interface Layout {
 export interface LayoutOptions {
   pageSize: PageSize;
   measure: Measure;
+  /** Scales line leading and section gaps (1 = the design's own spacing). Used to fit a page. */
+  spacing?: number;
 }
 
 const BODY: Record<string, number> = { small: 9.5, medium: 10.5, large: 11.5 };
@@ -68,7 +70,8 @@ export function layoutResume(resume: Resume, opts: LayoutOptions): Layout {
   const page = PAGE[opts.pageSize];
   const margin = MARGIN[r.design.margin] ?? MARGIN.normal;
   const body = BODY[r.design.fontSize] ?? BODY.medium;
-  const leading = LEADING[r.design.lineHeight] ?? LEADING.normal;
+  const spacing = opts.spacing ?? 1;
+  const leading = (LEADING[r.design.lineHeight] ?? LEADING.normal) * spacing;
   const accent = /^#[0-9a-fA-F]{6}$/.test(r.design.accent) ? r.design.accent : style.accent;
   const contentWidth = page.width - margin * 2;
   const bottom = page.height - margin;
@@ -153,7 +156,7 @@ export function layoutResume(resume: Resume, opts: LayoutOptions): Layout {
   function sectionBlock(section: Section) {
     const title = style.headingCase === 'caps' ? section.title.toUpperCase() : section.title;
     ensure(body * 3);
-    y += style.sectionGap;
+    y += style.sectionGap * spacing;
     line(title, { face: style.heading, size: body + 1, color: style.headingColor === 'accent' ? accent : style.ink });
     textLines.push(section.title);
     y += (body + 1) * 1.3;
