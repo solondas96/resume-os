@@ -4,7 +4,8 @@ import { defineConfig, devices } from '@playwright/test';
 // the lazy chunks are tested as they ship. Run `npm run build` first.
 export default defineConfig({
   testDir: 'tests/e2e',
-  testIgnore: /pwa\.spec\.ts/,
+  // The offline test has its own config. errors.spec injects a fault that only development builds allow.
+  testIgnore: [/pwa\.spec\.ts/, /errors\.spec\.ts/],
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   reporter: 'list',
