@@ -8,6 +8,7 @@ import { readdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { scoreOne, Score } from './score';
+import { readBaseline, compareToBaseline, formatChanges } from './baseline';
 import { importResume, NO_TEXT_MESSAGE } from '../../src/services/importResume';
 
 const dir = join(dirname(fileURLToPath(import.meta.url)), 'real');
@@ -36,6 +37,12 @@ describe('real-world PDFs', () => {
     writeFileSync(join(dir, 'report.txt'), lines.join('\n') + '\n');
     console.log(lines.join('\n'));
     expect(scores.length + missing.length).toBe(textIds.length);
+
+    // The ratchet: every field must equal its baseline. A drop is a regression; a rise must be recorded
+    // with `npm run fixtures:baseline` in the same commit.
+    const { changes, missing: unbaselined } = compareToBaseline(scores, readBaseline(join(dir, 'baseline.json')));
+    expect(unbaselined, 'fixtures with no baseline: run npm run fixtures:baseline').toEqual([]);
+    expect(changes.length, `scores changed from the baseline:\n${formatChanges(changes)}`).toBe(0);
   }, 180_000);
 
   for (const id of scannedIds) {

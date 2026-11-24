@@ -15,7 +15,8 @@
     "test:coverage": "vitest run --coverage",
     "size": "size-limit",
     "perf": "playwright test -c playwright.perf.config.ts",
-    "e2e:build": "playwright test -c playwright.build.config.ts"
+    "e2e:build": "playwright test -c playwright.build.config.ts",
+    "fixtures:baseline": "tsx tests/fixtures/update-baseline.ts"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.1",

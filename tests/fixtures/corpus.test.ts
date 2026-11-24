@@ -9,6 +9,7 @@ import { readdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { scoreOne, Score } from './score';
+import { readBaseline, compareToBaseline, formatChanges } from './baseline';
 
 const dir = join(dirname(fileURLToPath(import.meta.url)), 'corpus');
 const ids = readdirSync(join(dir, 'expected'))
@@ -31,6 +32,9 @@ describe('PDF import accuracy over the corpus', () => {
     console.log(report);
 
     expect(scores.length).toBe(16);
+    const { changes, missing: unbaselined } = compareToBaseline(scores, readBaseline(join(dir, 'baseline.json')));
+    expect(unbaselined, 'fixtures with no baseline: run npm run fixtures:baseline').toEqual([]);
+    expect(changes.length, `scores changed from the baseline:\n${formatChanges(changes)}`).toBe(0);
     // Gate: the measured mean is 99%; a drop below 95% fails the run
     expect(mean).toBeGreaterThanOrEqual(0.95);
   }, 120_000);
