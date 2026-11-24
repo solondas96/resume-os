@@ -36,6 +36,16 @@ Use any `<id>` (for example `my-cv`). The expected file has the same shape as th
 
 Write the dates the way the file shows them. The scorer converts them to a canonical form, so it does not depend on the date parser.
 
+## The quick way
+
+```
+npm run fixtures:add -- my-cv ~/Documents/my-cv.pdf   # copies the PDF here and writes an empty expected file
+# fill in expected/my-cv.json by hand, from the file
+npm run fixtures:private                              # prints the score for each field
+```
+
+`fixtures:add` refuses to overwrite an existing id. It never copies the importer's output into the expected file, because the expected file is the truth the importer is scored against.
+
 ## How to run only this test
 
 ```sh

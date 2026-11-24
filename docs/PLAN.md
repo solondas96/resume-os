@@ -169,7 +169,7 @@ Goal: every real-world PDF at 90% or more, and a mean of 95% or more.
 | 2 Layouts below 90% | Done | d3c1055 | real-world mean 81% to 100%; lowest fixture 97% (moderncv); synthetic corpus 100%. Four held-out résumés added (see below) |
 | 3 Import confidence | Done | 6d3d7c9 | high, medium or low in plain words, with reasons; "Paste text instead" on low; unit tests, a test over every fixture, and two e2e tests |
 | 4 Paperwork | Done | this commit | this section; CHANGELOG 2.1.0 and 2.2.0; the header budget test (below) |
-| 5 Developer tooling | Pending | | `npm run skills:check`, `npm run fixtures:add`, `npm run fixtures:private`, the usability findings template |
+| 5 Developer tooling | Done (the usability sessions are not run yet) | this commit | `npm run skills:check` (budget, sources, duplicates; 11,737 skills pass); `npm run fixtures:add -- <id> <file.pdf>` (private by default, empty skeleton, never the importer's output); `npm run fixtures:private`; `docs/USABILITY-FINDINGS.md` template, with status "no sessions run yet" |
 
 **Held-out résumés.** Four made-up résumés in layouts not used while tuning (`tests/fixtures/heldout/`). On their first run they scored 86% (the date-column table 55%, the single column 91%). Two rules were then added for the failures they showed: a date range before a role line, and a `Phone:` label. They now score 100%. They are no longer held out for those two rules, and the number should not be read as a clean held-out result.
 
