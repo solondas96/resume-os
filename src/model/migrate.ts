@@ -113,7 +113,7 @@ function migrateProfile(v1Profile: any, index: number): Resume | null {
     resume.meta.updatedAt = v1Profile.updatedAt || Date.now();
 
     resume.design.template = v1Profile.theme || 'modern';
-    resume.design.accent = v1Profile.accentColor || '#c96442';
+    resume.design.accent = v1Profile.accentColor || '#1F3A5F';
     resume.design.fontSize = v1Profile.fontSize || 'medium';
     resume.design.margin = v1Profile.marginSize || 'normal';
     resume.design.lineHeight = v1Profile.lineHeight || 'normal';

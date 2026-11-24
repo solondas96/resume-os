@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { createCanvas, loadImage, Canvas } from '@napi-rs/canvas';
-import { test, expect, waitForApp, skipTour } from './helpers';
+import { test, expect, waitForApp, skipTour, openNotes } from './helpers';
 
 const DOCX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes', 'maya-chen.docx');
 const RESULTS = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'test-results');
@@ -72,11 +72,11 @@ for (const size of ['A4', 'Letter'] as const) {
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
     if (size === 'Letter') {
-      await page.getByRole('button', { name: 'Inspector' }).click();
+      await openNotes(page);
       await page.getByRole('tab', { name: 'Design' }).click();
       await page.getByLabel('Paper size').selectOption('Letter');
-      await page.getByRole('button', { name: 'Close inspector' }).click();
-      await expect(page.getByRole('complementary', { name: 'Inspector' })).toBeHidden({ timeout: 10_000 });
+      await page.getByRole('button', { name: 'Close notes' }).click();
+      await expect(page.getByRole('complementary', { name: 'Notes' })).toBeHidden({ timeout: 10_000 });
       await expect(page.locator('.a4-sheet.page-letter')).toBeVisible();
     }
 

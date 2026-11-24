@@ -160,7 +160,7 @@ export function createResume(
     sections: [],
     design: {
       template: options.template || 'modern',
-      accent: options.accent || '#c96442',
+      accent: options.accent || '#1F3A5F',
       fontSize: 'medium',
       margin: 'normal',
       lineHeight: 'normal',

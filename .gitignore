@@ -32,3 +32,6 @@ coverage/
 tests/fixtures/private/*
 !tests/fixtures/private/README.md
 *.tsbuildinfo
+
+# The screenshot matrix (kept outside test-results/, which each run clears)
+test-results-viewports/

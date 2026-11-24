@@ -46,6 +46,8 @@ export const App: React.FC = () => {
   }, [commandPaletteOpen, setCommandPaletteOpen]);
   const mobileTab = useResumeStoreV2((s) => s.mobileTab);
   const setMobileTab = useResumeStoreV2((s) => s.setMobileTab);
+  const openInspector = useResumeStoreV2((s) => s.openInspector);
+  const closeInspector = useResumeStoreV2((s) => s.closeInspector);
   const recruiterViewMode = useResumeStoreV2((s) => s.recruiterViewMode);
   const currentResume = useResumeStoreV2((s) => s.currentResume);
   const openSharedView = useResumeStoreV2((s) => s.openSharedView);
@@ -164,32 +166,34 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground font-sans transition-colors duration-150">
+    <div className="flex flex-col h-screen h-dvh w-screen overflow-hidden bg-desk text-ink font-sans transition-colors duration-150">
       {/* Top Navbar */}
       <ErrorBoundary area="The header" faultId="header" compact><Suspense fallback={null}><Header /></Suspense></ErrorBoundary>
 
-      {/* Mobile Tab Switcher (Visible on mobile/tablet screens < md) */}
-      <div className="md:hidden flex items-center justify-center p-2 bg-muted/60 border-b border-border no-print transition-colors">
-        <div className="grid grid-cols-2 w-full max-w-xs bg-muted p-0.5 rounded-lg border border-border text-xs">
+      {/* Small tablets and small windows (640 to 767 px): one view at a time, under the header */}
+      <div className="hidden sm:flex md:hidden items-center justify-center p-2 bg-surface border-b border-rule no-print">
+        <div role="tablist" aria-label="Views" className="grid grid-cols-3 w-full max-w-sm bg-muted p-0.5 rounded-lg border border-rule text-xs">
+          {(['editor', 'preview'] as const).map((tab) => (
+            <button
+              key={tab}
+              role="tab"
+              aria-selected={mobileTab === tab && !inspectorTab}
+              onClick={() => {
+                closeInspector();
+                setMobileTab(tab);
+              }}
+              className={`min-h-[44px] rounded-md font-medium transition ${mobileTab === tab && !inspectorTab ? 'bg-pencil text-on-pencil' : 'text-graphite hover:text-ink'}`}
+            >
+              {tab === 'editor' ? 'Write' : 'Page'}
+            </button>
+          ))}
           <button
-            onClick={() => setMobileTab('editor')}
-            className={`py-1.5 rounded-md font-medium transition ${
-              mobileTab === 'editor'
-                ? 'bg-primary text-primary-foreground shadow-card'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            role="tab"
+            aria-selected={!!inspectorTab}
+            onClick={() => (inspectorTab ? closeInspector() : openInspector('health'))}
+            className={`min-h-[44px] rounded-md font-medium transition ${inspectorTab ? 'bg-pencil text-on-pencil' : 'text-graphite hover:text-ink'}`}
           >
-            Editor
-          </button>
-          <button
-            onClick={() => setMobileTab('preview')}
-            className={`py-1.5 rounded-md font-medium transition ${
-              mobileTab === 'preview'
-                ? 'bg-primary text-primary-foreground shadow-card'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Preview
+            Notes
           </button>
         </div>
       </div>
@@ -244,7 +248,41 @@ export const App: React.FC = () => {
       </div>
 
       {/* Bottom Unified Status Bar */}
-      <ErrorBoundary area="The status bar" faultId="status" compact><Suspense fallback={null}><StatusBar /></Suspense></ErrorBoundary>
+      <div className="hidden sm:block">
+        <ErrorBoundary area="The status bar" faultId="status" compact><Suspense fallback={null}><StatusBar /></Suspense></ErrorBoundary>
+      </div>
+
+      {/* Phones: the thumb-reach tab bar (Write, Page, Notes) */}
+      <nav aria-label="Views" className="sm:hidden no-print shrink-0 bg-surface border-t border-rule pb-[env(safe-area-inset-bottom)]">
+        <div role="tablist" className="grid grid-cols-3">
+          {([
+            { id: 'editor', label: 'Write' },
+            { id: 'preview', label: 'Page' },
+          ] as const).map((tab) => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={mobileTab === tab.id && !inspectorTab}
+              onClick={() => {
+                closeInspector();
+                setMobileTab(tab.id);
+              }}
+              className={`min-h-[56px] text-sm font-medium transition ${mobileTab === tab.id && !inspectorTab ? 'text-pencil' : 'text-graphite'}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <button
+            role="tab"
+            aria-selected={!!inspectorTab}
+            onClick={() => (inspectorTab ? closeInspector() : openInspector('health'))}
+            className={`min-h-[56px] text-sm font-medium transition ${inspectorTab ? 'text-pencil' : 'text-graphite'}`}
+          >
+            Notes
+          </button>
+        </div>
+      </nav>
+
 
       <BackupReminder />
 

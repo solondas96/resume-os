@@ -68,7 +68,7 @@ test.describe('editor, health and match', () => {
   });
 
   test('health badge shows a score; the inspector lists findings with a why', async ({ page }) => {
-    const badge = page.getByRole('button', { name: /Health\s*\d+/ });
+    const badge = page.getByRole('button', { name: /Checks\s*\d+/ });
     await expect(badge).toBeVisible();
     await badge.click();
     await expect(page.getByText('Resume health', { exact: true })).toBeVisible();
@@ -85,7 +85,7 @@ test.describe('editor, health and match', () => {
   });
 
   test('inspector tools render: ATS preview, seniority, bullet builder', async ({ page }) => {
-    await page.getByRole('button', { name: /Health\s*\d+/ }).click();
+    await page.getByRole('button', { name: /Checks\s*\d+/ }).click();
     await expect(page.getByText('What applicant tracking software sees')).toBeVisible();
     await expect(page.getByText('Plain text in reading order')).toBeVisible();
     await expect(page.getByText('Seniority', { exact: true })).toBeVisible();
@@ -106,7 +106,7 @@ test.describe('export', () => {
     await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
     // Also with a side panel open: panels must not print over the resume
-    await page.getByRole('button', { name: /Health\s*\d+/ }).click();
+    await page.getByRole('button', { name: /Checks\s*\d+/ }).click();
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.a4-sheet')).toHaveCount(1);
     // The sheet must start at the left edge of the page, not pushed right by hidden app chrome

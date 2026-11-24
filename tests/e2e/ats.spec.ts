@@ -16,7 +16,7 @@ test('ATS: the print-layout readout renders, and an exported PDF is read back an
   await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
   // Open the inspector and read the print-layout estimate
-  await page.getByRole('button', { name: /Health\s*\d+/ }).click();
+  await page.getByRole('button', { name: /Checks\s*\d+/ }).click();
   await expect(page.getByText('What applicant tracking software sees')).toBeVisible();
   await expect(page.getByText(/Read from this resume's PDF/)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByLabel('Text from the generated PDF')).toContainText('Maya Chen', { timeout: 20_000 });

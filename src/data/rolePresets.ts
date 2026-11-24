@@ -10,7 +10,7 @@ export const ROLE_PRESETS: RolePreset[] = [
     description: 'High-scale backends, microservices, STAR methodology, and quantifiable cloud optimization.',
     iconName: 'code',
     theme: 'modern',
-    accentColor: '#c96442', // Terracotta
+    accentColor: '#1F3A5F', // Ink navy
     markdown: SAMPLE_RESUME,
   },
   {
@@ -567,7 +567,7 @@ Computational Biologist and Postdoctoral Fellow specializing in single-cell tran
     description: 'Go-to-market product launches, ICP positioning, sales enablement, competitive battlecards, and ARR pipeline acceleration.',
     iconName: 'megaphone',
     theme: 'swiss',
-    accentColor: '#c96442', // Terracotta
+    accentColor: '#1F3A5F', // Ink navy
     markdown: `# Chloe Martin
 Lead Product Marketing Manager | Enterprise SaaS & Go-To-Market
 

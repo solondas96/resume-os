@@ -45,14 +45,17 @@ export const TEMPLATES: TemplateConfig[] = [
   },
 ];
 
+/**
+ * The accents a user can choose for a resume. Each one is checked at 4.5:1 or better on white
+ * (the page is always white). The first is the default: ink navy, not a brand colour.
+ */
 export const ACCENT_COLORS: AccentColor[] = [
-  { id: 'terracotta', name: 'Terracotta (Warm)', hex: '#c96442', lightHex: '#f5e9e2' },
-  { id: 'slate', name: 'Slate Gray', hex: '#334155', lightHex: '#f1f5f9' },
-  { id: 'blue', name: 'Pacific Blue', hex: '#2563eb', lightHex: '#eff6ff' },
-  { id: 'navy', name: 'Oxford Navy', hex: '#1e3a8a', lightHex: '#eff6ff' },
-  { id: 'emerald', name: 'Forest Emerald', hex: '#059669', lightHex: '#ecfdf5' },
-  { id: 'burgundy', name: 'Royal Burgundy', hex: '#991b1b', lightHex: '#fef2f2' },
-  { id: 'purple', name: 'Imperial Violet', hex: '#7c3aed', lightHex: '#f5f3ff' },
-  { id: 'amber', name: 'Sunset Amber', hex: '#d97706', lightHex: '#fffbeb' },
-  { id: 'charcoal', name: 'True Charcoal', hex: '#18181b', lightHex: '#f4f4f5' },
+  { id: 'ink-navy', name: 'Ink navy', hex: '#1F3A5F', lightHex: '#e6ebf2' },
+  { id: 'forest', name: 'Forest', hex: '#2F5D3A', lightHex: '#e8f0ea' },
+  { id: 'oxblood', name: 'Oxblood', hex: '#7A2E2E', lightHex: '#f3e7e7' },
+  { id: 'slate', name: 'Slate', hex: '#3F4A59', lightHex: '#e9ecf0' },
+  { id: 'teal', name: 'Teal', hex: '#1F5F63', lightHex: '#e4eff0' },
+  { id: 'plum', name: 'Plum', hex: '#5B3A6B', lightHex: '#eee8f1' },
+  { id: 'graphite', name: 'Graphite', hex: '#3B3F45', lightHex: '#ebebed' },
+  { id: 'ochre', name: 'Ochre', hex: '#7A5A16', lightHex: '#f4eedf' },
 ];

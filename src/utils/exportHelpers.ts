@@ -53,7 +53,7 @@ export async function exportDirectPdf(
 
     // Copy CSS variables from original element
     const computed = window.getComputedStyle(element);
-    const primaryColor = computed.getPropertyValue('--primary-color') || '#c96442';
+    const primaryColor = computed.getPropertyValue('--primary-color') || '#1F3A5F';
     const primaryLight = computed.getPropertyValue('--primary-light') || '#f5e9e2';
     clone.style.setProperty('--primary-color', primaryColor);
     clone.style.setProperty('--primary-light', primaryLight);

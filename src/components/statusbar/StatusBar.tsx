@@ -51,16 +51,15 @@ export const StatusBar: React.FC = () => {
   }, [markdown]);
 
   return (
-    <footer className="no-print h-8 bg-card border-t border-border flex items-center justify-between px-3 text-[11px] text-muted-foreground select-none z-30 shrink-0 transition-colors">
+    <footer className="no-print h-8 bg-surface border-t border-rule flex items-center justify-between px-3 text-[11px] text-muted-foreground select-none z-30 shrink-0 transition-colors">
       {/* Left: Editor Metrics & Autosave */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 font-mono">
+        <div className="flex items-center gap-2 tabular-nums">
           <span>{wordCount.toLocaleString()} words</span>
           <span className="text-muted-foreground/40">•</span>
           <span>{lineCount} lines</span>
         </div>
 
-        <div className="h-3 w-[1px] bg-border mx-1" />
 
         {/* Autosave Indicator */}
         <div className="flex items-center gap-1.5 font-medium">
@@ -80,11 +79,11 @@ export const StatusBar: React.FC = () => {
         {/* Bullet Linter Pill */}
         {workspaceMode === 'resume' && (
           <>
-            <div className="h-3 w-[1px] bg-border mx-1 hidden sm:block" />
+
             <button
               onClick={() => (inspectorTab === 'health' ? closeInspector() : openInspector('health'))}
               title="Open bullet checks: weak verbs and missing numbers"
-              className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
+              className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition tabular-nums ${
                 inspectorTab === 'health'
                   ? 'bg-accent text-accent-foreground border border-brand/30'
                   : 'hover:bg-muted text-muted-foreground hover:text-foreground'
@@ -97,7 +96,7 @@ export const StatusBar: React.FC = () => {
         )}
 
         {/* Health badge: opens the inspector breakdown */}
-        <div className="h-3 w-[1px] bg-border mx-1 hidden sm:block" />
+
         <HealthBadge
           active={inspectorTab === 'health'}
           onClick={() => (inspectorTab === 'health' ? closeInspector() : openInspector('health'))}
@@ -107,7 +106,7 @@ export const StatusBar: React.FC = () => {
         <button
           onClick={() => (inspectorTab === 'match' ? closeInspector() : openInspector('match'))}
           title="Open Job Match"
-          className={`hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
+          className={`hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition tabular-nums ${
             inspectorTab === 'match'
               ? 'bg-accent text-accent-foreground border border-brand/30'
               : 'hover:bg-muted text-muted-foreground hover:text-foreground'
@@ -124,7 +123,7 @@ export const StatusBar: React.FC = () => {
           <div className="flex items-center gap-2">
             <div
               title={`${pageCount} A4 pages. Content spills onto multiple pages.`}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent border border-brand/30 text-accent-foreground font-medium font-mono"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent border border-brand/30 text-accent-foreground font-medium tabular-nums"
             >
               <AlertTriangle className="w-3 h-3 text-brand-text" />
               <span>{pageCount} Pages (Spill)</span>
@@ -142,7 +141,7 @@ export const StatusBar: React.FC = () => {
         ) : (
           <div
             title="Clean single-page resume layout"
-            className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground font-mono"
+            className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground tabular-nums"
           >
             <FileText className="w-3 h-3 text-brand-text" />
             <span>1 Page (Fit)</span>
@@ -163,7 +162,7 @@ export const StatusBar: React.FC = () => {
           <ZoomOut className="w-3 h-3" />
         </button>
 
-        <span className="w-10 text-center font-mono font-medium text-foreground">
+        <span className="w-10 text-center tabular-nums font-medium text-foreground">
           {Math.round(zoom * 100)}%
         </span>
 
@@ -177,8 +176,6 @@ export const StatusBar: React.FC = () => {
         >
           <ZoomIn className="w-3 h-3" />
         </button>
-
-        <div className="h-3 w-[1px] bg-border mx-0.5" />
 
         <button
           onClick={() => setAutoFitZoom(true)}

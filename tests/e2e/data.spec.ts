@@ -5,7 +5,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
-import { test, expect, waitForApp, skipTour } from './helpers';
+import { test, expect, waitForApp, skipTour, openNotes } from './helpers';
 
 const DOCX = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'resumes', 'maya-chen.docx');
 
@@ -20,11 +20,11 @@ test('create, back up, delete everything, then restore from the backup file', as
   await expect(page.locator('.a4-sheet')).toContainText('Maya Chen');
 
   // 1. Download a backup from the inspector's History tab
-  await page.getByRole('button', { name: 'Inspector' }).click();
-  await page.getByRole('tab', { name: 'History' }).click();
+  await openNotes(page);
+  await page.getByRole('tab', { name: 'Versions' }).click();
   const download = page.waitForEvent('download');
   // The reminder banner has a button with the same name, so scope to the inspector
-  await page.getByRole('complementary', { name: 'Inspector' }).getByRole('button', { name: 'Download a backup' }).click();
+  await page.getByRole('complementary', { name: 'Notes' }).getByRole('button', { name: 'Download a backup' }).click();
   const file = await download;
   expect(file.suggestedFilename()).toMatch(/^resumelabs-backup-\d{4}-\d{2}-\d{2}\.json$/);
   const backupPath = test.info().outputPath(file.suggestedFilename());

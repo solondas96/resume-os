@@ -24,12 +24,12 @@ export const HealthBadge: React.FC<{ onClick: () => void; active: boolean }> = (
   return (
     <button
       onClick={onClick}
-      title="Resume health: open the inspector for the breakdown and fixes"
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition font-mono ${
-        active ? 'bg-accent text-accent-foreground border border-brand/30' : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+      title="Checks: the resume health score, with the fixes"
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full transition tabular-nums ${
+        active ? "bg-pencil-soft text-pencil-dark" : "hover:bg-muted text-graphite hover:text-ink"
       }`}
     >
-      <span>Health</span>
+      <span>Checks</span>
       <span className={`font-semibold ${scoreTone(health.overallScore)}`}>{health.overallScore}</span>
     </button>
   );

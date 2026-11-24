@@ -47,3 +47,9 @@ export async function skipTour(page: Page) {
   const skip = page.getByRole('button', { name: 'Skip tour' });
   await skip.waitFor({ state: 'visible', timeout: 5_000 }).then(() => skip.click()).catch(() => {});
 }
+
+/** Opens the Notes panel from More (the header keeps only four controls). */
+export async function openNotes(page: Page) {
+  await page.getByRole('button', { name: 'More', exact: true }).click();
+  await page.getByRole('menuitem', { name: /^Notes/ }).click();
+}

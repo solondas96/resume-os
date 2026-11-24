@@ -143,4 +143,5 @@ jobs:
             test-results/screenshots/
             test-results/walkthrough.json
             test-results/page-breaks/
+            test-results-viewports/
           if-no-files-found: warn

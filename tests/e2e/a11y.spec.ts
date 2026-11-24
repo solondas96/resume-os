@@ -44,7 +44,7 @@ test.describe('accessibility (WCAG 2.2 AA, serious and critical)', () => {
     await page.locator('.cm-content').first().waitFor();
     await serious(page, 'markdown view');
     await page.getByRole('button', { name: 'Form', exact: true }).click();
-    await page.getByRole('button', { name: /Health\s*\d+/ }).click();
+    await page.getByRole('button', { name: /Checks\s*\d+/ }).click();
     await serious(page, 'inspector');
   });
 

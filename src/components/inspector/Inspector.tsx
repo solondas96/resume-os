@@ -1,5 +1,5 @@
 /**
- * The one inspector: Health, Match, Design and History, as tabs. It replaces the separate
+ * The one notes panel: Checks, Job match, Design and Versions, as tabs. It replaces the separate
  * side panels and modals for these, so there is one place to look.
  */
 
@@ -14,10 +14,10 @@ import { HistoryPanel } from '../modals/HistoryModal';
 import { DataPanel } from '../data/DataPanel';
 
 const TABS: { id: InspectorTab; label: string }[] = [
-  { id: 'health', label: 'Health' },
-  { id: 'match', label: 'Match' },
+  { id: 'health', label: 'Checks' },
+  { id: 'match', label: 'Job match' },
   { id: 'design', label: 'Design' },
-  { id: 'history', label: 'History' },
+  { id: 'history', label: 'Versions' },
 ];
 
 export const Inspector: React.FC = () => {
@@ -40,21 +40,21 @@ export const Inspector: React.FC = () => {
 
   return (
     <aside
-      aria-label="Inspector"
-      className="no-print fixed right-0 top-0 bottom-0 z-40 w-full sm:w-[420px] bg-card border-l border-border shadow-lifted flex flex-col"
+      aria-label="Notes"
+      className="no-print fixed right-0 top-0 bottom-0 z-40 w-full sm:w-[420px] bg-surface border-l border-rule shadow-lifted flex flex-col"
     >
       <div className="px-5 py-3 border-b border-border flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground tracking-tight">Inspector</h2>
+        <h2 className="text-base font-bold text-ink">Notes</h2>
         <button
           onClick={() => closeInspector()}
           className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition"
-          aria-label="Close inspector"
+          aria-label="Close notes"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <div role="tablist" aria-label="Inspector sections" className="flex border-b border-border px-2">
+      <div role="tablist" aria-label="Notes sections" className="flex border-b border-border px-2">
         {TABS.map((tab, index) => {
           const selected = tab.id === inspectorTab;
           return (

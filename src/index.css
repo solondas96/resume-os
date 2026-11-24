@@ -124,6 +124,29 @@
 }
 
 .dark {
+  /* The same names, re-declared here: a var() resolves where it is declared, so the aliases must be too */
+  /* Names the components already use, mapped onto the palette */
+  --background: var(--desk);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --muted-foreground: var(--graphite);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--pencil);
+  --brand: var(--pencil);
+  --brand-hover: var(--pencil-dark);
+  --brand-text: var(--pencil);
+  --brand-button: var(--pencil);
+  --accent: var(--pencil-soft);
+  --accent-foreground: var(--pencil-dark);
+  --primary: var(--ink);
+  --primary-foreground: var(--surface);
+  --secondary: var(--muted);
+  --secondary-foreground: var(--ink);
+  --destructive: var(--redpen);
+  --destructive-foreground: var(--surface);
+
   --desk: #14171b;
   --surface: #1c2026;
   --paper: #ffffff;
@@ -233,14 +256,21 @@ html, body, #root {
 .a4-sheet {
   width: var(--a4-width);
   min-height: var(--a4-height);
-  background-color: #ffffff;
-  color: #141413;
-  box-shadow: 0 4px 20px -2px rgba(20, 20, 19, 0.08), 0 0 0 1px rgba(20, 20, 19, 0.04);
+  background-color: var(--paper);
+  color: var(--page-ink);
+  box-shadow: var(--shadow-page);
   padding: 40px 48px;
   transform-origin: top center;
   transition: transform 0.15s ease-out, box-shadow 0.2s ease;
   position: relative;
   box-sizing: border-box;
+}
+
+/* Links on the page are targets too (WCAG 2.2, target size): at least 24 px high in the preview */
+.a4-sheet a {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
 }
 
 .dark .a4-sheet {

@@ -83,6 +83,6 @@ test('empty states: a blank resume says what to add next, and the health panel e
   await waitForApp(page);
   await page.getByRole('heading', { name: 'Start blank' }).click();
   await expect(page.getByText('No sections yet. Add one below, such as Experience or Education.')).toBeVisible({ timeout: 20_000 });
-  await page.getByRole('button', { name: /Health\s*\d+/ }).click();
+  await page.getByRole('button', { name: /Checks\s*\d+/ }).click();
   await expect(page.getByRole('region', { name: 'Resume health' })).toBeVisible();
 });

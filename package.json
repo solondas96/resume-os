@@ -19,7 +19,8 @@
     "fixtures:baseline": "tsx tests/fixtures/update-baseline.ts",
     "fixtures:add": "tsx tests/fixtures/add-fixture.ts",
     "fixtures:private": "tsx tests/fixtures/private-report.ts",
-    "skills:check": "tsx scripts/check-skills.ts"
+    "skills:check": "tsx scripts/check-skills.ts",
+    "contact-sheet": "node scripts/contact-sheet.mjs"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.1",
