@@ -1,5 +1,53 @@
 # Changelog
 
+## 2.2.0 — 25 November 2026
+
+Import reads more layouts, and says how sure it is.
+
+### Added
+
+- **Import confidence.** The review shows whether a file was read with confidence, partly, or not well, in plain words, with the reasons: no name, no email or phone, lines not placed, jobs without dates or bullets.
+- **Paste text instead.** When a PDF cannot be read well, the text it contains goes into the paste box, so it can be corrected before review.
+
+### Changed
+
+- Contact rows separated by bars or dots are read as separate details. A "Contact" section moves into the header.
+- Skills separated by bars or dots are read as a list.
+- A header of three comma parts reads as role, company and place (or degree, school and place).
+- An education entry is its school, with the degree on the line below.
+- Icon-font glyphs are bullets when they are small, and are dropped when they are text-sized (contact icons).
+
+### Fixed
+
+- An entry whose dates are on the line below its title is no longer listed under "Unsorted lines".
+- A date range at the start of a role line, in a date column, is read with that role.
+- "Mar 2017 – 2020 to date" is read as a range that runs to the present.
+- A name set on two lines in large type is read as one name, and a name below an address is found.
+- Labels such as "Phone:" and "Email:" in front of a contact value are not part of the value.
+
+### Known limits
+
+- Skills after a label with no colon ("Languages Python, SQL") keep the label in the first skill.
+- Real-world PDFs: 12 scored, mean 100%, lowest 97%. Four held-out résumés were 86% on their first run; two rules were then added for the failures they showed, so they are no longer held out (their result is 100%).
+
+## 2.1.0 — 24 November 2026
+
+### Added
+
+- **LinkedIn export.** The "Get a copy of your data" ZIP is read with the same review as a PDF, and nothing is uploaded.
+- **Crash recovery.** An error in one panel shows a message, keeps the rest of the app and the data, and offers Download backup and Reload.
+- **Send feedback** opens a prefilled GitHub issue with the version, the browser and the template. No resume content is included.
+- **Welcome screen** with a three-point introduction, and a social preview image.
+
+### Changed
+
+- PDF pages do not leave a heading, or a role, at the foot of a page.
+- The docs include a 20-minute usability script for five people who are not developers, and a made-up sample kit.
+
+### Fixed
+
+- The deploy refuses to continue without the Pages artifact, and checks the live site afterwards.
+
 ## 2.0.0 — 23 November 2026
 
 The second major version. ResumeLabs now builds a real PDF in the browser, reads resumes more reliably, and is easier to use.
