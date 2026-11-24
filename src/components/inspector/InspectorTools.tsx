@@ -84,12 +84,12 @@ export const AtsPreviewSection: React.FC = () => {
           <>
             <div className="text-[11px] text-muted-foreground">Headings found: {generated.headings.join(', ') || 'none'}</div>
             {generated.problems.length === 0 ? (
-              <div className="text-xs text-emerald-700 dark:text-emerald-400">The PDF text matches the resume.</div>
+              <div className="text-xs text-tick ">The PDF text matches the resume.</div>
             ) : (
               <ul className="space-y-2">
                 {generated.problems.map((p, i) => (
                   <li key={`${p.rule}-${i}`} className="text-xs">
-                    <div className="text-amber-700 dark:text-amber-400">{p.message}</div>
+                    <div className="text-ink ">{p.message}</div>
                     <div className="text-[11px] text-muted-foreground">{p.why}</div>
                   </li>
                 ))}
@@ -111,7 +111,7 @@ export const AtsPreviewSection: React.FC = () => {
         <ul className="space-y-2">
           {problems.map((p, i) => (
             <li key={`${p.rule}-${i}`} className="text-xs">
-              <div className={p.severity === 'warning' ? 'text-amber-700 dark:text-amber-400' : 'text-foreground'}>{p.message}</div>
+              <div className={p.severity === 'warning' ? 'text-ink ' : 'text-foreground'}>{p.message}</div>
               <div className="text-[11px] text-muted-foreground">{p.why}</div>
             </li>
           ))}
@@ -149,12 +149,12 @@ export const AtsPreviewSection: React.FC = () => {
           <div className="space-y-2">
             <div className="text-[11px] text-muted-foreground">Headings the PDF reader found: {pdf.headings.join(', ') || 'none'}</div>
             {pdf.problems.length === 0 ? (
-              <div className="text-xs text-emerald-700 dark:text-emerald-400">The PDF text matches your resume, in order.</div>
+              <div className="text-xs text-tick ">The PDF text matches your resume, in order.</div>
             ) : (
               <ul className="space-y-2">
                 {pdf.problems.map((p, i) => (
                   <li key={`${p.rule}-${i}`} className="text-xs">
-                    <div className="text-amber-700 dark:text-amber-400">{p.message}</div>
+                    <div className="text-ink ">{p.message}</div>
                     <div className="text-[11px] text-muted-foreground">{p.why}</div>
                   </li>
                 ))}
@@ -197,7 +197,7 @@ export const SenioritySection: React.FC = () => {
         </select>
       </div>
       {target && result.missing.length === 0 && (
-        <div className="text-xs text-emerald-700 dark:text-emerald-400">The resume shows the signals expected for this level.</div>
+        <div className="text-xs text-tick ">The resume shows the signals expected for this level.</div>
       )}
       {result.missing.map((m) => (
         <div key={m.signal} className="text-xs space-y-0.5">
@@ -269,7 +269,7 @@ export const BulletBuilderSection: React.FC = () => {
       {composed && (
         <div className="bg-background border border-border rounded-lg p-3 space-y-2">
           <p className="text-xs text-foreground leading-relaxed">{composed.text}</p>
-          {composed.prompt && <p className="text-[11px] text-amber-700 dark:text-amber-400">{composed.prompt}</p>}
+          {composed.prompt && <p className="text-[11px] text-ink ">{composed.prompt}</p>}
           <button onClick={copy} className="text-xs px-3 py-1 rounded-md bg-muted hover:bg-muted/80 text-foreground transition">
             {copied ? 'Copied' : 'Copy as a bullet'}
           </button>

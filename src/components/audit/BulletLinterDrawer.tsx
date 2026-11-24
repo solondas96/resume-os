@@ -28,10 +28,10 @@ export const BulletLinterDrawer: React.FC<{ embedded?: boolean }> = ({ embedded 
 
   const scoreColor =
     analysis.overallScore >= 80
-      ? 'text-emerald-700 dark:text-emerald-400'
+      ? 'text-tick '
       : analysis.overallScore >= 60
-      ? 'text-amber-600 dark:text-amber-400'
-      : 'text-rose-600 dark:text-rose-400';
+      ? 'text-ink '
+      : 'text-redpen ';
 
   return (
     <div className={embedded ? 'flex flex-col min-h-0 flex-1' : 'no-print fixed z-40 bg-card shadow-2xl flex flex-col animate-in duration-200 motion-reduce:animate-none inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t border-border slide-in-from-bottom sm:inset-y-0 sm:left-auto sm:right-0 sm:max-h-none sm:w-[420px] sm:rounded-none sm:border-t-0 sm:border-l sm:slide-in-from-right'}>
@@ -85,15 +85,15 @@ export const BulletLinterDrawer: React.FC<{ embedded?: boolean }> = ({ embedded 
 
         {/* Quick stat chips */}
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium">
+          <div className="p-2 rounded-lg bg-tick-soft border border-tick text-tick font-medium">
             <div className="font-mono text-base font-bold">{analysis.strongBullets}</div>
             <div className="text-[10px]">Action Verbs</div>
           </div>
-          <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 font-medium">
+          <div className="p-2 rounded-lg bg-pencil-soft border border-pencil text-pencil font-medium">
             <div className="font-mono text-base font-bold">{analysis.metricsBullets}</div>
             <div className="text-[10px]">Quantified</div>
           </div>
-          <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 font-medium">
+          <div className="p-2 rounded-lg bg-highlighter border border-highlighter text-page-ink font-medium">
             <div className="font-mono text-base font-bold">{analysis.weakVerbBullets}</div>
             <div className="text-[10px]">Passive/Weak</div>
           </div>
@@ -112,31 +112,31 @@ export const BulletLinterDrawer: React.FC<{ embedded?: boolean }> = ({ embedded 
               key={idx}
               className={`p-3.5 rounded-xl border text-xs transition ${
                 bullet.status === 'strong'
-                  ? 'border-emerald-500/30 bg-emerald-500/5'
+                  ? 'border-tick bg-tick-soft'
                   : bullet.status === 'passive'
-                  ? 'border-rose-500/30 bg-rose-500/5'
+                  ? 'border-redpen bg-redpen-soft'
                   : 'border-border bg-card'
               }`}
             >
               <div className="flex items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {bullet.hasActionVerb && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-medium">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-tick-soft text-tick font-medium">
                       ✓ {bullet.actionVerb}
                     </span>
                   )}
                   {bullet.hasMetric && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/15 text-blue-700 dark:text-blue-300 font-medium">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-pencil-soft text-pencil font-medium">
                       {bullet.metrics.join(', ')}
                     </span>
                   )}
                   {bullet.weakVerb && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-rose-500/15 text-rose-700 dark:text-rose-300 font-medium">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-redpen-soft text-redpen font-medium">
                       Passive: "{bullet.weakVerb}"
                     </span>
                   )}
                   {!bullet.hasMetric && !bullet.weakVerb && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-highlighter text-page-ink ">
                       Needs Quantifiable Metric
                     </span>
                   )}
@@ -157,7 +157,7 @@ export const BulletLinterDrawer: React.FC<{ embedded?: boolean }> = ({ embedded 
                   </span>
                   <button
                     onClick={() => handleApplyFix(bullet.raw, bullet.weakVerb!, bullet.suggestedVerb!)}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-button text-white rounded text-[11px] font-medium hover:bg-brand-hover transition active:scale-[0.98]"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-button text-on-pencil rounded text-[11px] font-medium hover:bg-brand-hover transition active:scale-[0.98]"
                   >
                     <span>Replace Verb</span>
                     <ArrowRight className="w-3 h-3" />

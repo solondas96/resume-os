@@ -43,6 +43,29 @@ export default {
           DEFAULT: 'var(--destructive)',
           foreground: 'var(--destructive-foreground)',
         },
+        // The editor's desk palette (docs/DESIGN.md §2.1)
+        desk: 'var(--desk)',
+        surface: 'var(--surface)',
+        paper: 'var(--paper)',
+        ink: 'var(--ink)',
+        graphite: 'var(--graphite)',
+        rule: 'var(--rule)',
+        pencil: {
+          DEFAULT: 'var(--pencil)',
+          dark: 'var(--pencil-dark)',
+          soft: 'var(--pencil-soft)',
+        },
+        'on-pencil': 'var(--on-pencil)',
+        highlighter: 'var(--highlighter)',
+        tick: {
+          DEFAULT: 'var(--tick)',
+          soft: 'var(--tick-soft)',
+        },
+        redpen: {
+          DEFAULT: 'var(--redpen)',
+          soft: 'var(--redpen-soft)',
+        },
+        'page-ink': 'var(--page-ink)',
       },
       borderRadius: {
         sm: '0.5rem',
@@ -54,6 +77,7 @@ export default {
       boxShadow: {
         card: 'var(--shadow-card)',
         lifted: 'var(--shadow-lifted)',
+        page: 'var(--shadow-page)',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Geist', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],

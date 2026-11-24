@@ -87,7 +87,7 @@ export const DataPanel: React.FC = () => {
         >
           Download a backup
         </button>
-        {message && <p role="status" className="text-xs text-emerald-700 dark:text-emerald-400">{message}</p>}
+        {message && <p role="status" className="text-xs text-tick ">{message}</p>}
       </section>
 
       <section aria-label="Restore" className="space-y-2">

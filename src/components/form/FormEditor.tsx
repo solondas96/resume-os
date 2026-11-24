@@ -224,7 +224,7 @@ const BulletRow: React.FC<{
             className={`w-2.5 h-2.5 rounded-full ${DOT[finding.severity]} ring-2 ring-transparent focus:ring-brand/40`}
           />
         ) : (
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" aria-label="No findings" title="No findings" />
+          <span className="w-2.5 h-2.5 rounded-full bg-tick" aria-label="No findings" title="No findings" />
         )}
       </div>
       <div className="flex-1 min-w-0 space-y-1.5">

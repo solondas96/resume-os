@@ -1,73 +1,83 @@
-# Design tokens
+# Design
 
-ResumeLabs uses warm, minimal colors and one font family for the interface. Colors are CSS custom properties on `:root` (light) and `.dark` (dark) in `src/index.css`. Tailwind classes such as `bg-card` and `text-brand-text` read those variables, so changing a token changes the whole app.
+ResumeLabs is "the editor's desk": a calm cool surface (the desk), white paper (the resume page) and one blue pencil for the things the user acts on. Job-match keywords are marked with a highlighter, and health findings appear as margin notes. Colours and type are CSS custom properties on `:root` (light) and `.dark` (dark) in `src/index.css`. Tailwind classes such as `bg-desk`, `text-ink` and `bg-pencil` read those variables.
 
-Use a token, never a raw color, in components. The exception is the resume's own accent color, which the user picks.
+Use a token, never a raw colour, in components. `src/components/tokens.test.ts` fails on raw hex, `rgb(`, or Tailwind colour shades. The exceptions are the resume's own accent colour, which the user picks, and the page's text, which uses `--page-ink`.
 
-## Colors
+## Colours
 
-| Token | Light | Dark | Used for |
+| Token | Light | Dark | Role |
 | --- | --- | --- | --- |
-| `--background` | `#faf9f5` | `#262624` | Page background |
-| `--foreground` | `#141413` | `#f5f4ee` | Main text |
-| `--card` | `#ffffff` | `#30302e` | Panels, dialogs, the inspector |
-| `--card-foreground` | `#141413` | `#f5f4ee` | Text on cards |
-| `--muted` | `#f0eee6` | `#3a3a37` | Quiet buttons, chips, hover fills |
-| `--muted-foreground` | `#6b6a64` | `#a8a69e` | Secondary text |
-| `--border` | `#e8e6dc` | `#3d3d3a` | Dividers and outlines |
-| `--input` | `#e8e6dc` | `#3d3d3a` | Form field borders |
-| `--ring` | `#c96442` | `#d97757` | Focus rings |
-| `--brand` | `#c96442` | `#d97757` | Accents, the active tab line, the brand mark |
-| `--brand-hover` | `#b5563a` | `#c96442` | Hover on brand fills |
-| `--brand-text` | `#a64c2d` | `#ec9a7a` | Brand-colored text and icons (passes 4.5:1 on the background) |
-| `--brand-button` | `#a64c2d` | `#a64c2d` | Primary button fill (white text) |
-| `--accent` | `#f5e9e2` | `#3d2e27` | Selected state background |
-| `--accent-foreground` | `#7a3a22` | `#f0c4b1` | Text on accent |
-| `--primary` | `#141413` | `#f5f4ee` | Main call to action (for example Export) |
-| `--primary-foreground` | `#faf9f5` | `#262624` | Text on primary |
-| `--secondary` | `#f0eee6` | `#3a3a37` | Secondary surfaces |
-| `--destructive` | `#b3261e` | `#f2877c` | Delete and other irreversible actions |
+| `--desk` | `#ecefea` | `#14171b` | App background, the surface the page sits on |
+| `--surface` | `#f8f9f6` | `#1c2026` | Editor panel, menus, sheets |
+| `--paper` | `#ffffff` | `#ffffff` | The resume page, in both themes |
+| `--ink` | `#1a1f2b` | `#e7eaef` | Main text |
+| `--graphite` | `#565e6c` | `#a3abb8` | Secondary text |
+| `--rule` | `#d5dad3` | `#2c323b` | Dividers and field outlines |
+| `--muted` | `#e2e6df` | `#262b33` | Quiet buttons, chips, hover fills |
+| `--pencil` | `#2f49c9` | `#8ea0ff` | The one accent: main button, focus, active tab, margin marks |
+| `--pencil-dark` | `#24379c` | `#b9c4ff` | Hover on pencil, text on pencil-soft |
+| `--pencil-soft` | `#e4e8fb` | `#232b4d` | Selected states |
+| `--on-pencil` | `#ffffff` | `#0e1220` | Text on a pencil button |
+| `--highlighter` | `#f6e47a` | `#e7d45a` | Highlights (job keywords). A background behind ink, never text colour |
+| `--tick` | `#25734f` | `#5fcb97` | Good: done, matched |
+| `--tick-soft` | `#e0f0e7` | `#1d3a2e` | Background for good status |
+| `--redpen` | `#b4321f` | `#f08a78` | Problems and destructive actions only |
+| `--redpen-soft` | `#f8e4df` | `#3d2521` | Background for problems |
+| `--page-ink` | `#1a1f2b` | `#1a1f2b` | Text on the resume page (paper is always white) |
 
-Status colors use Tailwind's emerald (good), amber (check this) and rose (problem) at the 700 shade in light and the 400 shade in dark, for text. Never color alone: each status also has a word.
+Rules:
+- One accent (`--pencil`). `--tick`, `--redpen` and `--highlighter` carry meaning only.
+- Every status also has a word or an icon: colour is never the only signal.
+- No gradients, no glass, no glows.
 
-Shadows: `--shadow-card` for cards at rest, `--shadow-lifted` for floating panels and menus.
+### Contrast (WCAG 2.2)
+
+Ratios are text on background. Body text needs 4.5:1; large text and UI parts 3:1.
+
+| Text | On | Light | Dark | Passes |
+| --- | --- | --- | --- | --- |
+| `--ink` | `--desk` | 14.20 | 14.91 | both |
+| `--ink` | `--surface` | 15.59 | 13.56 | both |
+| `--graphite` | `--desk` | 5.63 | 7.77 | both |
+| `--graphite` | `--surface` | 6.18 | 7.07 | both |
+| `--pencil` | `--desk` | 6.20 | 7.38 | both |
+| `--pencil` | `--surface` | 6.81 | 6.72 | both |
+| `--tick` | `--surface` | 5.45 | 8.16 | both |
+| `--redpen` | `--surface` | 5.82 | 6.71 | both |
+| `--page-ink` | `--highlighter` | 12.78 | 10.95 | both |
+| `--on-pencil` | `--pencil` | 7.20 | 7.66 | both |
+| `--page-ink` | `--paper` | 16.47 | 16.47 | both |
+| `--graphite` | `--paper` | 6.54 | n/a (the page uses `--page-ink`) | light |
+
+The dark-theme page text is `--page-ink` on white, so it is never the dark-theme `--ink` (which would be 1.21:1 on white).
 
 ## Type
 
-- Interface: Geist (`--font-sans`). Resume preview and PDF: Geist for sans templates, Newsreader for serif templates.
-- Code and numbers: Geist Mono (`--font-mono`), used for scores, counts and dates in the status bar.
-- Sizes: 12px for secondary text, 14px for body, 16px and up for headings. Small labels at 11px are allowed only for secondary notes.
-- Fonts are self-hosted from `public/fonts/` and listed in the service worker's precache.
+- Interface: Atkinson Hyperlegible Next (`--font-sans`), self-hosted weights 400, 500, 700 and italic 400. Its letters are built to be told apart (I, l, 1; O, 0).
+- Numbers: the same family with `tabular-nums`. No monospace in the interface.
+- Resume templates keep their own fonts: Geist for sans templates and Newsreader for serif ones (`--font-serif`). Geist Mono is only used by the Advanced Markdown editor.
+- Sizes follow the browser's text size (rem-based): 12, 14, 16 (body), 20, 25, 31, 39. Line-height 1.5 for body, 1.2 for headings.
+- Sentence case everywhere. No ALL-CAPS labels and no letter-spaced eyebrows.
+- Fonts are self-hosted from `public/fonts/` (the Atkinson licence is `public/fonts/ATKINSON-OFL.txt`).
 
-## Space and shape
+## Shape and depth
 
-- Spacing on a 4px grid (Tailwind's default scale).
-- Radius: `rounded-lg` for buttons and fields, `rounded-xl` for cards, `rounded-2xl` for dialogs.
-- Minimum touch target 36px high (40px on phones where it matters).
-
-## Breakpoints
-
-| Name | Width | What changes |
-| --- | --- | --- |
-| Phone | 360px | One column. The editor and preview are tabs. The inspector is full width. |
-| Tablet | 768px | The header shows the main actions. The inspector is a 420px panel. |
-| Desktop | 1440px | Editor and preview side by side. All header labels visible. |
-
-The screenshot test captures all three widths in light and dark (see `tests/e2e/screenshots.spec.ts`), and CI keeps the images as an artifact.
+- Radius by role: fields and buttons 8 px, menus and sheets 12 px, the page 2 px, dialogs 16 px.
+- Shadows: `--shadow-page` (two layers) on the page only. `--shadow-lifted` on menus and sheets. Form groups have no shadow.
+- Spacing on a 4 px grid.
 
 ## Motion
 
-- 150 to 200 ms for hover, open and close.
-- Respect `prefers-reduced-motion`: use the `motion-safe:` and `motion-reduce:` variants, never animate by default.
-- Celebrate only real milestones: the first download, and a health score of 85 or more.
+- Sheets and menus open in 150 to 200 ms.
+- Nothing animates by default. `prefers-reduced-motion` removes all motion.
 
-## Contrast
+## Breakpoints
 
-Text meets WCAG 2.2 AA (4.5:1 for body text, 3:1 for large text and UI borders) in both themes. The brand text token was darkened from the first design (3.9:1) to `#a64c2d` for this reason. The accessibility scan (`tests/e2e/a11y.spec.ts`) checks the main screens in both themes.
+To be set in the frame (Round 7, Step 2). Layouts use container queries for their regions.
 
 ## Adding a token
 
 1. Add it to `:root` and `.dark` in `src/index.css`.
-2. Map it in `tailwind.config` if it needs a utility class.
-3. Check the contrast in both themes (a 4.5:1 minimum for text).
-4. Add it to the table above.
+2. Map it in `tailwind.config.js` if it needs a utility class.
+3. Check the contrast in both themes (4.5:1 minimum for text) and add it to the table above.

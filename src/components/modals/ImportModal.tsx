@@ -19,11 +19,11 @@ import { importConfidence, ImportConfidence } from '../../import/confidence';
 const BANNER: Record<ImportConfidence, { text: string; tone: string }> = {
   high: {
     text: 'We read this resume with confidence. Check the name and dates, then create it.',
-    tone: 'border-emerald-500/40 text-emerald-700 dark:text-emerald-400',
+    tone: 'border-tick text-tick ',
   },
   medium: {
     text: 'We read most of this resume. Check the items marked “check this” and any lines we could not place.',
-    tone: 'border-amber-500/40 text-amber-700 dark:text-amber-400',
+    tone: 'border-highlighter text-ink ',
   },
   low: {
     text: 'We could not read this layout reliably. Check each section, or paste the text instead.',
@@ -65,8 +65,8 @@ const DroppableSection: React.FC<{ index: number; children: React.ReactNode }> =
 };
 
 const CONFIDENCE_STYLE: Record<string, string> = {
-  high: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  medium: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
+  high: 'bg-tick-soft text-tick ',
+  medium: 'bg-highlighter text-page-ink ',
   low: 'bg-destructive/10 text-destructive',
 };
 
@@ -338,7 +338,7 @@ export const ImportModal: React.FC = () => {
                   </div>
 
                   {unsorted.length > 0 && (
-                    <section aria-label="Unsorted lines" className="space-y-2 border border-amber-500/40 rounded-lg p-3">
+                    <section aria-label="Unsorted lines" className="space-y-2 border border-highlighter rounded-lg p-3">
                       <h3 className="text-xs font-medium text-foreground">
                         Unsorted lines ({unsorted.length}) — these are kept, but we are not sure where they belong
                       </h3>
@@ -374,13 +374,13 @@ export const ImportModal: React.FC = () => {
                   )}
 
                   {result.warnings.map((w, i) => (
-                    <div key={`w${i}`} className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                    <div key={`w${i}`} className="flex items-start gap-2 text-xs text-ink ">
                       <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                       <span>{w}</span>
                     </div>
                   ))}
 
-                  <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-400">
+                  <div className="flex items-center gap-2 text-xs text-tick ">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Nothing is created until you confirm.</span>
                   </div>

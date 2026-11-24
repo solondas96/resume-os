@@ -1,5 +1,37 @@
 /* Self-hosted fonts (Latin subset): no requests to font services, so the app works offline */
 @font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('/fonts/atkinson-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('/fonts/atkinson-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('/fonts/atkinson-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('/fonts/atkinson-italic-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Geist';
   src: url('/fonts/geist-latin.woff2') format('woff2');
   font-weight: 400 700;
@@ -32,73 +64,90 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+ :root {
+  --font-sans: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
   --font-serif: 'Newsreader', 'Merriweather', 'Georgia', serif;
 
-  /* Claude Light Theme */
-  --background: #faf9f5;
-  --foreground: #141413;
-  --card: #ffffff;
-  --card-foreground: #141413;
-  --muted: #f0eee6;
-  --muted-foreground: #6b6a64;
-  --border: #e8e6dc;
-  --input: #e8e6dc;
-  --ring: #c96442;
-  --brand: #c96442;
-  --brand-hover: #b5563a;
-  /* Text and button colours that pass WCAG AA (4.5:1) on the card and background */
-  --brand-text: #a64c2d;
-  --brand-button: #a64c2d;
-  --accent: #f5e9e2;
-  --accent-foreground: #7a3a22;
-  --primary: #141413;
-  --primary-foreground: #faf9f5;
-  --secondary: #f0eee6;
-  --secondary-foreground: #141413;
-  --destructive: #b3261e;
-  --destructive-foreground: #faf9f5;
+  /* The palette: "the editor's desk" (docs/DESIGN.md). Light theme. */
+  --desk: #ecefea;
+  --surface: #f8f9f6;
+  --paper: #ffffff;
+  --ink: #1a1f2b;
+  --graphite: #565e6c;
+  --rule: #d5dad3;
+  --muted: #e2e6df;
+  --pencil: #2f49c9;
+  --pencil-dark: #24379c;
+  --pencil-soft: #e4e8fb;
+  --on-pencil: #ffffff;
+  --highlighter: #f6e47a;
+  --tick: #25734f;
+  --tick-soft: #e0f0e7;
+  --redpen: #b4321f;
+  --redpen-soft: #f8e4df;
+  /* The page's own ink: the resume is always white paper, so its text never follows the theme */
+  --page-ink: #1a1f2b;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-lifted: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  /* Names the components already use, mapped onto the palette */
+  --background: var(--desk);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --muted-foreground: var(--graphite);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--pencil);
+  --brand: var(--pencil);
+  --brand-hover: var(--pencil-dark);
+  --brand-text: var(--pencil);
+  --brand-button: var(--pencil);
+  --accent: var(--pencil-soft);
+  --accent-foreground: var(--pencil-dark);
+  --primary: var(--ink);
+  --primary-foreground: var(--surface);
+  --secondary: var(--muted);
+  --secondary-foreground: var(--ink);
+  --destructive: var(--redpen);
+  --destructive-foreground: var(--surface);
 
-  --primary-color: #c96442;
-  --primary-light: #f5e9e2;
+  /* The page: two layers, a tight contact shadow and a soft wide one, like paper on a desk */
+  --shadow-page: 0 1px 2px rgba(26, 31, 43, 0.18), 0 8px 24px -6px rgba(26, 31, 43, 0.22);
+  /* Menus and sheets: one light shadow. Form groups have none */
+  --shadow-lifted: 0 6px 16px -4px rgba(26, 31, 43, 0.16);
+  --shadow-card: none;
+
+  --primary-color: var(--pencil);
+  --primary-light: var(--pencil-soft);
   --a4-width: 794px;
   --a4-height: 1123px;
 }
 
 .dark {
-  /* Claude Dark Theme */
-  --background: #262624;
-  --foreground: #f5f4ee;
-  --card: #30302e;
-  --card-foreground: #f5f4ee;
-  --muted: #3a3a37;
-  --muted-foreground: #a8a69e;
-  --border: #3d3d3a;
-  --input: #3d3d3a;
-  --ring: #d97757;
-  --brand: #d97757;
-  --brand-hover: #c96442;
-  --brand-text: #ec9a7a;
-  --brand-button: #a64c2d;
-  --accent: #3d2e27;
-  --accent-foreground: #f0c4b1;
-  --primary: #f5f4ee;
-  --primary-foreground: #262624;
-  --secondary: #3a3a37;
-  --secondary-foreground: #f5f4ee;
-  --destructive: #f2877c;
-  --destructive-foreground: #262624;
+  --desk: #14171b;
+  --surface: #1c2026;
+  --paper: #ffffff;
+  --ink: #e7eaef;
+  --graphite: #a3abb8;
+  --rule: #2c323b;
+  --muted: #262b33;
+  --pencil: #8ea0ff;
+  --pencil-dark: #b9c4ff;
+  --pencil-soft: #232b4d;
+  --on-pencil: #0e1220;
+  --highlighter: #e7d45a;
+  --tick: #5fcb97;
+  --tick-soft: #1d3a2e;
+  --redpen: #f08a78;
+  --redpen-soft: #3d2521;
+  --page-ink: #1a1f2b;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
-  --shadow-lifted: 0 12px 30px -5px rgba(0, 0, 0, 0.55), 0 8px 12px -6px rgba(0, 0, 0, 0.45);
+  --shadow-page: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 28px -6px rgba(0, 0, 0, 0.6);
+  --shadow-lifted: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
+  --shadow-card: none;
 
-  --primary-color: #d97757;
-  --primary-light: #3d2e27;
+  --primary-color: var(--pencil);
+  --primary-light: var(--pencil-soft);
 }
 
 /* Base resets & layout */
@@ -159,7 +208,7 @@ html, body, #root {
    A4 SHEET & PREVIEW CANVAS
    ================================================================ */
 .a4-canvas-wrapper {
-  background-color: #f0eee6;
+  background-color: var(--desk);
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
@@ -171,7 +220,7 @@ html, body, #root {
 }
 
 .dark .a4-canvas-wrapper {
-  background-color: #1e1e1c;
+  background-color: var(--desk);
 }
 
 .a4-sheet.page-letter {

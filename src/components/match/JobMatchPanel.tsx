@@ -12,8 +12,8 @@ import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 import { TailorSection } from './TailorSection';
 
 const STRENGTH_STYLE: Record<string, string> = {
-  strong: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  moderate: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
+  strong: 'bg-tick-soft text-tick ',
+  moderate: 'bg-highlighter text-page-ink ',
   weak: 'bg-muted text-muted-foreground',
   missing: 'bg-destructive/10 text-destructive',
 };

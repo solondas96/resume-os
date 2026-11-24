@@ -132,7 +132,7 @@ export const StatusBar: React.FC = () => {
 
             <button
               onClick={fitToOnePage}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-button text-white font-medium text-[10px] hover:bg-brand-hover transition active:scale-[0.98]"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-button text-on-pencil font-medium text-[10px] hover:bg-brand-hover transition active:scale-[0.98]"
               title="Automatically optimize line-height, margins and font size to pull content onto 1 page"
             >
               <Sparkles className="w-2.5 h-2.5" />

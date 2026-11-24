@@ -106,7 +106,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: '1-Click Direct Download PDF',
       description: 'Download high-DPI A4 PDF directly in the browser',
-      icon: <Download className="w-4 h-4 text-blue-400" />,
+      icon: <Download className="w-4 h-4 text-pencil" />,
       action: async () => {
         saveRevision('Pre-export save');
         const target = document.querySelector('.a4-sheet') as HTMLElement;
@@ -122,7 +122,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Print / Save as Vector PDF',
       description: 'Trigger browser print dialog with @page vector CSS',
-      icon: <Printer className="w-4 h-4 text-blue-400" />,
+      icon: <Printer className="w-4 h-4 text-pencil" />,
       action: () => {
         saveRevision('Pre-print save');
         confetti({ particleCount: 60, spread: 50, origin: { y: 0.1 } });
@@ -135,7 +135,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Export Plain Text (.txt for ATS)',
       description: 'Clean formatted plain text without markdown symbols',
-      icon: <FileCode className="w-4 h-4 text-amber-400" />,
+      icon: <FileCode className="w-4 h-4 text-ink" />,
       action: () => exportPlainText(modelMarkdown, 'resume.txt'),
       keywords: ['txt', 'text', 'ats', 'plain', 'export'],
     },
@@ -144,7 +144,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Export JSON Resume Schema (.json)',
       description: 'Export structured resume data per schema.jsonresume.org',
-      icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
+      icon: <FileSpreadsheet className="w-4 h-4 text-pencil" />,
       action: () => exportJsonResume(modelMarkdown, 'resume.json'),
       keywords: ['json', 'resume', 'schema', 'export', 'data'],
     },
@@ -153,7 +153,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Export Bundle (.zip): resume and cover letter PDFs, text, backup',
       description: 'One zip with PDFs, plain text, Markdown and a full backup. Nothing is uploaded.',
-      icon: <FileSpreadsheet className="w-4 h-4 text-purple-400" />,
+      icon: <FileSpreadsheet className="w-4 h-4 text-pencil" />,
       action: () =>
         downloadBundle(
           {
@@ -207,7 +207,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Design',
       title: 'Auto-Fit Content to Exactly 1 Page',
       description: 'Intelligently optimize margins, line height and font scale to fit on 1 page',
-      icon: <Sparkles className="w-4 h-4 text-emerald-400" />,
+      icon: <Sparkles className="w-4 h-4 text-tick" />,
       action: () => fitToOnePage(),
       keywords: ['autofit', 'fit', '1-page', 'one page', 'shrink', 'compact'],
     },
@@ -216,7 +216,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Sections',
       title: `Switch Workspace to ${workspaceMode === 'resume' ? 'Cover Letter' : 'Resume'}`,
       description: 'Toggle between Resume and matching Cover Letter companion',
-      icon: <Mail className="w-4 h-4 text-blue-400" />,
+      icon: <Mail className="w-4 h-4 text-pencil" />,
       action: () => setWorkspaceMode(workspaceMode === 'resume' ? 'cover-letter' : 'resume'),
       keywords: ['cover letter', 'letter', 'mode', 'switch', 'resume'],
     },
@@ -225,7 +225,7 @@ export const CommandPalette: React.FC = () => {
       category: 'AI',
       title: 'Open Application Tracker',
       description: 'Track applications, statuses and conversion',
-      icon: <Target className="w-4 h-4 text-emerald-400" />,
+      icon: <Target className="w-4 h-4 text-tick" />,
       action: () => setActiveModal('tracker'),
       keywords: ['tracker', 'applications', 'jobs', 'status', 'interview', 'offer'],
     },
@@ -243,7 +243,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Design',
       title: 'Browse Starter Role Presets',
       description: 'Load pre-built templates for SWE, Product Designer, PM, or New Grad',
-      icon: <Sparkles className="w-4 h-4 text-blue-400" />,
+      icon: <Sparkles className="w-4 h-4 text-pencil" />,
       action: () => setActiveModal('presets'),
       keywords: ['presets', 'templates', 'starter', 'roles', 'sample'],
     },
@@ -252,7 +252,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Download Markdown (.md)',
       description: 'Export local source markdown file',
-      icon: <FileText className="w-4 h-4 text-emerald-400" />,
+      icon: <FileText className="w-4 h-4 text-tick" />,
       action: () => {
         const blob = new Blob([modelMarkdown], { type: 'text/markdown;charset=utf-8' });
         const url = URL.createObjectURL(blob);
@@ -269,7 +269,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'Import Markdown File',
       description: 'Upload an existing .md file or paste text',
-      icon: <Upload className="w-4 h-4 text-purple-400" />,
+      icon: <Upload className="w-4 h-4 text-pencil" />,
       action: () => setActiveModal('import'),
       keywords: ['import', 'upload', 'load'],
     },
@@ -278,7 +278,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Export',
       title: 'View Revision History',
       description: 'Go back to a saved version of this resume',
-      icon: <History className="w-4 h-4 text-amber-400" />,
+      icon: <History className="w-4 h-4 text-ink" />,
       action: () => openInspector('history'),
       keywords: ['undo', 'history', 'revisions', 'restore', 'versions', 'snapshots'],
     },
@@ -289,7 +289,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Appearance',
       title: `Switch to ${uiTheme === 'dark' ? 'Light' : 'Dark'} Mode`,
       description: 'Toggle application chrome theme',
-      icon: uiTheme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />,
+      icon: uiTheme === 'dark' ? <Sun className="w-4 h-4 text-ink" /> : <Moon className="w-4 h-4 text-pencil" />,
       action: () => toggleUiTheme(),
       keywords: ['theme', 'dark', 'light', 'mode'],
     },
@@ -298,7 +298,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Appearance',
       title: `Switch to ${editorViewMode === 'markdown' ? 'Form Editor' : 'Advanced Markdown View'}`,
       description: 'Toggle between code editor and structured card editor',
-      icon: <Columns className="w-4 h-4 text-blue-400" />,
+      icon: <Columns className="w-4 h-4 text-pencil" />,
       action: () => setEditorViewMode(editorViewMode === 'markdown' ? 'form' : 'markdown'),
       keywords: ['form', 'cards', 'view', 'sections', 'toggle', 'editor', 'markdown'],
     },
@@ -309,7 +309,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Design',
       title: `Toggle Compact Spacing (${compactSpacing ? 'Currently On' : 'Currently Off'})`,
       description: 'Tighten line-height and margins to fit on fewer pages',
-      icon: <Sliders className="w-4 h-4 text-blue-400" />,
+      icon: <Sliders className="w-4 h-4 text-pencil" />,
       action: () => setCompactSpacing(!compactSpacing),
       keywords: ['density', 'compact', 'spacing', 'tight', 'margin'],
     },
@@ -318,7 +318,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Design',
       title: `Toggle 1-Page Fit Mode (${onePageMode ? 'Currently On' : 'Currently Off'})`,
       description: 'Lock canvas strictly to 1123px A4 height',
-      icon: <FileText className="w-4 h-4 text-amber-400" />,
+      icon: <FileText className="w-4 h-4 text-ink" />,
       action: () => setOnePageMode(!onePageMode),
       keywords: ['1-page', 'one page', 'clamp', 'fit'],
     },
@@ -329,7 +329,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Design' as const,
       title: `Template: ${tmpl.name}`,
       description: tmpl.description,
-      icon: <Layout className="w-4 h-4 text-blue-400" />,
+      icon: <Layout className="w-4 h-4 text-pencil" />,
       action: () => setTheme(tmpl.id),
       keywords: ['template', tmpl.name.toLowerCase(), tmpl.id],
     })),
@@ -351,7 +351,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Sections',
       title: 'Insert Work Experience Section',
       description: 'Add a new company, title, dates, and STAR bullet template',
-      icon: <PlusCircle className="w-4 h-4 text-emerald-400" />,
+      icon: <PlusCircle className="w-4 h-4 text-tick" />,
       action: () =>
         insertSectionAtEnd(
           'Work Experience',
@@ -364,7 +364,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Sections',
       title: 'Insert Key Projects Section',
       description: 'Add open source or product achievements',
-      icon: <PlusCircle className="w-4 h-4 text-emerald-400" />,
+      icon: <PlusCircle className="w-4 h-4 text-tick" />,
       action: () =>
         insertSectionAtEnd(
           'Key Projects',
@@ -377,7 +377,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Sections',
       title: 'Insert Education Section',
       description: 'Add university, degree, graduation year, and GPA',
-      icon: <PlusCircle className="w-4 h-4 text-emerald-400" />,
+      icon: <PlusCircle className="w-4 h-4 text-tick" />,
       action: () =>
         insertSectionAtEnd(
           'Education',
@@ -392,7 +392,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Help',
       title: 'Markdown & Icon Syntax Guide',
       description: 'View cheat-sheet for two-column headers and icon badges',
-      icon: <HelpCircle className="w-4 h-4 text-blue-400" />,
+      icon: <HelpCircle className="w-4 h-4 text-pencil" />,
       action: () => setActiveModal('shortcuts'),
       keywords: ['help', 'shortcuts', 'syntax', 'icons', 'guide'],
     },

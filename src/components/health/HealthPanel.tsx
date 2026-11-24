@@ -8,8 +8,8 @@ import { calculateHealthScore } from '../../intelligence/healthScore';
 import { useResumeStoreV2 } from '../../store/useResumeStoreV2';
 
 function scoreTone(score: number): string {
-  if (score >= 80) return 'text-emerald-700 dark:text-emerald-400';
-  if (score >= 60) return 'text-amber-600 dark:text-amber-400';
+  if (score >= 80) return 'text-tick ';
+  if (score >= 60) return 'text-ink ';
   return 'text-destructive';
 }
 

@@ -18,7 +18,7 @@ export const ResumeLabsLogo: React.FC<ResumeLabsLogoProps> = ({
       {/* Calm, refined geometric monogram */}
       <div
         style={{ width: size, height: size }}
-        className="relative flex-shrink-0 flex items-center justify-center rounded-xl bg-brand-button text-white shadow-card transition-transform duration-200"
+        className="relative flex-shrink-0 flex items-center justify-center rounded-xl bg-brand-button text-on-pencil shadow-card transition-transform duration-200"
       >
         <svg
           viewBox="0 0 32 32"

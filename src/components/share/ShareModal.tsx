@@ -92,7 +92,7 @@ export const ShareModal: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+          <div className="p-3.5 rounded-xl bg-highlighter border border-highlighter text-xs text-page-ink flex items-start gap-2.5">
             <span className="font-semibold shrink-0">Warning</span>
             <span>
               Anyone with this link can read this resume. The resume is inside the link, so it cannot be taken back.
@@ -124,7 +124,7 @@ export const ShareModal: React.FC = () => {
               />
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-brand-button text-white text-xs font-medium rounded-xl hover:bg-brand-hover transition active:scale-[0.98] shrink-0"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-brand-button text-on-pencil text-xs font-medium rounded-xl hover:bg-brand-hover transition active:scale-[0.98] shrink-0"
               >
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copied' : 'Copy'}</span>

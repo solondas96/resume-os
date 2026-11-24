@@ -249,7 +249,7 @@ export const Header: React.FC = () => {
           type="button"
           onClick={handleDirectPdf}
           disabled={isExportingPdf || !currentResume}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-button text-white text-xs font-medium hover:opacity-90 disabled:opacity-40 transition active:scale-[0.98] min-h-[36px]"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-button text-on-pencil text-xs font-medium hover:opacity-90 disabled:opacity-40 transition active:scale-[0.98] min-h-[36px]"
         >
           <Download className="w-3.5 h-3.5" />
           <span className="whitespace-nowrap">{isExportingPdf ? 'Preparing…' : (<><span className="sm:hidden">PDF</span><span className="hidden sm:inline">Download PDF</span></>)}</span>

@@ -26,7 +26,7 @@ export const RecruiterView: React.FC = () => {
           <span className="text-xs font-medium text-foreground truncate max-w-xs sm:max-w-md">
             {documentTitle}
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-medium">
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-tick-soft text-tick font-medium">
             Recruiter View
           </span>
         </div>
@@ -34,7 +34,7 @@ export const RecruiterView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand-button text-white rounded-lg hover:bg-brand-hover transition active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand-button text-on-pencil rounded-lg hover:bg-brand-hover transition active:scale-[0.98]"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print / PDF</span>

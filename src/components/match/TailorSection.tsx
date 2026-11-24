@@ -16,7 +16,7 @@ const DiffLines: React.FC<{ before: string[]; after: string[] }> = ({ before, af
       <div key={`b${i}`} className="text-destructive line-through decoration-destructive/40 break-words">− {line}</div>
     ))}
     {after.map((line, i) => (
-      <div key={`a${i}`} className="text-emerald-700 dark:text-emerald-400 break-words">+ {line}</div>
+      <div key={`a${i}`} className="text-tick break-words">+ {line}</div>
     ))}
   </div>
 );
@@ -101,7 +101,7 @@ export const TailorSection: React.FC = () => {
                       type="button"
                       aria-pressed={decision === 'reject'}
                       onClick={() => decide(p.id, 'reject')}
-                      className={`px-2.5 py-1 rounded-md text-xs min-h-[32px] ${decision === 'reject' ? 'bg-destructive text-white' : 'bg-muted text-foreground hover:bg-muted/80'}`}
+                      className={`px-2.5 py-1 rounded-md text-xs min-h-[32px] ${decision === 'reject' ? 'bg-destructive text-surface' : 'bg-muted text-foreground hover:bg-muted/80'}`}
                     >
                       Reject
                     </button>

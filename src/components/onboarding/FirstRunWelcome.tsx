@@ -60,7 +60,7 @@ export const FirstRunWelcome: React.FC<FirstRunWelcomeProps> = ({
             Beautiful, intelligent resumes built 100% in your browser
           </p>
           <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-            <CheckCircle2 className="w-4 h-4 text-green-600" />
+            <CheckCircle2 className="w-4 h-4 text-tick" />
             <span>Everything stays private. Nothing leaves your browser.</span>
           </div>
         </div>
