@@ -11,6 +11,8 @@ export interface TextItem {
   width: number;
   size: number; // font size
   bold: boolean;
+  /** The item is drawn with an icon font (every glyph in that font is a single character) */
+  icon?: boolean;
 }
 
 export interface TextLine {
@@ -23,48 +25,190 @@ export interface TextLine {
   page: number;
   /** Which column the line sits in, when known: left, right, full width, or the only column */
   column?: 'L' | 'R' | 'full' | 'all';
+  /** The line is a cell beside another cell on its row (a date, a place, a label): never a list item */
+  aside?: boolean;
 }
 
-/** Items on the same baseline form one line; items are joined left to right */
+/** Glyphs that mean "list item" when they come from an icon font (Symbol, Wingdings, dingbats) */
+const BULLET_GLYPH = /^[•▪◦●·\-–—*]$/;
+/** A year, or a month and a year */
+const DATE_WORD = String.raw`(?:(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+)?(?:19|20)\d{2}`;
+/** A date that starts a range and is followed by its other end on another line: "Mar 2020 –" */
+const DATE_OPEN = new RegExp(String.raw`^${DATE_WORD}\s*(?:–|—|-|to)$`, 'i');
+/** A whole date, or the open end of a range: "Feb 2020", "Present" */
+const DATE_CLOSE = new RegExp(String.raw`^(?:${DATE_WORD}|present|now|current|today)$`, 'i');
+
+/** The size of the text that carries the most characters */
+export function itemBodySize(items: TextItem[]): number {
+  const weight = new Map<number, number>();
+  for (const it of items) {
+    if (!it.str.trim()) continue;
+    const key = Math.round(it.size * 2) / 2;
+    weight.set(key, (weight.get(key) ?? 0) + it.str.length);
+  }
+  let best = 10;
+  let bestWeight = -1;
+  for (const [size, w] of weight) {
+    if (w > bestWeight) {
+      best = size;
+      bestWeight = w;
+    }
+  }
+  return best;
+}
+
+interface Cell {
+  text: string;
+  x0: number;
+  x1: number;
+  size: number;
+  bold: boolean;
+  /** A bullet drawn with an icon font: it becomes "• " in front of the cell after it */
+  bullet?: boolean;
+}
+
+/**
+ * Split one visual row into cells. A cell is text that reads as one run: a gap of two
+ * font sizes or more starts a new cell (a table column, or a label before its content),
+ * and so does an icon. A date fragment ("Mar 2020 –") ends its cell even at a word gap,
+ * so a date column beside a role is not read as one line.
+ */
+function cellsOfRow(parts: TextItem[], body: number): Cell[] {
+  const cells: Cell[] = [];
+  let cur: (Cell & { end: number }) | null = null;
+  const close = () => {
+    if (cur) cells.push({ text: cur.text, x0: cur.x0, x1: cur.x1, size: cur.size, bold: cur.bold });
+    cur = null;
+  };
+
+  for (const p of parts) {
+    if (p.icon && !BULLET_GLYPH.test(p.str.trim())) {
+      // A small icon-font glyph is a bullet; a glyph at text size is a contact icon, and is dropped
+      close();
+      if (p.size <= body * 0.75) cells.push({ text: '•', x0: p.x, x1: p.x + p.width, size: p.size, bold: false, bullet: true });
+      continue;
+    }
+    if (cur) {
+      const gap = p.x - cur.end;
+      const split =
+        gap > p.size * 2 ||
+        (gap > p.size * 0.6 && (DATE_OPEN.test(cur.text) || DATE_CLOSE.test(cur.text)));
+      if (split) close();
+    }
+    if (!cur) {
+      cur = { text: p.str, x0: p.x, x1: p.x + p.width, size: p.size, bold: p.bold, end: p.x + p.width };
+    } else {
+      const gap = p.x - cur.end;
+      // A real gap is a word space; a tiny gap (a ligature split as "fi" + "rst") joins without one
+      if (gap > cur.size * 0.15) cur.text += ' ';
+      cur.text += p.str;
+      cur.x1 = Math.max(cur.x1, p.x + p.width);
+      cur.bold = cur.bold && p.bold;
+      cur.end = p.x + p.width;
+    }
+  }
+  close();
+  return cells;
+}
+
+/**
+ * Items on the same baseline form one row; the row is split into cells, and each cell becomes
+ * a line. A date that wraps onto its own row ("Mar 2020 –" then "Present") is joined to the
+ * line it belongs to, so the dates stay with their entry.
+ */
 export function groupItemsIntoLines(items: TextItem[], page: number): TextLine[] {
   const usable = items.filter((i) => i.str.trim().length > 0);
+  const body = itemBodySize(usable);
   const sorted = [...usable].sort((a, b) => b.y - a.y || a.x - b.x);
-  const rows: { y: number; size: number; parts: TextItem[] }[] = [];
+  const rows: { y: number; parts: TextItem[] }[] = [];
 
+  // Items join a row when their baselines are close; the smaller size sets the tolerance,
+  // so a name and an address set in different sizes stay on separate rows
   for (const item of sorted) {
-    const row = rows.find((r) => Math.abs(r.y - item.y) < Math.max(r.size, item.size) * 0.5);
+    const row = rows.find((r) => Math.abs(r.y - item.y) < Math.min(...r.parts.map((p) => p.size), item.size) * 0.5);
     if (row) row.parts.push(item);
-    else rows.push({ y: item.y, size: item.size, parts: [item] });
+    else rows.push({ y: item.y, parts: [item] });
   }
 
-  return rows.map((row) => {
-    const parts = [...row.parts].sort((a, b) => a.x - b.x);
-    let text = '';
-    let prevEnd: number | null = null;
-    for (const p of parts) {
-      if (prevEnd !== null) {
-        const gap = p.x - prevEnd;
-        // A real gap is a word space; a gap of several font sizes is a column or table break.
-        // Tiny gaps (for example a ligature split as "fi" + "rst") join without a space.
-        if (gap > row.size * 0.15) text += ' ';
-        if (gap > row.size * 3) text += ' ';
+  const out: TextLine[] = [];
+  // A date range that is open: its start is on `owner`, its end is still to come
+  const state: { pending: { owner: TextLine; start: string } | null } = { pending: null };
+  const flush = () => {
+    if (state.pending) state.pending.owner.text = `${state.pending.owner.text} ${state.pending.start}`;
+    state.pending = null;
+  };
+
+  for (const row of rows) {
+    const cells = cellsOfRow([...row.parts].sort((a, b) => a.x - b.x), body);
+
+    // A bullet cell joins the cell after it
+    const contents: Cell[] = [];
+    let bulletCell: Cell | null = null;
+    for (const c of cells) {
+      if (c.bullet) {
+        bulletCell = c;
+        continue;
       }
-      text += p.str;
-      prevEnd = p.x + p.width;
+      if (bulletCell) {
+        contents.push({ ...c, text: `• ${c.text}`, x0: bulletCell.x0 });
+        bulletCell = null;
+      } else {
+        contents.push(c);
+      }
     }
-    const x0 = Math.min(...parts.map((p) => p.x));
-    const x1 = Math.max(...parts.map((p) => p.x + p.width));
-    const bold = parts.every((p) => p.bold);
-    return {
-      text: text.replace(/\s+/g, ' ').trim(),
-      x0,
-      x1,
+    if (bulletCell) contents.push({ ...bulletCell, text: '•' });
+
+    const toLine = (c: Cell, aside: boolean): TextLine => ({
+      text: c.text.replace(/\s+/g, ' ').trim(),
+      x0: c.x0,
+      x1: c.x1,
       y: row.y,
-      size: row.size,
-      bold,
+      size: c.size,
+      bold: c.bold,
       page,
-    };
-  });
+      ...(aside ? { aside: true } : {}),
+    });
+
+    // A whole date range at the start of a row, before the text beside it ("2020 – Present" in a
+    // date column): it belongs to that text, so it is read at the end of the line
+    const RANGE_PREFIX = new RegExp(String.raw`^${DATE_WORD}\s*(?:–|—|-|to)\s*(?:${DATE_WORD}|present|now|current|today)$`, 'i');
+    if (contents.length >= 2 && RANGE_PREFIX.test(contents[0].text)) {
+      const [range, ...rest] = contents;
+      rest[0] = { ...rest[0], text: `${rest[0].text} ${range.text}` };
+      contents.splice(0, contents.length, ...rest);
+    }
+
+    const rowLines: TextLine[] = [];
+    let openStart: string | null = null;
+    let openCell: Cell | null = null;
+    for (const c of contents) {
+      if (DATE_OPEN.test(c.text) && openStart === null) {
+        openStart = c.text.replace(/\s*(?:–|—|-|to)$/i, '').trim();
+        openCell = c;
+        continue;
+      }
+      if (state.pending && DATE_CLOSE.test(c.text)) {
+        const { owner, start } = state.pending;
+        owner.text = `${owner.text} ${start} – ${c.text}`;
+        state.pending = null;
+        continue;
+      }
+      rowLines.push(toLine(c, rowLines.length > 0));
+    }
+
+    if (openStart !== null) {
+      if (rowLines.length > 0) {
+        flush();
+        state.pending = { owner: rowLines[0], start: openStart };
+      } else {
+        // A range start with nothing else on its row is plain text
+        rowLines.push(toLine(openCell!, false));
+      }
+    }
+    out.push(...rowLines);
+  }
+  flush();
+  return out;
 }
 
 /**

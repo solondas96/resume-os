@@ -47,12 +47,18 @@ export async function extractTextLines(data: ArrayBuffer | Uint8Array, workerSrc
     }
   }
 
+  // Icon fonts: a face whose every item is one character (contact icons, bullet dingbats)
+  const multi = new Set<string>();
+  for (const { items } of pages) for (const it of items) if (it.str.trim().length !== 1) multi.add(it.font);
+  const iconFonts = new Set<string>();
+  for (const { items } of pages) for (const it of items) if (!multi.has(it.font) && it.font !== bodyFont) iconFonts.add(it.font);
+
   // Pass 2: lay out each page; a face other than the body face is emphasis (bold)
   const lines: TextLine[] = [];
   for (const { pageNo, items } of pages) {
     lines.push(
       ...layoutItems(
-        items.map(({ font, ...item }) => ({ ...item, bold: font !== bodyFont })),
+        items.map(({ font, ...item }) => ({ ...item, bold: font !== bodyFont, icon: iconFonts.has(font) })),
         pageNo
       )
     );

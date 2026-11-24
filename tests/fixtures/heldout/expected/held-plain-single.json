@@ -1,0 +1,38 @@
+{
+  "id": "held-plain-single",
+  "kind": "text",
+  "name": "Hassan Rahimi",
+  "email": "hassan.rahimi@example.com",
+  "phone": "+98 21 555 0166",
+  "sections": ["Summary", "Experience", "Education", "Skills"],
+  "experience": [
+    {
+      "company": "Acme Retail",
+      "role": "Store Manager",
+      "start": "2018",
+      "end": "2022",
+      "bullets": [
+        "Grew weekend sales by 26% over two years",
+        "Trained and rota'd a team of 14 staff"
+      ]
+    },
+    {
+      "company": "Corner Books",
+      "role": "Sales Assistant",
+      "start": "2015",
+      "end": "2018",
+      "bullets": [
+        "Ran the loyalty card scheme for 6,000 members"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Azad University",
+      "degree": "BSc Business Administration",
+      "start": "2011",
+      "end": "2015"
+    }
+  ],
+  "skills": ["Retail operations", "Inventory control", "Persian", "English"]
+}

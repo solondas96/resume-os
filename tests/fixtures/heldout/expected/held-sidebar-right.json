@@ -1,0 +1,38 @@
+{
+  "id": "held-sidebar-right",
+  "kind": "text",
+  "name": "Daniel Okoro",
+  "email": "daniel.okoro@example.com",
+  "phone": "+44 20 5550 9921",
+  "sections": ["Experience", "Education", "Skills", "Languages"],
+  "experience": [
+    {
+      "company": "Helix Payments",
+      "role": "Senior Platform Engineer",
+      "start": "2021",
+      "end": "Present",
+      "bullets": [
+        "Moved 40 services onto a shared Kubernetes platform",
+        "Halved median deploy time to 9 minutes"
+      ]
+    },
+    {
+      "company": "Quarry Logistics",
+      "role": "Backend Engineer",
+      "start": "2017",
+      "end": "2021",
+      "bullets": [
+        "Built the dispatch API that handles 2 million routes a month"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Bath",
+      "degree": "BEng Software Engineering",
+      "start": "2012",
+      "end": "2016"
+    }
+  ],
+  "skills": ["Go", "Rust", "Kubernetes", "Terraform"]
+}

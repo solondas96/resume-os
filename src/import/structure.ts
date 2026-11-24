@@ -74,6 +74,8 @@ const COMPANY_WORD = /\b(inc|llc|llp|pllc|plc|ltd|lp|corp|corporation|co|company
 /** Words that name a role. A part with one is the role, not the company */
 const ROLE_WORD = /\b(engineer|developer|manager|director|analyst|designer|nurse|teacher|lead|senior|junior|staff|principal|associate|specialist|consultant|coordinator|chef|accountant|lawyer|counsel|pharmacist|intern|officer|executive|architect|scientist|researcher|administrator|assistant|head|technician|electrician|foreman|representative|advisor|editor|writer|producer|partner)\b/i;
 const SCHOOL_WORD = /\b(university|college|school|institute|academy)\b/i;
+/** A line that starts with words and ends in a role word: "Platform Engineer San Francisco, CA" */
+const ROLE_LEAD = new RegExp(`^(.*${ROLE_WORD.source})\\s+(.+)$`, 'i');
 
 export const splitDate = (text: string): { rest: string; dates?: string } => {
   const range = text.match(RANGE_AT_END);
@@ -101,6 +103,23 @@ export function splitEntryHeader(text: string, kind: 'experience' | 'education' 
   const lastComma = text.lastIndexOf(', ');
   if (kind !== 'education' && lastComma > 0 && COMPANY_WORD.test(text.slice(lastComma + 2)) && text.indexOf(', ') !== lastComma) {
     return { head: text.slice(lastComma + 2).trim(), detail: text.slice(0, lastComma).trim(), confident: true };
+  }
+
+  // Three comma parts are "Role, Company, Place" (experience) or "Degree, School, Place" (education);
+  // the place is not a company or a role, so it is dropped
+  const commaParts = text.split(', ').map((p) => p.trim()).filter(Boolean);
+  if (kind !== 'projects' && commaParts.length >= 3) {
+    if (kind === 'education') {
+      const school = commaParts.findIndex((p) => SCHOOL_WORD.test(p));
+      if (school >= 0) return { head: commaParts[school], detail: commaParts.slice(0, school).join(', ') || undefined, confident: true };
+    } else {
+      const role = commaParts.findIndex((p) => ROLE_WORD.test(p));
+      if (role >= 0) {
+        const companyAt = commaParts.findIndex((p, k) => k !== role && COMPANY_WORD.test(p));
+        const company = companyAt >= 0 ? companyAt : role === 0 ? 1 : 0;
+        return { head: commaParts[company], detail: commaParts[role], confident: true };
+      }
+    }
   }
 
   const separators = [' — ', ' – ', ' | ', ' - ', ' at ', ', '];
@@ -141,15 +160,23 @@ export function splitEntryHeader(text: string, kind: 'experience' | 'education' 
 const isUpper = (s: string) => s === s.toUpperCase() && /[A-Z]/.test(s);
 const titleCase = (s: string) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
-function headingFor(line: TextLine, body: number): { title: string; kind: DetectedSection['kind']; confidence: Confidence } | null {
+/**
+ * A heading: a known section name, or (outside the header) a line set larger than the body, or
+ * bold capitals. In the header only known names count, so a headline set large is not a section.
+ */
+function headingFor(line: TextLine, body: number, inHeader = false): { title: string; kind: DetectedSection['kind']; confidence: Confidence } | null {
   const text = line.text.replace(/:$/, '').trim();
   const alias = HEADING_ALIASES[text.toLowerCase()];
   // Keep the document's own wording ("Profile", not "Summary"); the alias only picks the section kind
   // All-caps headings read better in title case; mixed-case wording is kept as written
   if (alias) return { title: isUpper(text) ? titleCase(text) : text, kind: alias.kind, confidence: 'high' };
+  if (inHeader) return null;
   const words = text.split(/\s+/).length;
   if (BULLET_RE.test(line.text) || SPACE_DATE(text)) return null;
-  if (line.size >= body * 1.15 && words <= 5 && text.length > 2) return { title: titleCase(text), kind: 'custom', confidence: 'medium' };
+  // A bold line only counts when it is clearly larger than the body (a bold job title is not a heading)
+  if (line.size >= body * 1.15 && (!line.bold || line.size >= body * 1.3) && words <= 5 && text.length > 2) {
+    return { title: titleCase(text), kind: 'custom', confidence: 'medium' };
+  }
   if (line.bold && isUpper(text) && words <= 4 && text.length > 3) return { title: titleCase(text), kind: 'custom', confidence: 'medium' };
   return null;
 }
@@ -158,18 +185,37 @@ function SPACE_DATE(text: string): boolean {
   return RANGE_AT_END.test(text);
 }
 
+/** A line that is only a date: "2021", "Mar 2020 – Present" */
+const dateOnly = (text: string): boolean => {
+  const s = splitDate(text);
+  return s.dates !== undefined && s.rest === '';
+};
+
+// A bold line is a heading of its own (an entry's company), never the end of the bullet above
 const isContinuation = (line: TextLine, prev: TextLine | null, prevWasBullet: boolean): boolean =>
-  prevWasBullet && prev !== null && (/^[a-z(]/.test(line.text) || line.x0 > prev.x0 + 2) && !BULLET_RE.test(line.text) && !SPACE_DATE(line.text);
+  prevWasBullet && prev !== null && (/^[a-z(]/.test(line.text) || line.x0 > prev.x0 + 2) && !BULLET_RE.test(line.text) && !SPACE_DATE(line.text) && !line.bold && !line.aside;
 
 /**
  * Detect the structure of ordered lines and emit the Markdown dialect.
  */
-export function structureFromLines(lines: TextLine[]): StructureResult {
+export function structureFromLines(input: TextLine[]): StructureResult {
   const notes: string[] = [];
   const unsorted: UnsortedLine[] = [];
   const sections: DetectedSection[] = [];
   const out: string[] = [];
-  const body = bodySize(lines);
+  const body = bodySize(input);
+  // The name is the largest text near the top. A layout with no column split can put an address
+  // above it in reading order, so the name is moved to the front.
+  let lines = input;
+  {
+    const top = input.slice(0, 6);
+    const biggest = Math.max(...top.map((l) => l.size));
+    const at = top.findIndex((l) => l.size === biggest);
+    const candidate = top[at];
+    if (at > 0 && biggest >= body * 1.3 && candidate.text.split(/\s+/).length <= 5 && !EMAIL_RE.test(candidate.text) && !PHONE_RE.test(candidate.text)) {
+      lines = [candidate, ...input.filter((l) => l !== candidate)];
+    }
+  }
   let uid = 0;
   // Each column's own left margin (its most common x): a line indented past it is a list item,
   // even when the bullet is drawn as a graphic and has no glyph in the text
@@ -202,6 +248,12 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
       name = first.text;
       if (first.size < body * 1.2) notes.push(`Name "${name}" was taken from the first line; it is not set in a larger font.`);
       i = 1;
+      // A name set on two lines in the same large size ("Tomas" / "Novak" in a sidebar)
+      const second = lines[1];
+      if (second && first.size >= body * 1.3 && Math.abs(second.size - first.size) < 0.5 && second.text.split(/\s+/).length <= 2 && !EMAIL_RE.test(second.text) && !PHONE_RE.test(second.text)) {
+        name = `${first.text} ${second.text}`;
+        i = 2;
+      }
     } else {
       notes.push('No name was found at the top of the page.');
     }
@@ -211,27 +263,45 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
   const contactLines: string[] = [];
   const links: string[] = [];
   let headlineSet = false;
-  while (i < lines.length && !headingFor(lines[i], body)) {
+  // Contact details can share a line, separated by bars or dots ("Accra, Ghana | +233 … | name@x.com")
+  const splitContactRow = (text: string): string[] => {
+    const pieces = text.split(/\s+[|·•]\s+/).map((p) => p.trim()).filter(Boolean);
+    return pieces.length > 1 && pieces.some((p) => EMAIL_RE.test(p) || PHONE_RE.test(p)) ? pieces : [text];
+  };
+
+  while (i < lines.length && !headingFor(lines[i], body, true)) {
     const line = lines[i];
-    const email = line.text.match(EMAIL_RE);
-    const phone = line.text.match(PHONE_RE);
-    const url = line.text.match(URL_RE);
-    if (email || phone) {
-      contactLines.push(line.text);
-    } else if (url && !email) {
-      const u = url[1].startsWith('http') ? url[1] : `https://${url[1]}`;
-      const icon = /linkedin/i.test(u) ? 'linkedin' : /github/i.test(u) ? 'github' : 'globe';
-      links.push(`[icon:${icon} ${url[1]}](${u})`);
-    } else if (!headlineSet && line.text.length > 3) {
-      out.push(line.text);
-      headlineSet = true;
-    } else {
-      unsorted.push({ id: unsortedId(), text: line.text, page: line.page, reason: 'in the header, not a contact detail' });
-      out.push(line.text);
+    const pieces = splitContactRow(line.text);
+    const isContactRow = pieces.length > 1;
+    for (const piece of pieces) {
+      // "Phone: +98 21 555 0166": the label is not part of the value
+      const text = piece.replace(/^(?:e-?mail|phone|tel|telephone|mobile|cell|web|website|linkedin)\s*:\s*/i, '');
+      const email = text.match(EMAIL_RE);
+      const phone = text.match(PHONE_RE);
+      const url = text.match(URL_RE);
+      if (email || phone) {
+        contactLines.push(text);
+      } else if (url && !email) {
+        const u = url[1].startsWith('http') ? url[1] : `https://${url[1]}`;
+        const icon = /linkedin/i.test(u) ? 'linkedin' : /github/i.test(u) ? 'github' : 'globe';
+        links.push(`[icon:${icon} ${url[1]}](${u})`);
+      } else if (isContactRow) {
+        // Any other part of a contact row (a place, a website) is contact information too
+        contactLines.push(text);
+      } else if (!headlineSet && line.text.length > 3) {
+        out.push(line.text);
+        headlineSet = true;
+      } else {
+        unsorted.push({ id: unsortedId(), text: line.text, page: line.page, reason: 'in the header, not a contact detail' });
+        out.push(line.text);
+      }
     }
     i++;
   }
   out.push(...contactLines, ...links, '');
+  const headerEnd = out.length - 1;
+  // Contact details in a "Contact" section of their own are moved up into the header
+  const sideContact: string[] = [];
 
   // ---- sections -----------------------------------------------------------
   let current: { kind: DetectedSection['kind']; entry: boolean; prevBullet: TextLine | null; hasEntry: boolean; hasMeta?: boolean } | null = null;
@@ -248,12 +318,25 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
     prevWasBullet = false;
   };
 
+  let inContact = false;
+  // The role under an entry header that had only a company: "Platform Engineer San Francisco, CA"
+  let roleAfterDates: { index: number; head: string } | null = null;
   for (; i < lines.length; i++) {
     const line = lines[i];
     const heading = headingFor(line, body);
+    if (heading && heading.title.toLowerCase() === 'contact') {
+      inContact = true;
+      notes.push('The contact section was moved up into the header.');
+      continue;
+    }
     if (heading) {
+      inContact = false;
       startSection(heading.title, heading.kind, heading.confidence);
       if (heading.kind === 'custom') notes.push(`Heading "${heading.title}" is not a standard section name; kept as a custom section.`);
+      continue;
+    }
+    if (inContact) {
+      for (const piece of splitContactRow(line.text)) sideContact.push(piece);
       continue;
     }
     if (!current) {
@@ -273,10 +356,33 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
     }
 
     if (kind === 'skills') {
+      // Skills set in a row are separated by bars or dots: they read as a comma list
+      const commas = (s: string) => s.replace(/\s*[|·•]\s*/g, ', ');
       const labelled = text.match(/^([^:]{2,32}):\s*(.+)$/);
-      out.push(labelled ? `- **${labelled[1].trim()}:** ${labelled[2].trim()}` : BULLET_RE.test(text) ? `- ${text.replace(BULLET_RE, '')}` : `- ${text}`);
+      out.push(
+        labelled
+          ? `- **${labelled[1].trim()}:** ${commas(labelled[2].trim())}`
+          : BULLET_RE.test(text)
+            ? `- ${commas(text.replace(BULLET_RE, ''))}`
+            : `- ${commas(text)}`
+      );
       prev = line;
       continue;
+    }
+
+    // An entry header that named only the company: the line under its dates may name the role
+    if (roleAfterDates && !dateOnly(text)) {
+      const waiting = roleAfterDates;
+      roleAfterDates = null;
+      // "Platform Engineer San Francisco, CA" (role, then place) or a bare "Platform Engineer"
+      const lead = BULLET_RE.test(text) ? null : text.match(ROLE_LEAD);
+      const role = lead ? lead[1].trim() : ROLE_WORD.test(text) ? text.trim() : null;
+      if (role && role.split(/\s+/).length <= 4 && text.length < 60 && !/[.!?]$/.test(text)) {
+        out[waiting.index] = `### ${waiting.head} — ${role}`;
+        prev = line;
+        prevWasBullet = false;
+        continue;
+      }
     }
 
     // Order matters: a marked line is a bullet; a wrapped line joins the bullet before it;
@@ -296,7 +402,9 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
       continue;
     }
 
-    if (indented(line) && !SPACE_DATE(text)) {
+    // A cell beside another cell (a date or a place at the right), a bold heading and a date on its own
+    // are never list items, however far they are indented
+    if (indented(line) && !SPACE_DATE(text) && !dateOnly(text) && !line.aside && !line.bold) {
       out.push(`- ${text.trim()}`);
       prevWasBullet = true;
       prev = line;
@@ -322,13 +430,19 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
         if (!parts.confident) notes.push(`Could not tell which part of "${split.rest}" is the ${kind === 'education' ? 'school' : 'company'}; check the order.`);
         const entryConfident = parts.confident && dated;
         if (!entryConfident) unsorted.push({ id: unsortedId(), text, page: line.page, reason: 'entry header is a guess' });
+        const headerAt = out.length;
+        // An education entry is "### School" with its degree in the meta line; a role and a company
+        // share the header line
+        const degreeInMeta = kind === 'education' && parts.detail !== undefined;
         out.push(
-          kind === 'projects' ? `### ${parts.head}` : `### ${parts.head}${parts.detail ? ` — ${parts.detail}` : ''}`
+          kind === 'projects' || degreeInMeta ? `### ${parts.head}` : `### ${parts.head}${parts.detail ? ` — ${parts.detail}` : ''}`
         );
-        if (dated) out.push(`*${split.dates}*`);
+        if (degreeInMeta) out.push(`*${[parts.detail, dated ? split.dates : ''].filter(Boolean).join(' | ')}*`);
+        else if (dated) out.push(`*${split.dates}*`);
+        roleAfterDates = kind === 'experience' && !parts.detail ? { index: headerAt, head: parts.head } : null;
         sections[sectionIndex].entries += 1;
         (current as { hasEntry: boolean; hasMeta?: boolean }).hasEntry = true;
-        (current as { hasMeta?: boolean }).hasMeta = dated;
+        (current as { hasMeta?: boolean }).hasMeta = dated || degreeInMeta;
         prevWasBullet = false;
         prev = line;
         continue;
@@ -354,6 +468,8 @@ export function structureFromLines(lines: TextLine[]): StructureResult {
     prev = line;
     prevWasBullet = false;
   }
+
+  out.splice(headerEnd, 0, ...sideContact);
 
   // Remove the blank line the writer may have left between a bullet and its continuation
   const markdown = out.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';

@@ -1,0 +1,38 @@
+{
+  "id": "held-date-table",
+  "kind": "text",
+  "name": "Grace Lindqvist",
+  "email": "grace.lindqvist@example.com",
+  "phone": "+46 8 555 0172",
+  "sections": ["Experience", "Education", "Skills"],
+  "experience": [
+    {
+      "company": "Nordwave Studio",
+      "role": "Product Designer",
+      "start": "2020",
+      "end": "Present",
+      "bullets": [
+        "Led the redesign of the booking app, lifting conversion by 18%",
+        "Set up the design system used by four product teams"
+      ]
+    },
+    {
+      "company": "Pixelhaven",
+      "role": "UX Designer",
+      "start": "2017",
+      "end": "2020",
+      "bullets": [
+        "Ran 30 usability sessions for a retail banking client"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Konstfack University of Arts",
+      "degree": "BA Interaction Design",
+      "start": "2013",
+      "end": "2016"
+    }
+  ],
+  "skills": ["Swedish", "English", "German", "Figma", "Sketch", "Principle", "Interviews", "Card sorting"]
+}

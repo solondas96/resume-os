@@ -11,10 +11,15 @@ const item = (str: string, x: number, y: number, size = 10, bold = false, width 
 });
 
 describe('groupItemsIntoLines', () => {
-  it('positive: items on one baseline become one line, left to right, with word spaces', () => {
-    const lines = groupItemsIntoLines([item('Senior', 100, 700), item('Engineer', 150, 700), item('2019', 400, 700)], 1);
+  it('positive: items on one baseline with word spaces become one line, left to right', () => {
+    const lines = groupItemsIntoLines([item('Senior', 100, 700), item('Engineer', 150, 700)], 1);
     expect(lines.length).toBe(1);
-    expect(lines[0].text).toBe('Senior Engineer 2019');
+    expect(lines[0].text).toBe('Senior Engineer');
+  });
+
+  it('a gap of two font sizes or more starts a new cell, so a right-aligned date is its own line', () => {
+    const lines = groupItemsIntoLines([item('Senior', 100, 700), item('Engineer', 150, 700), item('2019', 400, 700)], 1);
+    expect(lines.map((l) => l.text)).toEqual(['Senior Engineer', '2019']);
   });
 
   it('negative: items on different baselines are separate lines, top to bottom', () => {
@@ -22,9 +27,19 @@ describe('groupItemsIntoLines', () => {
     expect(lines.map((l) => l.text)).toEqual(['Top', 'Bottom']);
   });
 
-  it('a wide gap on the same baseline (a right-aligned date) keeps two spaces apart', () => {
+  it('a wide gap on the same baseline (a right-aligned date) is a separate cell, not a line of its own text', () => {
     const lines = groupItemsIntoLines([item('Engineer', 50, 500), item('2019 – 2021', 480, 500)], 1);
-    expect(lines[0].text).toMatch(/Engineer\s+2019 – 2021/);
+    expect(lines.map((l) => l.text)).toEqual(['Engineer', '2019 – 2021']);
+  });
+
+  it('a date that wraps onto its own row closes the range on the line above it', () => {
+    const lines = groupItemsIntoLines(
+      [item('Mar 2020 –', 50, 500, 10, false, 60), item('Senior Engineer', 120, 500), item('Present', 50, 485, 10, false, 40), item('Built a pipeline', 120, 485)],
+      1
+    );
+    expect(lines.length).toBe(2);
+    expect(lines[0].text).toBe('Senior Engineer Mar 2020 – Present');
+    expect(lines[1].text).toBe('Built a pipeline');
   });
 
   it('marks bold lines only when all their text is bold', () => {

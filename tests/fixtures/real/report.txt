@@ -1,15 +1,15 @@
 real-world PDFs scored: 12 of 12 (missing: 0)
 fixture                      | name | email | phone | sections | company | role | dates | school | bullets | bulletPrecision | skills | overall
-html-centered-pipes          | 100 | 100 | 100 | 100 | 100 | 100 | 100 |   0 | 100 | 100 |   0 |  82
-html-sidebar-icons           |   0 |   0 |   0 | 100 | 100 | 100 | 100 |   0 | 100 | 100 | 100 |  64
-html-table-layout            | 100 | 100 | 100 |   0 |   0 |   0 |   0 |   0 |   0 | 100 |   0 |  36
-html-two-column-grid         | 100 |   0 |   0 | 100 | 100 | 100 | 100 |   0 | 100 | 100 | 100 |  73
-latex-jakes-style            | 100 | 100 | 100 | 100 | 100 |   0 | 100 | 100 | 100 | 100 | 100 |  91
-latex-moderncv               |   0 |   0 |   0 | 100 |   0 |   0 |   0 |   0 |   0 | 100 |  71 |  25
+html-centered-pipes          | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+html-sidebar-icons           | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+html-table-layout            | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+html-two-column-grid         | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+latex-jakes-style            | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+latex-moderncv               | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 |  71 |  97
 libreoffice-a4-eu            | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
 libreoffice-a4-india         | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
 libreoffice-a4-uk            | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
 libreoffice-letter-photo     | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
 libreoffice-three-page       | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
 libreoffice-us-letter        | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
-mean overall: 81%
+mean overall: 100%

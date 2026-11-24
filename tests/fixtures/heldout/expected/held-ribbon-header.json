@@ -1,0 +1,38 @@
+{
+  "id": "held-ribbon-header",
+  "kind": "text",
+  "name": "Irene Vasquez",
+  "email": "irene.vasquez@example.com",
+  "phone": "+34 91 555 0148",
+  "sections": ["Profile", "Work History", "Education", "Core Skills"],
+  "experience": [
+    {
+      "company": "Lumina Biotech",
+      "role": "Clinical Research Coordinator",
+      "start": "Apr 2019",
+      "end": "Present",
+      "bullets": [
+        "Ran a 240-patient oncology trial across three sites",
+        "Cut query resolution time from 11 days to 4"
+      ]
+    },
+    {
+      "company": "Vega Health Partners",
+      "role": "Research Assistant",
+      "start": "Jan 2016",
+      "end": "Mar 2019",
+      "bullets": [
+        "Prepared regulatory submissions for two cardiology studies"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Universidad Complutense de Madrid",
+      "degree": "MSc Clinical Research",
+      "start": "2014",
+      "end": "2015"
+    }
+  ],
+  "skills": ["GCP", "eTMF", "Medidata Rave", "SAS", "Spanish", "English"]
+}

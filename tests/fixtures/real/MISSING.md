@@ -44,14 +44,15 @@ Name each file `pdf/<tool>-<id>.pdf`, for example `pdf/word-ava-thompson.pdf`, a
 | `html-centered-pipes` | Chromium print of hand-written HTML | a centred name, contact row separated by `\|` (below 90%) |
 | `scanned-image-only` | generated image PDF | Clear message, no OCR (not a document tool export) |
 
-## Layouts below 90% (not yet fixed)
+## Layouts that scored below 90% before Round 6 Step 2
 
-Scored by `npx vitest run tests/fixtures/real.test.ts` (see `report.txt`). The reasons come from the extracted text and structure of each file.
+Scored by `npx vitest run tests/fixtures/real.test.ts` (see `report.txt`). All five are now at 97% or above. Each row says what was wrong and what changed.
 
-| Fixture | Overall | Reason |
-| --- | --- | --- |
-| `latex-moderncv` | 25% | The name and the address share one line ("Priya Raman 12 Harbour Lane"), the dates sit on the same line as the job title, and the bullets begin with a font glyph ("f"), so they are not recognised. |
-| `html-table-layout` | 36% | The section labels share a line with their content ("PROFILE Operations manager…"), so the headings are not found, and the roles are misread. |
-| `html-sidebar-icons` | 64% | The name is split across two lines in the sidebar ("Tomas" / "Novak"), and icon glyphs in front of the contact values break the phone and email matches. |
-| `html-two-column-grid` | 73% | The contact is in the left column, and the education lines put the degree first ("MSc Statistics, Humboldt University of Berlin"), so the school is read as the degree. |
-| `html-centered-pipes` | 82% | The education line also puts the degree first, so the school is missed. The skills line uses `\|` separators, and the skills are not recognised (cause not checked yet). |
+| Fixture | Before | Now | What was wrong, and the change |
+| --- | --- | --- | --- |
+| `latex-moderncv` | 25% | 97% | The name and the address shared a row (the row tolerance used the larger font size), and the address sat above the name. Now the row tolerance uses the smaller size, and the largest text near the top is the name. Dingbat bullets and contact icons come from an icon font (one character per glyph), so they are read as bullets or dropped. Dates wrap to their own column and join the role. **Still missed:** the skills label "Languages" has no colon, so it stays in the skill ("Languages Python"). |
+| `html-table-layout` | 36% | 100% | Section labels and their content are cells split by a gap of two font sizes. A table row gives a heading and a line of content. The skill "Lean Six Sigma (green belt)" is the name in the source, so the expected value was corrected to match it. |
+| `html-sidebar-icons` | 64% | 100% | The name is two lines in the same large size. Contact icons are dropped. |
+| `html-two-column-grid` | 73% | 100% | A "Contact" section is moved up into the header. The school is the entry header, and the degree is its meta line. |
+| `html-centered-pipes` | 82% | 100% | A contact row split on `\|`, `·`, `•`; skills separated by pipes read as a list. |
+| `latex-jakes-style` | 91% | 100% | The role on the line after the dates is read as the role of an entry that had only a company. |

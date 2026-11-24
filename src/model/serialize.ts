@@ -114,7 +114,9 @@ export function parseDateRange(text: string): { start?: YearMonth; end?: YearMon
   // "2020 to date" is a start date that runs to the present
   const ongoing = text.match(/^(.+?)\s+to\s+date$/i);
   if (ongoing) {
-    const start = parseDate(ongoing[1]);
+    // "Mar 2017 – 2020 to date": the range starts at its first date and runs on
+    const from = ongoing[1].split(/\s*(?:–|—| - )\s*/)[0];
+    const start = parseDate(from);
     return start && start !== 'present' ? { start, end: 'present' } : null;
   }
   const parts = text.split(/\s*(?:–|—| - | to )\s*/).map((p) => p.trim()).filter(Boolean);

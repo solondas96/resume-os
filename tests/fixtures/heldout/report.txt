@@ -1,0 +1,7 @@
+held-out PDFs scored: 4
+fixture                  | name | email | phone | sections | company | role | dates | school | bullets | bulletPrecision | skills | overall
+held-date-table          | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+held-plain-single        | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+held-ribbon-header       | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+held-sidebar-right       | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 100
+mean overall: 100%
