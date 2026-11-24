@@ -7,6 +7,7 @@ import { Resume } from '../model/resume';
 import { markdownToResume } from '../model/serialize';
 import { extractTextLines } from '../import/pdfText';
 import { structureFromLines, StructureResult } from '../import/structure';
+import { importConfidence, ConfidenceReport } from '../import/confidence';
 import { linkedinToMarkdown, isZipFile } from '../import/linkedin';
 import { htmlToLines } from '../import/docxHtml';
 // Bundled worker: served from our own origin, never from a CDN
@@ -25,6 +26,8 @@ export interface ImportResult {
   /** The extracted text, so the caller can keep it as the editor source */
   text?: string;
   resume?: Resume;
+  /** How much to trust the parse, in plain reasons (see import/confidence.ts) */
+  confidence?: ConfidenceReport;
   detectedSections: { title: string; content: string; confidence: 'high' | 'medium' | 'low' }[];
   warnings: string[];
   errors: string[];
@@ -205,6 +208,10 @@ export async function importResume(file: File): Promise<ImportResult> {
     if (!resume.basics.name) result.warnings.push('Could not detect candidate name. You can add it manually.');
     if (resume.sections.length === 0) result.warnings.push('No structured sections detected. You may need to reorganize content.');
     result.warnings.push(...(result.structure?.notes ?? []));
+    result.confidence = importConfidence(resume, {
+      unsorted: result.structure?.unsorted.length ?? 0,
+      lines: result.structure?.lineCount ?? markdown.split('\n').filter((l) => l.trim()).length,
+    });
 
     result.success = true;
     return result;

@@ -31,6 +31,8 @@ export interface StructureResult {
   unsorted: UnsortedLine[];
   /** Human-readable notes on what was guessed */
   notes: string[];
+  /** How many text lines were read: the base for the share of unsorted lines */
+  lineCount: number;
 }
 
 const HEADING_ALIASES: Record<string, { title: string; kind: DetectedSection['kind'] }> = {
@@ -73,7 +75,7 @@ const SINGLE_AT_END = new RegExp(String.raw`(?:^|\s|\|)\(?((?:${MONTH}\s+)?(?:19
 const COMPANY_WORD = /\b(inc|llc|llp|pllc|plc|ltd|lp|corp|corporation|co|company|group|labs?|university|college|school|institute|hospital|medical|clinic|center|centre|partners|associates|studio|agency|bank|systems|technologies|solutions|health|foundation|academy|department|district|industries|media|cloud|electric|power|logistics|retail|digital|outfitters|apparel|holdings|ventures|works|network|networks|pharmacy|cancer|gulf|emirates)\b/i;
 /** Words that name a role. A part with one is the role, not the company */
 const ROLE_WORD = /\b(engineer|developer|manager|director|analyst|designer|nurse|teacher|lead|senior|junior|staff|principal|associate|specialist|consultant|coordinator|chef|accountant|lawyer|counsel|pharmacist|intern|officer|executive|architect|scientist|researcher|administrator|assistant|head|technician|electrician|foreman|representative|advisor|editor|writer|producer|partner)\b/i;
-const SCHOOL_WORD = /\b(university|college|school|institute|academy)\b/i;
+const SCHOOL_WORD = /\b(university|universität|universidad|università|université|college|school|institute|academy|hochschule)\b/i;
 /** A line that starts with words and ends in a role word: "Platform Engineer San Francisco, CA" */
 const ROLE_LEAD = new RegExp(`^(.*${ROLE_WORD.source})\\s+(.+)$`, 'i');
 
@@ -154,7 +156,8 @@ export function splitEntryHeader(text: string, kind: 'experience' | 'education' 
     if (aCompany && !bCompany) return { head: a, detail: b, confident: true };
     return { head: b, detail: a, confident: aCompany || bCompany };
   }
-  return { head: text, confident: kind === 'projects' };
+  // A lone school name is clear on its own; any other lone text is a guess (except a project title)
+  return { head: text, confident: kind === 'projects' || (kind === 'education' && SCHOOL_WORD.test(text)) };
 }
 
 const isUpper = (s: string) => s === s.toUpperCase() && /[A-Z]/.test(s);
@@ -428,7 +431,9 @@ export function structureFromLines(input: TextLine[]): StructureResult {
       if (looksLikeHeader && split.rest.length > 0) {
         const parts = splitEntryHeader(split.rest, kind as 'experience' | 'education' | 'projects');
         if (!parts.confident) notes.push(`Could not tell which part of "${split.rest}" is the ${kind === 'education' ? 'school' : 'company'}; check the order.`);
-        const entryConfident = parts.confident && dated;
+        // The header is a guess only when its parts could not be told apart; dates that come on the next line
+        // are the entry's meta and are not a reason to doubt the header
+        const entryConfident = parts.confident;
         if (!entryConfident) unsorted.push({ id: unsortedId(), text, page: line.page, reason: 'entry header is a guess' });
         const headerAt = out.length;
         // An education entry is "### School" with its degree in the meta line; a role and a company
@@ -473,7 +478,7 @@ export function structureFromLines(input: TextLine[]): StructureResult {
 
   // Remove the blank line the writer may have left between a bullet and its continuation
   const markdown = out.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';
-  return { markdown, name, sections, unsorted, notes };
+  return { markdown, name, sections, unsorted, notes, lineCount: input.length };
 }
 
 /**

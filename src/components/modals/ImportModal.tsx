@@ -13,6 +13,23 @@ import { importResume, ImportResult } from '../../services/importResume';
 import { markdownToResume } from '../../model/serialize';
 import { allBullets, sectionItems } from '../../model/resume';
 import { moveLineToSection, UnsortedLine } from '../../import/structure';
+import { importConfidence, ImportConfidence } from '../../import/confidence';
+
+/** The banner's first sentence, in plain words, for each level */
+const BANNER: Record<ImportConfidence, { text: string; tone: string }> = {
+  high: {
+    text: 'We read this resume with confidence. Check the name and dates, then create it.',
+    tone: 'border-emerald-500/40 text-emerald-700 dark:text-emerald-400',
+  },
+  medium: {
+    text: 'We read most of this resume. Check the items marked “check this” and any lines we could not place.',
+    tone: 'border-amber-500/40 text-amber-700 dark:text-amber-400',
+  },
+  low: {
+    text: 'We could not read this layout reliably. Check each section, or paste the text instead.',
+    tone: 'border-destructive/40 text-destructive',
+  },
+};
 
 const ACCEPT = '.pdf,.docx,.txt,.md,.zip';
 
@@ -102,6 +119,13 @@ export const ImportModal: React.FC = () => {
   }, [result]);
 
   const reviewResume = useMemo(() => (reviewText.trim() ? markdownToResume(reviewText, title) : null), [reviewText, title]);
+
+  // Confidence follows the review: moving an unsorted line into a section updates it
+  const confidence = useMemo(() => {
+    if (!reviewResume) return null;
+    const lines = result?.structure?.lineCount ?? reviewText.split('\n').filter((l) => l.trim()).length;
+    return importConfidence(reviewResume, { unsorted: unsorted.length, lines });
+  }, [reviewResume, reviewText, unsorted, result]);
 
   const summary = useMemo(() => {
     if (!reviewResume) return null;
@@ -257,9 +281,32 @@ export const ImportModal: React.FC = () => {
                 </div>
               ))}
 
-              {result.success && summary && (
+              {result.success && summary && confidence && (
                 <DndContext sensors={sensors} onDragEnd={onDragEnd}>
                 <>
+                  <div role="status" aria-label="How well we read this file" className={`border rounded-lg p-3 text-xs space-y-1.5 ${BANNER[confidence.level].tone}`}>
+                    <p className="font-medium">{BANNER[confidence.level].text}</p>
+                    {confidence.level !== 'high' && confidence.reasons.length > 0 && (
+                      <ul className="list-disc pl-4 text-muted-foreground space-y-0.5">
+                        {confidence.reasons.map((r) => (
+                          <li key={r}>{r}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {confidence.level === 'low' && result.structure && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Start again from the text the file says, so the user can correct it
+                          setPasteText(result.pageText ?? '');
+                          setResult(null);
+                        }}
+                        className="px-2.5 py-1 bg-muted hover:bg-muted/80 text-foreground rounded-md font-medium"
+                      >
+                        Paste text instead
+                      </button>
+                    )}
+                  </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     <section aria-label="Original text" className="space-y-2 min-w-0">
                       <h3 className="text-xs font-medium text-foreground">What the file says</h3>
